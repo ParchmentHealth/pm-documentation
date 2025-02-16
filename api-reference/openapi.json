@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
+    "title": "Parchment APIs",
+    "description": "Parchments API documentation for partner integrations, enabling secure e-prescription services",
     "license": {
       "name": "MIT"
     },
@@ -10,15 +10,57 @@
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
+      "url": "https://api.dev.parchmenthealth.io/external"
+    },
+    {
+      "url": "https://api.parchmenthealth.io/external"
     }
   ],
   "security": [
     {
-      "bearerAuth": []
+      "bearerAuth": [],
+      "apiKeyAuth": []
     }
   ],
   "paths": {
+    "/v1/create-patient": {
+      "post": {
+        "description": "Creates a new patient in Parchment",
+        "requestBody": {
+          "description": "Patient data to add to Parchment",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewPatient"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Patient creation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/plants": {
       "get": {
         "description": "Returns all plants from the system that the user has access to",
@@ -133,9 +175,7 @@
   "components": {
     "schemas": {
       "Plant": {
-        "required": [
-          "name"
-        ],
+        "required": ["name"],
         "type": "object",
         "properties": {
           "name": {
@@ -154,9 +194,7 @@
             "$ref": "#/components/schemas/Plant"
           },
           {
-            "required": [
-              "id"
-            ],
+            "required": ["id"],
             "type": "object",
             "properties": {
               "id": {
@@ -169,10 +207,7 @@
         ]
       },
       "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
+        "required": ["error", "message"],
         "type": "object",
         "properties": {
           "error": {
@@ -183,12 +218,191 @@
             "type": "string"
           }
         }
+      },
+      "NewPatient": {
+        "type": "object",
+        "description": "Patient information to be created",
+        "required": [
+          "family_name",
+          "date_of_birth",
+          "sex",
+          "email",
+          "phone",
+          "partner_patient_id"
+        ],
+        "properties": {
+          "ihi_number": {
+            "type": "string",
+            "description": "Individual Healthcare Identifier"
+          },
+          "dva_file_number": {
+            "type": "string",
+            "description": "DVA file number"
+          },
+          "medicare_card_number": {
+            "type": "string",
+            "description": "Medicare card number"
+          },
+          "medicare_irn": {
+            "type": "string",
+            "description": "Medicare IRN"
+          },
+          "given_name": {
+            "type": "string",
+            "description": "Patient's given name"
+          },
+          "family_name": {
+            "type": "string",
+            "description": "Patient's family name"
+          },
+          "date_of_birth": {
+            "type": "string",
+            "format": "date",
+            "description": "Patient's date of birth in YYYY-MM-DD format"
+          },
+          "sex": {
+            "$ref": "#/components/schemas/Sex"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Patient's email address"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Patient's phone number"
+          },
+          "address": {
+            "$ref": "#/components/schemas/AustralianAddress"
+          },
+          "medicare_valid_to": {
+            "type": "string",
+            "format": "date",
+            "description": "Medicare card expiry date"
+          },
+          "concession_pension_number": {
+            "type": "string",
+            "description": "Concession or pension number"
+          },
+          "entitlement_number": {
+            "type": "string",
+            "description": "Entitlement number"
+          },
+          "dva_card_color": {
+            "$ref": "#/components/schemas/DVA_COLOR"
+          },
+          "racf_id": {
+            "type": "string",
+            "description": "RACF identifier"
+          },
+          "ctg_eligible": {
+            "type": "boolean",
+            "description": "Closing the Gap eligibility"
+          },
+          "indigenous_type": {
+            "$ref": "#/components/schemas/IndigenousType"
+          },
+          "partner_patient_id": {
+            "type": "string",
+            "description": "Partner's unique identifier for the patient"
+          }
+        }
+      },
+      "AustralianAddress": {
+        "type": "object",
+        "required": [
+          "street_number",
+          "street_name",
+          "suburb",
+          "state",
+          "postcode"
+        ],
+        "properties": {
+          "street_number": {
+            "type": "string",
+            "description": "Street number"
+          },
+          "street_name": {
+            "type": "string",
+            "description": "Street name"
+          },
+          "suburb": {
+            "type": "string",
+            "description": "Suburb"
+          },
+          "state": {
+            "$ref": "#/components/schemas/AU_STATE"
+          },
+          "postcode": {
+            "type": "string",
+            "description": "Postcode"
+          }
+        }
+      },
+      "Sex": {
+        "type": "string",
+        "enum": ["male", "female", "other", "unknown"],
+        "description": "Patient's sex"
+      },
+      "DVA_COLOR": {
+        "type": "string",
+        "enum": ["gold", "white", "orange"],
+        "description": "DVA card color"
+      },
+      "IndigenousType": {
+        "type": "string",
+        "enum": [
+          "aboriginal",
+          "torres_strait_islander",
+          "both",
+          "neither",
+          "not_stated"
+        ],
+        "description": "Patient's indigenous status"
+      },
+      "AU_STATE": {
+        "type": "string",
+        "enum": ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"],
+        "description": "Australian state or territory"
+      },
+      "PatientResponse": {
+        "type": "object",
+        "required": ["status_code", "message", "partner_patient_id", "url"],
+        "properties": {
+          "status_code": {
+            "type": "integer",
+            "description": "HTTP status code"
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message"
+          },
+          "partner_patient_id": {
+            "type": "string",
+            "description": "Your internal patient id"
+          },
+          "parchment_patient_id": {
+            "type": "string",
+            "description": "Parchment's unique identifier for the patient",
+            "example": "3b66aa2f-4330-4d77-96fd-9c7d58221495"
+          },
+          "url": {
+            "type": "string",
+            "description": "URL to access the patient in Parchment portal",
+            "example": "https://portal.parchmenthealth.io/dashboard/patients/3b66aa2f-4330-4d77-96fd-9c7d58221495"
+          }
+        }
       }
     },
     "securitySchemes": {
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer"
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
       }
     }
   }
