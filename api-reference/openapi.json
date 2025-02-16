@@ -170,6 +170,93 @@
           }
         }
       }
+    },
+    "/v1/token": {
+      "post": {
+        "security": [],
+        "description": "Generate an access token for API authentication",
+        "parameters": [
+          {
+            "name": "x-client-id",
+            "in": "header",
+            "required": true,
+            "description": "Client ID for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-client-secret",
+            "in": "header",
+            "required": true,
+            "description": "Client secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": true,
+            "description": "API key for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-partner-id",
+            "in": "header",
+            "required": true,
+            "description": "Partner identifier - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Token request parameters",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token generation successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -390,6 +477,70 @@
             "type": "string",
             "description": "URL to access the patient in Parchment portal",
             "example": "https://portal.parchmenthealth.io/dashboard/patients/3b66aa2f-4330-4d77-96fd-9c7d58221495"
+          }
+        }
+      },
+      "TokenRequest": {
+        "type": "object",
+        "required": ["grantType", "scope"],
+        "properties": {
+          "grantType": {
+            "type": "string",
+            "enum": ["client_credentials"],
+            "description": "The type of grant to request"
+          },
+          "scope": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["create:patient"]
+            },
+            "description": "Array of requested scopes"
+          }
+        }
+      },
+      "TokenResponse": {
+        "type": "object",
+        "required": ["statusCode", "message", "data"],
+        "properties": {
+          "statusCode": {
+            "type": "integer",
+            "description": "HTTP status code",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message",
+            "example": "Success"
+          },
+          "data": {
+            "type": "object",
+            "required": ["accessToken", "expiresIn", "tokenType", "scope"],
+            "properties": {
+              "accessToken": {
+                "type": "string",
+                "description": "JWT access token",
+                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              },
+              "expiresIn": {
+                "type": "integer",
+                "description": "Token expiration time in seconds",
+                "example": 3600
+              },
+              "tokenType": {
+                "type": "string",
+                "enum": ["Bearer"],
+                "description": "Type of token"
+              },
+              "scope": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": ["create:patient"]
+                },
+                "description": "Array of granted scopes"
+              }
+            }
           }
         }
       }
