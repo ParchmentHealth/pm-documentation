@@ -61,153 +61,52 @@
         }
       }
     },
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/v1/token": {
       "post": {
         "security": [],
         "description": "Generate an access token for API authentication",
         "parameters": [
           {
-            "name": "x-client-id",
-            "in": "header",
-            "required": true,
-            "description": "Client ID for authentication - provided by Parchment",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "x-client-secret",
-            "in": "header",
-            "required": true,
-            "description": "Client secret for authentication - provided by Parchment",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "required": true,
-            "description": "API key for authentication - provided by Parchment",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
             "name": "x-partner-id",
             "in": "header",
             "required": true,
-            "description": "Partner identifier - provided by Parchment",
+            "description": "Partner ID for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-partner-secret",
+            "in": "header",
+            "required": true,
+            "description": "Partner secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-organization-id",
+            "in": "header",
+            "required": true,
+            "description": "Organization ID for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": true,
+            "description": "User ID for authentication - provided by Parchment",
             "schema": {
               "type": "string"
             }
@@ -261,38 +160,6 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
-        "required": ["name"],
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
-          },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
-      },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": ["id"],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
       "Error": {
         "required": ["error", "message"],
         "type": "object",
@@ -493,7 +360,17 @@
             "type": "array",
             "items": {
               "type": "string",
-              "enum": ["create:patient"]
+              "enum": [
+                "create:patient",
+                "read:patient",
+                "update:patient",
+                "delete:patient",
+                "read:patient_prescription",
+                "create:user",
+                "read:user",
+                "update:user",
+                "delete:user"
+              ]
             },
             "description": "Array of requested scopes"
           }
@@ -536,7 +413,17 @@
                 "type": "array",
                 "items": {
                   "type": "string",
-                  "enum": ["create:patient"]
+                  "enum": [
+                    "create:patient",
+                    "read:patient",
+                    "update:patient",
+                    "delete:patient",
+                    "read:patient_prescription",
+                    "create:user",
+                    "read:user",
+                    "update:user",
+                    "delete:user"
+                  ]
                 },
                 "description": "Array of granted scopes"
               }
