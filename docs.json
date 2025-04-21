@@ -15,18 +15,7 @@
         "groups": [
           {
             "group": "Get Started",
-            "pages": ["introduction", "quickstart", "development"]
-          },
-          {
-            "group": "Essentials",
-            "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/settings",
-              "essentials/navigation",
-              "essentials/reusable-snippets"
-            ]
+            "pages": ["introduction", "development"]
           }
         ]
       },
@@ -43,6 +32,15 @@
               "api-reference/endpoint/v1/token",
               "api-reference/endpoint/v1/create-patient"
             ]
+          }
+        ]
+      },
+      {
+        "tab": "Single Sign-On (SSO)",
+        "groups": [
+          {
+            "group": "SSO Integration",
+            "pages": ["sso/sso-integration"]
           }
         ]
       }

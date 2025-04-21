@@ -1,0 +1,84 @@
+---
+title: Single Sign-On (SSO) Integration
+description: "Integrate your identity provider with Parchment Health using SAML 2.0"
+---
+
+Parchment Health supports SAML-based Single Sign-On integration, allowing your organization's users to access Parchment services using their existing credentials.
+
+## Benefits
+
+Our SSO solution provides:
+
+- **Streamlined Authentication**: Allow users to access Parchment using their existing organisational credentials
+- **Enhanced Security**: Reduce password fatigue and security risks through centralized authentication
+- **Simplified User Management**: Automatically provision and deprovision users based on your identity provider
+- **SAML 2.0 Compatibility**: Works with major identity providers like Auth0, Okta, Azure AD, and more
+
+## Integration Steps
+
+To integrate your identity provider with Parchment using SAML:
+
+1. **Request SSO Setup**: Contact Parchment support to initiate SSO setup for your organization
+2. **Configure Your Identity Provider**:
+   - Set up a new SAML application in your identity provider
+   - Configure the following endpoints:
+     - **Development**: `https://auth-dev.parchment.health/saml2/idpresponse`
+     - **Production**: `https://auth.parchment.health/saml2/idpresponse`
+3. **Set Audience URI**:
+   - For development: `urn:amazon:cognito:sp:ap-southeast-2_Y1BbT5tQR`
+   - Production URI will be provided after testing is complete
+4. **Configure Attribute Mapping**:
+   - Map the following attributes from your identity provider to Parchment:
+     - `user_id`
+     - `email`
+     - `name`
+     - `given_name`
+     - `family_name`
+5. **Set Callback URLs**:
+   - For development:
+     ```
+     https://portal.dev.parchment.health/auth/callback,
+     https://auth-dev.parchment.health/,
+     https://auth-dev.parchment.health/saml2/idpresponse
+     ```
+   - For production:
+     ```
+     https://portal.parchment.health/auth/callback,
+     https://auth.parchment.health/,
+     https://auth.parchment.health/saml2/idpresponse
+     ```
+6. **Test the Integration**:
+   - Verify SSO login works in the development environment
+   - Once confirmed, complete production deployment with Parchment support
+
+## SAML Configuration Example (Auth0)
+
+Here's an example configuration for Auth0:
+
+```json
+{
+  "audience": "urn:amazon:cognito:sp:ap-southeast-2_Y1BbT5tQR",
+  "mappings": {
+    "user_id": "user_id",
+    "email": "email",
+    "name": "name",
+    "given_name": "given_name",
+    "family_name": "family_name"
+  },
+  "createUpnClaim": false,
+  "passthroughClaimsWithNoMapping": false,
+  "mapUnknownClaimsAsIs": false
+}
+```
+
+## Troubleshooting
+
+If you encounter issues during integration:
+
+1. Verify all endpoints and URIs are correctly configured
+2. Ensure attribute mappings are properly set up in your identity provider
+3. Check that your identity provider is correctly sending all required attributes
+
+## Support
+
+For help with your SSO integration, please contact our support team at [hello@parchment.health](mailto:hello@parchment.health).
