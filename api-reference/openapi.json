@@ -343,7 +343,7 @@
           "url": {
             "type": "string",
             "description": "URL to access the patient in Parchment portal",
-            "example": "https://portal.parchmenthealth.io/dashboard/patients/3b66aa2f-4330-4d77-96fd-9c7d58221495"
+            "example": "https://portal.parchment.health/dashboard/patients/3b66aa2f-4330-4d77-96fd-9c7d58221495"
           }
         }
       },

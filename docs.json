@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "maple",
-  "name": "Starter Kit",
+  "name": "Parchment Health developer docs",
   "colors": {
     "primary": "#0D9373",
     "light": "#07C983",
