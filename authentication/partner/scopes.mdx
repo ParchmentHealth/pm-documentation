@@ -1,0 +1,51 @@
+---
+title: "Authentication Scopes"
+description: "Understanding and implementing permission scopes for partner APIs"
+---
+
+## What Are Scopes?
+
+Scopes define the specific actions and resources that a token can access. They follow a pattern of `action:resource` and represent granular permissions in the Parchment API.
+
+## Available Scopes
+
+Below are the common scopes used in the Parchment partner API:
+
+| Scope                       | Description                     |
+| --------------------------- | ------------------------------- |
+| `create:patient`            | Create new patient records      |
+| `read:patient`              | View patient information        |
+| `update:patient`            | Update existing patient records |
+| `delete:patient`            | Delete patient records          |
+| `read:patient_prescription` | View patient prescription data  |
+| `create:user`               | Create new user accounts        |
+| `read:user`                 | View user information           |
+| `update:user`               | Update existing user accounts   |
+| `delete:user`               | Delete user accounts            |
+
+When generating a token, you can request specific scopes from the allowed set:
+
+```json
+{
+  "grantType": "client_credentials",
+  "scope": ["read:patient_prescription"]
+}
+```
+
+## Scope Intersection
+
+When requesting scopes for a token, the system performs an intersection between:
+
+1. The **requested scopes** in the token generation call
+2. The **allowed scopes** configured for the organization
+
+This means a token will only receive scopes that are both requested AND allowed.
+
+## Best Practices for Scopes
+
+1. **Least Privilege**: Request only the scopes you need for your specific operation
+2. **Scope Separation**: Generate different tokens for different operations rather than requesting all scopes at once
+
+## Managing Scope Changes
+
+As your integration evolves, you may need access to additional scopes. Contact Parchment support to update the allowed scopes for your organization. Once updated, you can request the new scopes when generating tokens.

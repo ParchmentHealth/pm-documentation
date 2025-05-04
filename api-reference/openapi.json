@@ -18,12 +18,11 @@
   ],
   "security": [
     {
-      "bearerAuth": [],
-      "apiKeyAuth": []
+      "bearerAuth": []
     }
   ],
   "paths": {
-    "/v1/create-patient": {
+    "/v1/organizations/{organization_id}/users/{user_id}/patients": {
       "post": {
         "description": "Creates a new patient in Parchment",
         "requestBody": {
@@ -72,7 +71,8 @@
             "required": true,
             "description": "Partner ID for authentication - provided by Parchment",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "tacklit"
             }
           },
           {
@@ -157,11 +157,37 @@
         }
       }
     },
-
     "/v1/organizations/{organization_id}/users/{user_id}/patients/{patient_id}/prescriptions": {
       "get": {
         "description": "Get prescriptions for a specific patient",
         "parameters": [
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Number of prescriptions to return",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "lastKey",
+            "in": "query",
+            "required": false,
+            "description": "Last key to return",
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "organization_id",
             "in": "path",
@@ -433,11 +459,14 @@
         "properties": {
           "grantType": {
             "type": "string",
-            "enum": ["client_credentials"],
-            "description": "The type of grant to request"
+            "description": "Type of grant for OAuth2 authentication",
+            "example": "client_credentials",
+            "default": "client_credentials",
+            "enum": ["client_credentials"]
           },
           "scope": {
             "type": "array",
+            "description": "List of permission scopes being requested",
             "items": {
               "type": "string",
               "enum": [
@@ -452,13 +481,12 @@
                 "delete:user"
               ]
             },
-            "description": "Array of requested scopes"
+            "example": ["create:patient", "read:patient_prescription"]
           }
         }
       },
       "TokenResponse": {
         "type": "object",
-        "required": ["statusCode", "message", "data"],
         "properties": {
           "statusCode": {
             "type": "integer",
@@ -472,40 +500,29 @@
           },
           "data": {
             "type": "object",
-            "required": ["accessToken", "expiresIn", "tokenType", "scope"],
             "properties": {
               "accessToken": {
                 "type": "string",
-                "description": "JWT access token",
-                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                "description": "JWT token for API authentication",
+                "example": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImtleTEifQ..."
               },
               "expiresIn": {
                 "type": "integer",
-                "description": "Token expiration time in seconds",
+                "description": "Token validity in seconds",
                 "example": 3600
               },
               "tokenType": {
                 "type": "string",
-                "enum": ["Bearer"],
-                "description": "Type of token"
+                "description": "Type of the token",
+                "example": "Bearer"
               },
               "scope": {
                 "type": "array",
+                "description": "List of granted permission scopes",
                 "items": {
-                  "type": "string",
-                  "enum": [
-                    "create:patient",
-                    "read:patient",
-                    "update:patient",
-                    "delete:patient",
-                    "read:patient_prescription",
-                    "create:user",
-                    "read:user",
-                    "update:user",
-                    "delete:user"
-                  ]
+                  "type": "string"
                 },
-                "description": "Array of granted scopes"
+                "example": ["create:patient", "read:patient_prescription"]
               }
             }
           }
@@ -577,11 +594,6 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer"
-      },
-      "apiKeyAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-partner-secret"
       }
     }
   }

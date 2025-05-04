@@ -1,4 +1,29 @@
 ---
-title: "Get patient prescriptions"
 openapi: "GET /v1/organizations/{organization_id}/users/{user_id}/patients/{patient_id}/prescriptions"
 ---
+
+## Pagination
+
+### Query Parameters
+
+- `limit` (optional, integer): Maximum number of prescriptions to return per page (default: 20, max: 100).
+- `lastKey` (optional, string): Opaque cursor for fetching the next page. Use the `pagination.lastKey` value from the previous response.
+
+### Response
+
+If pagination is used, the response will include a `pagination` object:
+
+```json
+{
+  "prescriptions": [ ... ],
+  "patient": { ... },
+  "prescriber": { ... },
+  "pagination": {
+    "count": 20,
+    "lastKey": "eyJwayI6ICJQQVRJRU5UIzIwYjA0OTM0LTJjZTUtNDYyOC1iYzZlLWVhMWNkM2I3MjllMyIsICJzayI6ICIyMDI1LTA1LTAyVDA1OjU5OjI3LjM0NFo..."
+  }
+}
+```
+
+- `count`: Number of prescriptions returned in this page.
+- `lastKey`: The string to use as the `lastKey` query parameter for the next request. If `undefined` or not present, there are no more results.

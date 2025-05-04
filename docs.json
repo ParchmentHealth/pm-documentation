@@ -27,6 +27,14 @@
             "pages": ["api-reference/introduction"]
           },
           {
+            "group": "Authentication",
+            "pages": [
+              "authentication/partner/index",
+              "authentication/partner/token-creation",
+              "authentication/partner/scopes"
+            ]
+          },
+          {
             "group": "Endpoint Examples",
             "pages": [
               "api-reference/endpoint/v1/token",

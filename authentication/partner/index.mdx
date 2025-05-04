@@ -1,0 +1,49 @@
+---
+title: "Partner Authentication"
+description: "Comprehensive guide for implementing partner authentication"
+---
+
+# Partner Authentication
+
+This guide explains how to authenticate with the Parchment partner API. The partner authentication system uses a combination of API keys, client credentials, and JWT tokens to provide a secure and flexible authentication mechanism for partners.
+
+## Overview
+
+Parchment uses a multi-layered authentication approach for partners:
+
+1. **Partner Registration** - Partners are registered in our system with a unique Partner ID.
+2. **Organization Registration** - Each partner can have multiple organizations, each with their own credentials.
+3. **Token Generation** - Partners can generate JWT tokens for authenticated API requests.
+4. **Request Authentication** - All API requests must include appropriate authentication headers.
+
+## Partner Registration
+
+Partners must be registered in the Parchment system before they can access the API. This is typically done by the Parchment team. Once registered, partners receive:
+
+- A unique `x-partner-id`
+- A `x-partner-secret` for authentication
+
+## Organization Registration
+
+Once a new organization is created, the partner will receive a `x-organization-id` and `x-organization-secret` for authentication. This secret is used to generate a JWT token for authenticated API requests.
+
+## Token Generation
+
+Partners must generate a JWT token for authenticated API requests. Tokens have the following characteristics:
+
+- Valid for 1 hour
+- Include specific scopes that determine permissions
+- Are signed using RS256 algorithm
+- Used as Bearer token in the Authorization header
+  - eg. `Authorization: Bearer <token>`
+
+## Security Considerations
+
+- Partner and Organization secrets should be kept secure on serverside and never exposed publicly
+- Tokens have a limited lifetime of 1 hour
+- Use HTTPS for all API requests
+- Implement proper error handling for authentication failures
+
+## API Reference
+
+For detailed API endpoints and request/response formats, see the [API Reference](/api-reference/endpoint/v1/token).
