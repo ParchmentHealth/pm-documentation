@@ -6,7 +6,7 @@ openapi: "GET /v1/organizations/{organization_id}/users/{user_id}/patients/{pati
 
 ### Query Parameters
 
-- `limit` (optional, integer): Maximum number of prescriptions to return per page (default: 20, max: 100).
+- `limit` (optional, integer): Maximum number of prescriptions to return per page (default: 20, max: 50).
 - `lastKey` (optional, string): Opaque cursor for fetching the next page. Use the `pagination.lastKey` value from the previous response.
 
 ### Response
