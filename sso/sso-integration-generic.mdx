@@ -1,0 +1,82 @@
+---
+title: SSO Integration (generic)
+---
+
+Parchment Health supports **SAML 2.0-based Single Sign-On (SSO)**. This guide is for IT administrators or identity provider (IdP) teams who want to integrate with our platform to enable secure, seamless user authentication.
+
+---
+
+## Overview
+
+- **Protocol**: SAML 2.0
+- **Supported IdPs**: Any that support SAML 2.0 (e.g. Azure AD, Okta, Ping Identity, Google Workspace, etc.)
+- **Flow**: SP-initiated login only
+
+---
+
+## SAML Configuration
+
+Set up a new **SAML 2.0 application** in your identity provider with the following details:
+
+### Assertion Consumer Service (ACS) URL
+
+| Environment | ACS URL                                               |
+| ----------- | ----------------------------------------------------- |
+| Development | `https://auth-dev.parchment.health/saml2/idpresponse` |
+| Production  | `https://auth.parchment.health/saml2/idpresponse`     |
+
+---
+
+### Entity ID / Audience URI
+
+| Environment | Entity ID (Audience URI)                         |
+| ----------- | ------------------------------------------------ |
+| Development | `urn:amazon:cognito:sp:ap-southeast-2_Y1BbT5tQR` |
+| Production  | Provided upon successful DEV environment testing |
+
+> You can request your production Entity ID after testing is complete.
+
+---
+
+### Required Attributes
+
+The following attributes must be included in the SAML assertion:
+
+| Attribute Name | Description                     |
+| -------------- | ------------------------------- |
+| `user_id`      | Unique user identifier (string) |
+| `email`        | Email address                   |
+| `name`         | Full name (first + last)        |
+| `given_name`   | First name                      |
+| `family_name`  | Last name                       |
+
+> ⚠️ All attributes are **case-sensitive** and must be present in the SAML response.
+
+---
+
+## Send configuration to Parchment
+
+Once you have configured the SAML integration, send the following to Parchment support:
+
+- SAML metadata file (XML)
+
+or
+
+- SAML metadata URL
+
+---
+
+## Testing & Going Live
+
+1. **Set up** the SAML integration using the development ACS URL and Entity ID.
+2. **Test** SSO by initiating login from the Parchment platform.
+3. Once successful, contact [hello@parchment.health](mailto:hello@parchment.health) to:
+   - Confirm your test results
+   - Receive your **production Entity ID**
+   - Finalize production access
+
+---
+
+## Support
+
+If you encounter issues or need help, please contact us at [hello@parchment.health](mailto:hello@parchment.health)

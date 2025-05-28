@@ -49,7 +49,10 @@
         "groups": [
           {
             "group": "SSO Integration",
-            "pages": ["sso/sso-integration"]
+            "pages": [
+              "sso/sso-integration-generic",
+              "sso/sso-integration-auth0"
+            ]
           }
         ]
       }
