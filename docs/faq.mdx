@@ -1,0 +1,59 @@
+---
+title: "Frequently Asked Questions"
+description: "Common questions about the Parchment API integration"
+---
+
+## API Scopes and Timeline
+
+<Accordion title="What is the timeline for releasing additional API scopes?">
+  We are currently testing the create user/prescriber endpoint and plan to
+  launch it by the end of this month. Support for update and delete operations
+  on patients and users is scheduled for release in July.
+</Accordion>
+
+## Patient Records
+
+<Accordion title="What is the recommended approach to creating patient records?">
+While it's technically possible to create patients at the time of prescribing, we recommend creating patient records in advance for two key reasons:
+
+First, it avoids potential validation errors during the prescribing process.
+
+Second, it reduces latency, as creating a new patient record on-the-fly may introduce a few seconds of delay.
+
+</Accordion>
+
+<Accordion title="Are patient records shared across users within our organization?">
+  Yes, patient records in Parchment are scoped to the organization (practice).
+  All prescribers within a practice can access the same set of patient records,
+  including those created by their colleagues.
+</Accordion>
+
+<Accordion title="How can we determine if a patient record already exists in Parchment via the API?">
+  The API will return a response indicating whether the patient already exists
+  in the system.
+</Accordion>
+
+<Accordion title="Can we edit patient records via the API?">
+  The ability to update patient records will be available in July.
+</Accordion>
+
+## Prescriptions and Access
+
+<Accordion title="Can prescribers view each other's prescriptions within the same organization?">
+  Yes, prescriptions created by any prescriber within the same organization will
+  be visible to other prescribers in that organization.
+</Accordion>
+
+## Webhooks and Notifications
+
+<Accordion title="Are there webhooks or callbacks available to notify us of events in Parchment?">
+  We are planning to release webhook support by the end of June or early July to
+  enable real-time notifications.
+</Accordion>
+
+## Production Access
+
+<Accordion title="How will production credentials be shared with us?">
+  Production credentials will be shared securely via 1Password or another secure
+  method of your choice.
+</Accordion>
