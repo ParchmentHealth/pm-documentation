@@ -1,3 +1,212 @@
 ---
 openapi: "POST /v1/organizations/{organization_id}/users/{user_id}/patients"
 ---
+
+## Response Examples
+
+### Success Response (201 Created)
+
+```json
+{
+  "success": true,
+  "statusCode": 201,
+  "message": "Patient created successfully",
+  "data": {
+    "external_patient_id": "CLINIKO#12345",
+    "parchment_patient_id": "pat_abc123def456",
+    "url": "https://app.parchment.health/dashboard/patients/pat_abc123def456"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_abc123"
+}
+```
+
+### Conflict Detected (202 Accepted)
+
+```json
+{
+  "success": true,
+  "statusCode": 202,
+  "message": "Patient creation accepted - conflicts found",
+  "data": {
+    "external_patient_id": "CLINIKO#12345",
+    "parchment_patient_id": "pat_existing789",
+    "url": "https://app.parchment.health/dashboard/patients/pat_existing789"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_def456"
+}
+```
+
+### Validation Error (422 Unprocessable Entity)
+
+```json
+{
+  "success": false,
+  "statusCode": 422,
+  "error": {
+    "type": "https://parchment.health/errors/validation-error",
+    "title": "Validation failed",
+    "detail": "There were some problems with your input.",
+    "validation": [
+      {
+        "field": "family_name",
+        "message": "Family name is required",
+        "code": "VALIDATION_ERROR"
+      },
+      {
+        "field": "date_of_birth",
+        "message": "Invalid date format. Use YYYY-MM-DD",
+        "code": "INVALID_FORMAT"
+      }
+    ]
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_ghi789"
+}
+```
+
+### Partner Patient ID Conflict (409 Conflict)
+
+```json
+{
+  "success": false,
+  "statusCode": 409,
+  "error": {
+    "type": "https://parchment.health/errors/partner-patient-id-conflict",
+    "title": "Partner patient ID conflict",
+    "detail": "Partner patient ID 'CLINIKO#12345' is already in use by another patient. Please use a unique identifier."
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_jkl012"
+}
+```
+
+### Unauthorized (401)
+
+```json
+{
+  "success": false,
+  "statusCode": 401,
+  "error": {
+    "type": "https://parchment.health/errors/authentication-required",
+    "title": "Unauthorized",
+    "detail": "Valid authentication token is required"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_mno345"
+}
+```
+
+### Insufficient Permissions (403 Forbidden)
+
+```json
+{
+  "success": false,
+  "statusCode": 403,
+  "error": {
+    "type": "https://parchment.health/errors/insufficient-scope",
+    "title": "Insufficient permissions",
+    "detail": "This operation requires the 'CREATE_PATIENT' scope"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_pqr678"
+}
+```
+
+## Response Fields
+
+### Success Response Data
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `external_patient_id` | string | Your system's patient identifier (as provided in request) |
+| `parchment_patient_id` | string | Parchment's unique patient identifier |
+| `url` | string | Direct link to patient in Parchment portal |
+
+### Common Response Fields
+
+All responses include these standard fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `success` | boolean | Indicates if the request was successful |
+| `statusCode` | number | HTTP status code |
+| `timestamp` | string | ISO 8601 timestamp of the response |
+| `requestId` | string | Unique identifier for debugging |
+
+## Status Codes
+
+| Code | Status | Description |
+|------|--------|-------------|
+| `201` | Created | Patient successfully created |
+| `202` | Accepted | Patient creation accepted (demographic conflicts found) |
+| `400` | Bad Request | Invalid request format or missing required fields |
+| `401` | Unauthorized | Authentication required or token invalid |
+| `403` | Forbidden | Insufficient permissions (missing CREATE_PATIENT scope) |
+| `409` | Conflict | Partner patient ID already exists |
+| `422` | Unprocessable Entity | Request validation failed |
+| `500` | Internal Server Error | Unexpected server error |
+
+## Error Handling
+
+### Recommended Approach
+
+```javascript
+async function createPatient(patientData) {
+  try {
+    const response = await fetch('/v1/organizations/org123/users/user456/patients', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer your_jwt_token',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(patientData)
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Handle success
+      console.log('Patient created:', result.data.parchment_patient_id);
+      return result.data;
+    } else {
+      // Handle error
+      console.error('Error:', result.error.detail);
+      
+      // Handle specific error types
+      switch (result.statusCode) {
+        case 422:
+          // Show validation errors
+          result.error.validation.forEach(err => {
+            console.error(`${err.field}: ${err.message}`);
+          });
+          break;
+        case 409:
+          // Handle partner patient ID conflict
+          console.error('Patient ID already exists');
+          break;
+        case 401:
+          // Handle authentication error
+          console.error('Please log in again');
+          break;
+        default:
+          console.error('Unexpected error occurred');
+      }
+      
+      // Always log requestId for debugging
+      console.log('Request ID:', result.requestId);
+    }
+  } catch (error) {
+    console.error('Network error:', error);
+  }
+}
+```
+
+## Integration Notes
+
+1. **Store Request ID**: Always log the `requestId` for debugging support requests
+2. **Handle 202 Status**: A 202 response indicates demographic conflicts were found but a matching patient was returned
+3. **Validation Errors**: Use the `error.validation` array to display field-specific error messages
+4. **Partner Patient ID**: Must be unique across your organization; use the format returned in `external_patient_id`
+5. **URL Access**: The returned `url` provides direct access to the patient in the Parchment portal

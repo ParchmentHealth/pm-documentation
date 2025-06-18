@@ -1,0 +1,420 @@
+---
+title: "Response Standards"
+description: "Standardized API response formats and error handling"
+---
+
+## Overview
+
+All Parchment Health API endpoints follow a consistent response structure to ensure predictability and ease of integration. Our responses comply with industry standards including RFC 7807 for error handling.
+
+## Response Structure
+
+### Success Response Format
+
+All successful API responses follow this structure:
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Success",
+  "data": {
+    // Response-specific data
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_abc123",
+  "pagination": {
+    // Only included for list operations
+    "count": 25,
+    "hasNext": true,
+    "limit": 50,
+    "offset": 0,
+    "lastKey": "eyJwayI6ICJQQVRJRU5UIzIwYjA0OTM0LTJjZTUtNDYyOC1iYzZlLWVhMWNkM2I3MjllMyIsICJzayI6ICIyMDI1LTA1LTAyVDA1OjU5OjI3LjM0NFo..."
+  }
+}
+```
+
+### Error Response Format (RFC 7807)
+
+All error responses follow the RFC 7807 Problem Details standard:
+
+```json
+{
+  "success": false,
+  "statusCode": 400,
+  "error": {
+    "type": "https://parchment.health/errors/validation-error",
+    "title": "Validation failed",
+    "detail": "There were some problems with your input.",
+    "instance": "/patients/123",
+    "validation": [
+      {
+        "field": "family_name",
+        "message": "Family name is required",
+        "code": "VALIDATION_ERROR"
+      }
+    ]
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_def456"
+}
+```
+
+## HTTP Status Codes
+
+### Success Codes
+
+| Code | Status | Usage |
+|------|--------|-------|
+| `200` | OK | Successful GET, PUT, PATCH operations |
+| `201` | Created | Successful POST operations (resource creation) |
+| `202` | Accepted | Request accepted for processing (e.g., conflicts found) |
+| `204` | No Content | Successful DELETE operations |
+
+### Error Codes
+
+| Code | Status | Usage |
+|------|--------|-------|
+| `400` | Bad Request | Invalid request data or parameters |
+| `401` | Unauthorized | Authentication required or failed |
+| `403` | Forbidden | Authorization failed (insufficient permissions) |
+| `404` | Not Found | Requested resource does not exist |
+| `409` | Conflict | Business logic conflict (e.g., duplicate IDs) |
+| `422` | Unprocessable Entity | Validation errors in request data |
+| `429` | Too Many Requests | Rate limiting exceeded |
+| `500` | Internal Server Error | Unexpected server error |
+| `503` | Service Unavailable | External service temporarily unavailable |
+
+## Response Fields
+
+### Core Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `success` | boolean | Indicates if the request was successful |
+| `statusCode` | number | HTTP status code |
+| `message` | string | Human-readable message (success responses) |
+| `data` | object | Response payload (success responses) |
+| `error` | object | Error details (error responses) |
+| `timestamp` | string | ISO 8601 timestamp of the response |
+| `requestId` | string | Unique identifier for request tracing |
+
+### Optional Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `pagination` | object | Pagination information for list operations |
+
+### Pagination Object Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `count` | number | Number of items returned in the current page |
+| `hasNext` | boolean | Whether more items are available on subsequent pages |
+| `limit` | number | Maximum number of items per page (as requested) |
+| `offset` | number | Starting position of the current page (zero-based) |
+| `lastKey` | string\|null | Opaque cursor for fetching the next page. Use this value as the `lastKey` query parameter for the next request. If `null`, no more pages are available |
+
+### Error Object Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `type` | string | URI identifying the problem type |
+| `title` | string | Human-readable summary of the problem |
+| `detail` | string | Human-readable explanation |
+| `instance` | string | URI reference to the specific occurrence |
+| `validation` | array | Field-level validation errors (422 responses) |
+
+## Error Types
+
+### Standard Error Types
+
+| Error Type | Description |
+|------------|-------------|
+| `invalid-request` | General invalid request format |
+| `missing-required-field` | Required field not provided |
+| `invalid-format` | Data format validation failed |
+| `authentication-required` | Authentication token missing |
+| `invalid-token` | Authentication token invalid |
+| `token-expired` | Authentication token expired |
+| `insufficient-scope` | Missing required permissions |
+| `access-denied` | Access to resource denied |
+| `resource-not-found` | General resource not found |
+| `patient-not-found` | Specific patient not found |
+| `resource-conflict` | General resource conflict |
+| `partner-patient-id-conflict` | Partner patient ID already exists |
+| `validation-error` | Request validation failed |
+| `business-rule-violation` | Business logic constraint violated |
+| `rate-limit-exceeded` | Too many requests |
+| `internal-error` | Unexpected server error |
+| `service-unavailable` | External service unavailable |
+
+## Response Examples
+
+### Create Patient Success (201)
+
+```json
+{
+  "success": true,
+  "statusCode": 201,
+  "message": "Patient created successfully",
+  "data": {
+    "external_patient_id": "PARTNER#12345",
+    "parchment_patient_id": "pat_abc123def456",
+    "url": "https://app.parchment.health/dashboard/patients/pat_abc123def456"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_abc123"
+}
+```
+
+### Get Patient Success (200)
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Success",
+  "data": {
+    "patient_id": "pat_abc123def456",
+    "family_name": "Smith",
+    "given_name": "John",
+    "date_of_birth": "1990-01-15",
+    "sex": "M",
+    "ihi_number": "8003608166690503",
+    "medicare_number": "1234567890",
+    "partner_patient_id": "PARTNER#12345"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_def456"
+}
+```
+
+### List Patients Success (200)
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Success",
+  "data": [
+    {
+      "patient_id": "pat_abc123def456",
+      "family_name": "Smith",
+      "given_name": "John"
+    }
+  ],
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_ghi789",
+  "pagination": {
+    "count": 1,
+    "hasNext": false,
+    "limit": 50,
+    "offset": 0,
+    "lastKey": null
+  }
+}
+```
+
+### Validation Error (422)
+
+```json
+{
+  "success": false,
+  "statusCode": 422,
+  "error": {
+    "type": "https://parchment.health/errors/validation-error",
+    "title": "Validation failed",
+    "detail": "There were some problems with your input.",
+    "validation": [
+      {
+        "field": "family_name",
+        "message": "Family name is required",
+        "code": "VALIDATION_ERROR"
+      },
+      {
+        "field": "date_of_birth",
+        "message": "Invalid date format. Use YYYY-MM-DD",
+        "code": "INVALID_FORMAT"
+      }
+    ]
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_jkl012"
+}
+```
+
+### Unauthorized Error (401)
+
+```json
+{
+  "success": false,
+  "statusCode": 401,
+  "error": {
+    "type": "https://parchment.health/errors/authentication-required",
+    "title": "Unauthorized",
+    "detail": "Valid authentication token is required"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_mno345"
+}
+```
+
+### Partner Patient ID Conflict (409)
+
+```json
+{
+  "success": false,
+  "statusCode": 409,
+  "error": {
+    "type": "https://parchment.health/errors/partner-patient-id-conflict",
+    "title": "Partner patient ID conflict",
+    "detail": "Partner patient ID 'PARTNER#12345' is already in use by another patient. Please use a unique identifier."
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_pqr678"
+}
+```
+
+### Patient Not Found (404)
+
+```json
+{
+  "success": false,
+  "statusCode": 404,
+  "error": {
+    "type": "https://parchment.health/errors/patient-not-found",
+    "title": "Patient not found",
+    "detail": "Patient with ID 'pat_invalid123' does not exist",
+    "instance": "/patients/pat_invalid123"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_stu901"
+}
+```
+
+### Internal Server Error (500)
+
+```json
+{
+  "success": false,
+  "statusCode": 500,
+  "error": {
+    "type": "https://parchment.health/errors/internal-error",
+    "title": "Internal server error",
+    "detail": "An unexpected error occurred while processing your request"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_vwx234"
+}
+```
+
+## Request Tracing
+
+Every response includes a unique `requestId` that can be used for:
+
+- **Debugging**: Reference this ID when reporting issues
+- **Logging**: Correlate requests across different systems
+- **Monitoring**: Track request flow through the system
+
+Example: `req_1705312200000_abc123`
+
+## API Versioning
+
+The API version information is tracked internally for compatibility purposes, allowing for:
+
+- **Backward Compatibility**: Maintain support for older integrations
+- **Feature Detection**: Identify available features based on version
+- **Migration Planning**: Plan upgrades to newer API versions
+
+## Pagination Usage
+
+When working with paginated endpoints, use the `lastKey` field to navigate through pages:
+
+### Making Paginated Requests
+
+```javascript
+// First request (no lastKey)
+const firstPage = await fetch(`/api/v1/patients?limit=20`);
+const firstResponse = await firstPage.json();
+
+// Check if more pages exist
+if (firstResponse.pagination.hasNext && firstResponse.pagination.lastKey) {
+  // Request next page using lastKey
+  const secondPage = await fetch(`/api/v1/patients?limit=20&lastKey=${encodeURIComponent(firstResponse.pagination.lastKey)}`);
+  const secondResponse = await secondPage.json();
+}
+```
+
+### Pagination Best Practices
+
+1. **Always check `hasNext`** before requesting the next page
+2. **Use `lastKey` for cursor-based pagination** when available
+3. **Fall back to `offset`** for offset-based pagination when needed
+4. **URL encode `lastKey` values** when using as query parameters
+5. **Handle `null` lastKey** as indication of no more pages
+
+## Best Practices
+
+### Error Handling
+
+1. **Always check the `success` field** to determine if the request succeeded
+2. **Use `statusCode` for programmatic handling** of different scenarios
+3. **Display `error.detail` to users** for human-readable error messages
+4. **Log `requestId`** for debugging and support requests
+5. **Handle validation errors** by checking the `error.validation` array
+
+### Integration Tips
+
+1. **Store `requestId`** in your logs for easier debugging
+2. **Implement retry logic** for 5xx errors with exponential backoff
+3. **Cache successful responses** when appropriate to reduce API calls
+4. **Monitor response times** for performance tracking
+5. **Validate API version compatibility** when integrating
+
+## Migration Guide
+
+### From Legacy Responses
+
+If you're migrating from the legacy response format:
+
+1. **Update success checks**: Use `response.success` instead of checking `statusCode < 400`
+2. **Extract data**: Access response data from `response.data` instead of the root
+3. **Handle errors**: Use `response.error` object instead of `response.message`
+4. **Add request tracing**: Store `response.requestId` for debugging
+
+### TypeScript Support
+
+```typescript
+interface ApiResponse<T = any> {
+  success: true
+  statusCode: number
+  message: string
+  data: T
+  timestamp: string
+  requestId: string
+  pagination?: PaginationInfo
+}
+
+interface PaginationInfo {
+  count: number
+  hasNext: boolean
+  limit: number
+  offset: number
+  lastKey: string | null
+}
+
+interface ApiErrorResponse {
+  success: false
+  statusCode: number
+  error: {
+    type: string
+    title: string
+    detail: string
+    instance?: string
+    validation?: ValidationError[]
+  }
+  timestamp: string
+  requestId: string
+}
+```

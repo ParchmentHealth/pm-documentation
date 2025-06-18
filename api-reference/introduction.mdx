@@ -5,10 +5,22 @@ description: "Parchment e-prescriptions API endpoints"
 
 ## Overview
 
-The Parchment Health API is a RESTful API that allows you to manage your Patient information in Parchment.
+The Parchment Health API is a RESTful API that allows you to manage your Patient information in Parchment. Our API follows industry standards including RFC 7807 for error responses and provides consistent, predictable response formats across all endpoints.
 
-Below is the basic sequence of events when a user signs up to Parchment.
+## Key Features
+
+- **Standardized Responses**: All endpoints follow a consistent response structure
+- **RFC 7807 Compliance**: Error responses follow Problem Details standard
+- **Request Tracing**: Every response includes a unique `requestId` for debugging
+- **Type Safety**: Full TypeScript support with comprehensive interfaces
+- **Detailed Validation**: Field-level validation errors with actionable messages
 
 ## API Sequence
 
+Below is the basic sequence of events when a user signs up to Parchment.
+
 ![Alt text](/images/api-sequence.png)
+
+## Response Structure
+
+All API responses follow a standardized format. See the [Response Standards](/api-reference/response-standards) section for detailed information about success and error response formats.

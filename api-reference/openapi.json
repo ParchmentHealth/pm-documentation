@@ -37,22 +37,121 @@
           "required": true
         },
         "responses": {
-          "200": {
-            "description": "Patient creation response",
+          "201": {
+            "description": "Patient created successfully",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PatientResponse"
+                },
+                "example": {
+                  "success": true,
+                  "statusCode": 201,
+                  "message": "Patient created successfully",
+                  "data": {
+                    "external_patient_id": "PARTNER#12345",
+                    "parchment_patient_id": "pat_abc123def456",
+                    "url": "https://app.parchment.health/dashboard/patients/pat_abc123def456"
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_abc123"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Patient creation accepted - conflicts found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientResponse"
+                },
+                "example": {
+                  "success": true,
+                  "statusCode": 202,
+                  "message": "Patient creation accepted - conflicts found",
+                  "data": {
+                    "external_patient_id": "PARTNER#12345",
+                    "parchment_patient_id": "pat_existing789",
+                    "url": "https://app.parchment.health/dashboard/patients/pat_existing789"
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_def456"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Partner patient ID conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 409,
+                  "error": {
+                    "type": "https://parchment.health/errors/partner-patient-id-conflict",
+                    "title": "Partner patient ID conflict",
+                    "detail": "Partner patient ID 'PARTNER#12345' is already in use by another patient. Please use a unique identifier."
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_ghi789"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 422,
+                  "error": {
+                    "type": "https://parchment.health/errors/validation-error",
+                    "title": "Validation failed",
+                    "detail": "There were some problems with your input.",
+                    "validation": [
+                      {
+                        "field": "family_name",
+                        "message": "Family name is required",
+                        "code": "VALIDATION_ERROR"
+                      },
+                      {
+                        "field": "date_of_birth",
+                        "message": "Invalid date format. Use YYYY-MM-DD",
+                        "code": "INVALID_FORMAT"
+                      }
+                    ]
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_jkl012"
                 }
               }
             }
           },
           "400": {
-            "description": "unexpected error",
+            "description": "Bad request",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 400,
+                  "error": {
+                    "type": "https://parchment.health/errors/invalid-request",
+                    "title": "Bad request",
+                    "detail": "The request could not be processed due to invalid data."
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_mno345"
                 }
               }
             }
@@ -130,6 +229,23 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TokenResponse"
+                },
+                "example": {
+                  "success": true,
+                  "statusCode": 200,
+                  "message": "Token generated successfully",
+                  "data": {
+                    "accessToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImtleTEifQ...",
+                    "expiresIn": 3600,
+                    "tokenType": "Bearer",
+                    "scope": ["create:patient", "read:patient_prescription"]
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_pqr678",
+                  "meta": {
+                    "apiVersion": "1.0",
+                    "responseTime": 125
+                  }
                 }
               }
             }
@@ -140,6 +256,20 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 400,
+                  "error": {
+                    "type": "https://parchment.health/errors/invalid-request",
+                    "title": "Bad request",
+                    "detail": "Invalid grant type or scope provided."
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_stu901",
+                  "meta": {
+                    "apiVersion": "1.0"
+                  }
                 }
               }
             }
@@ -150,6 +280,20 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 401,
+                  "error": {
+                    "type": "https://parchment.health/errors/authentication-required",
+                    "title": "Unauthorized",
+                    "detail": "Invalid partner credentials provided."
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_vwx234",
+                  "meta": {
+                    "apiVersion": "1.0"
+                  }
                 }
               }
             }
@@ -226,6 +370,43 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PatientPrescriptionsExternal"
+                },
+                "example": {
+                  "success": true,
+                  "statusCode": 200,
+                  "message": "Patient prescriptions retrieved successfully",
+                  "data": {
+                    "patient": {
+                      "given_name": "John",
+                      "family_name": "Smith",
+                      "date_of_birth": "1990-01-15T00:00:00.000Z",
+                      "partner_patient_id": "PARTNER#12345"
+                    },
+                    "prescriber": {
+                      "given_name": "Dr. Emily",
+                      "family_name": "Johnson"
+                    },
+                    "prescriptions": [
+                      {
+                        "url": "https://app.parchment.health/prescriptions/rx_abc123",
+                        "scid": "12345678",
+                        "created_date": "2024-01-10T14:30:00.000Z",
+                        "item_name": "Amoxicillin 500mg capsules",
+                        "quantity": "21",
+                        "number_of_repeats_authorised": "0",
+                        "private_prescription": false
+                      }
+                    ]
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_yza567",
+                  "pagination": {
+                    "count": 1,
+                    "hasNext": false,
+                    "limit": 50,
+                    "offset": 0,
+                    "lastKey": null
+                  }
                 }
               }
             }
@@ -236,6 +417,20 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 400,
+                  "error": {
+                    "type": "https://parchment.health/errors/invalid-request",
+                    "title": "Bad request",
+                    "detail": "Invalid query parameters provided."
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_bcd890",
+                  "meta": {
+                    "apiVersion": "1.0"
+                  }
                 }
               }
             }
@@ -246,16 +441,60 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 401,
+                  "error": {
+                    "type": "https://parchment.health/errors/authentication-required",
+                    "title": "Unauthorized",
+                    "detail": "Valid authentication token is required."
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_efg123"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 403,
+                  "error": {
+                    "type": "https://parchment.health/errors/insufficient-scope",
+                    "title": "Insufficient permissions",
+                    "detail": "This operation requires the 'read:patient_prescription' scope."
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_hij456"
                 }
               }
             }
           },
           "404": {
-            "description": "Not found",
+            "description": "Patient not found",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 404,
+                  "error": {
+                    "type": "https://parchment.health/errors/patient-not-found",
+                    "title": "Patient not found",
+                    "detail": "Patient with the specified ID does not exist.",
+                    "instance": "/patients/invalid-id"
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_klm789"
                 }
               }
             }
@@ -266,18 +505,159 @@
   },
   "components": {
     "schemas": {
-      "Error": {
-        "required": ["error", "message"],
+      "ExternalApiResponse": {
         "type": "object",
+        "required": ["success", "statusCode", "message", "data", "timestamp", "requestId"],
         "properties": {
-          "error": {
+          "success": {
+            "type": "boolean",
+            "description": "Indicates if the request was successful",
+            "example": true
+          },
+          "statusCode": {
             "type": "integer",
-            "format": "int32"
+            "description": "HTTP status code",
+            "example": 200
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "description": "Human-readable success message",
+            "example": "Success"
+          },
+          "data": {
+            "type": "object",
+            "description": "Response payload data"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of the response",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "requestId": {
+            "type": "string",
+            "description": "Unique identifier for request tracing",
+            "example": "req_1705312200000_abc123"
+          },
+          "pagination": {
+            "type": "object",
+            "description": "Pagination information for list operations",
+            "properties": {
+              "count": {
+                "type": "integer",
+                "description": "Number of items in current response"
+              },
+              "hasNext": {
+                "type": "boolean",
+                "description": "Whether more items are available"
+              },
+              "limit": {
+                "type": "integer",
+                "description": "Maximum items per page"
+              },
+              "offset": {
+                "type": "integer",
+                "description": "Starting position of current page"
+              },
+              "lastKey": {
+                "type": "string",
+                "nullable": true,
+                "description": "Opaque cursor for fetching the next page. Use this value as the lastKey query parameter for the next request. If null, no more pages are available"
+              }
+            }
           }
         }
+      },
+      "ExternalApiErrorResponse": {
+        "type": "object",
+        "required": ["success", "statusCode", "error", "timestamp", "requestId"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Indicates if the request was successful",
+            "example": false
+          },
+          "statusCode": {
+            "type": "integer",
+            "description": "HTTP status code",
+            "example": 400
+          },
+          "error": {
+            "type": "object",
+            "description": "RFC 7807 compliant error details",
+            "required": ["type", "title", "detail"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "format": "uri",
+                "description": "URI identifying the problem type",
+                "example": "https://parchment.health/errors/validation-error"
+              },
+              "title": {
+                "type": "string",
+                "description": "Human-readable summary of the problem",
+                "example": "Validation failed"
+              },
+              "detail": {
+                "type": "string",
+                "description": "Human-readable explanation of the problem",
+                "example": "There were some problems with your input."
+              },
+              "instance": {
+                "type": "string",
+                "format": "uri",
+                "description": "URI reference to the specific occurrence",
+                "example": "/patients/123"
+              },
+              "validation": {
+                "type": "array",
+                "description": "Field-level validation errors (for 422 responses)",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string",
+                      "description": "Field name that failed validation"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Validation error message"
+                    },
+                    "code": {
+                      "type": "string",
+                      "description": "Error code for programmatic handling"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of the response",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "requestId": {
+            "type": "string",
+            "description": "Unique identifier for request tracing",
+            "example": "req_1705312200000_def456"
+          },
+          "meta": {
+            "type": "object",
+            "description": "Additional response metadata",
+            "properties": {
+              "apiVersion": {
+                "type": "string",
+                "description": "API version used",
+                "example": "1.0"
+              }
+            }
+          }
+        }
+      },
+      "Error": {
+        "$ref": "#/components/schemas/ExternalApiErrorResponse"
       },
       "NewPatient": {
         "type": "object",
@@ -421,33 +801,49 @@
         "enum": ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"],
         "description": "Australian state or territory"
       },
-      "PatientResponse": {
+      "PatientData": {
         "type": "object",
-        "required": ["status_code", "message", "partner_patient_id", "url"],
+        "description": "Patient creation response data",
+        "required": ["external_patient_id", "parchment_patient_id", "url"],
         "properties": {
-          "status_code": {
-            "type": "integer",
-            "description": "HTTP status code"
-          },
-          "message": {
+          "external_patient_id": {
             "type": "string",
-            "description": "Response message"
-          },
-          "partner_patient_id": {
-            "type": "string",
-            "description": "Your internal patient id"
+            "description": "Partner's unique identifier for the patient",
+            "example": "PARTNER#12345"
           },
           "parchment_patient_id": {
             "type": "string",
             "description": "Parchment's unique identifier for the patient",
-            "example": "3b66aa2f-4330-4d77-96fd-9c7d58221495"
+            "example": "pat_abc123def456"
           },
           "url": {
             "type": "string",
+            "format": "uri",
             "description": "URL to access the patient in Parchment portal",
-            "example": "https://portal.parchment.health/dashboard/patients/3b66aa2f-4330-4d77-96fd-9c7d58221495"
+            "example": "https://app.parchment.health/dashboard/patients/pat_abc123def456"
           }
         }
+      },
+      "PatientResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ExternalApiResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "statusCode": {
+                "example": 201
+              },
+              "message": {
+                "example": "Patient created successfully"
+              },
+              "data": {
+                "$ref": "#/components/schemas/PatientData"
+              }
+            }
+          }
+        ]
       },
       "TokenRequest": {
         "type": "object",
@@ -481,48 +877,56 @@
           }
         }
       },
-      "TokenResponse": {
+      "TokenData": {
         "type": "object",
+        "description": "Authentication token data",
+        "required": ["accessToken", "expiresIn", "tokenType", "scope"],
         "properties": {
-          "statusCode": {
-            "type": "integer",
-            "description": "HTTP status code",
-            "example": 200
-          },
-          "message": {
+          "accessToken": {
             "type": "string",
-            "description": "Response message",
-            "example": "Success"
+            "description": "JWT token for API authentication",
+            "example": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImtleTEifQ..."
           },
-          "data": {
+          "expiresIn": {
+            "type": "integer",
+            "description": "Token validity in seconds",
+            "example": 3600
+          },
+          "tokenType": {
+            "type": "string",
+            "description": "Type of the token",
+            "example": "Bearer"
+          },
+          "scope": {
+            "type": "array",
+            "description": "List of granted permission scopes",
+            "items": {
+              "type": "string"
+            },
+            "example": ["create:patient", "read:patient_prescription"]
+          }
+        }
+      },
+      "TokenResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ExternalApiResponse"
+          },
+          {
             "type": "object",
             "properties": {
-              "accessToken": {
-                "type": "string",
-                "description": "JWT token for API authentication",
-                "example": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImtleTEifQ..."
+              "statusCode": {
+                "example": 200
               },
-              "expiresIn": {
-                "type": "integer",
-                "description": "Token validity in seconds",
-                "example": 3600
+              "message": {
+                "example": "Token generated successfully"
               },
-              "tokenType": {
-                "type": "string",
-                "description": "Type of the token",
-                "example": "Bearer"
-              },
-              "scope": {
-                "type": "array",
-                "description": "List of granted permission scopes",
-                "items": {
-                  "type": "string"
-                },
-                "example": ["create:patient", "read:patient_prescription"]
+              "data": {
+                "$ref": "#/components/schemas/TokenData"
               }
             }
           }
-        }
+        ]
       },
       "Prescription": {
         "type": "object",
@@ -574,16 +978,42 @@
           "family_name": { "type": "string" }
         }
       },
-      "PatientPrescriptionsExternal": {
+      "PatientPrescriptionsData": {
         "type": "object",
+        "description": "Patient prescription data",
+        "required": ["patient", "prescriber", "prescriptions"],
         "properties": {
+          "patient": {
+            "$ref": "#/components/schemas/Patient"
+          },
+          "prescriber": {
+            "$ref": "#/components/schemas/Prescriber"
+          },
           "prescriptions": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/Prescription" }
-          },
-          "patient": { "$ref": "#/components/schemas/Patient" },
-          "prescriber": { "$ref": "#/components/schemas/Prescriber" }
+            "items": {
+              "$ref": "#/components/schemas/Prescription"
+            }
+          }
         }
+      },
+      "PatientPrescriptionsExternal": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ExternalApiResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "example": "Patient prescriptions retrieved successfully"
+              },
+              "data": {
+                "$ref": "#/components/schemas/PatientPrescriptionsData"
+              }
+            }
+          }
+        ]
       }
     },
     "securitySchemes": {

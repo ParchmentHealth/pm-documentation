@@ -20,10 +20,16 @@ If pagination is used, the response will include a `pagination` object:
   "prescriber": { ... },
   "pagination": {
     "count": 20,
+    "hasNext": true,
+    "limit": 20,
+    "offset": 0,
     "lastKey": "eyJwayI6ICJQQVRJRU5UIzIwYjA0OTM0LTJjZTUtNDYyOC1iYzZlLWVhMWNkM2I3MjllMyIsICJzayI6ICIyMDI1LTA1LTAyVDA1OjU5OjI3LjM0NFo..."
   }
 }
 ```
 
 - `count`: Number of prescriptions returned in this page.
-- `lastKey`: The string to use as the `lastKey` query parameter for the next request. If `undefined` or not present, there are no more results.
+- `hasNext`: Whether more prescriptions are available on subsequent pages.
+- `limit`: Maximum number of prescriptions per page (as requested).
+- `offset`: Starting position of the current page (zero-based).
+- `lastKey`: The string to use as the `lastKey` query parameter for the next request. If `null`, there are no more results.
