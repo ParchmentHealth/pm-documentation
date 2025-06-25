@@ -1049,7 +1049,6 @@
                 "create:patient",
                 "read:patient",
                 "update:patient",
-                "delete:patient",
                 "read:patient_prescription",
                 "create:user",
                 "read:user",
