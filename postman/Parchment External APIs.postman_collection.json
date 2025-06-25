@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "899bf11e-160e-475a-b1d0-afa332f847fe",
+		"_postman_id": "eb60c193-3681-457b-ae38-c51510b09cfd",
 		"name": "Parchment External APIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "15250687",
-		"_collection_link": "https://solar-comet-693833.postman.co/workspace/Parchment~520846e6-1adf-4320-81d4-0793e2c85192/collection/15250687-899bf11e-160e-475a-b1d0-afa332f847fe?action=share&source=collection_link&creator=15250687"
+		"_collection_link": "https://solar-comet-693833.postman.co/workspace/Parchment~520846e6-1adf-4320-81d4-0793e2c85192/collection/15250687-eb60c193-3681-457b-ae38-c51510b09cfd?action=share&source=collection_link&creator=15250687"
 	},
 	"item": [
 		{
@@ -116,7 +116,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"given_name\": \"Andria\",\n    \"family_name\": \"van Zyl\",\n    \"medicare_card_number\": \"4950135291\", \n    \"medicare_irn\": \"1\",\n    \"dva_file_number\": \"DVA123456\",\n    \"date_of_birth\": \"1999-02-28\",\n    \"sex\": \"F\",\n    \"no_given_name\": false,\n    \"email\": \"john.smith@example.com\",\n    \"phone\": \"0412345678\",\n    \"partner_patient_id\": \"1234567890-1234567890\",\n    \"partner_id\": \"{{partnerId}}\",\n    \"australian_street_address\": {\n      \"street_number\": \"42\",\n      \"street_name\": \"Wallaby Way\",\n      \"suburb\": \"Sydney\",\n      \"state\": \"NSW\",\n      \"postcode\": \"2000\"\n    }\n}",
+							"raw": "{\n    \"given_name\": \"Henk\",\n    \"family_name\": \"SKILLING\",\n    \"medicare_card_number\": \"2950356401\", \n    \"medicare_irn\": \"1\",\n    \"dva_file_number\": \"DVA123456\",\n    \"date_of_birth\": \"1941-09-24\",\n    \"sex\": \"F\",\n    \"ihi_number\": \"8003608666690987\",\n    \"no_given_name\": false,\n    \"email\": \"john.smith@example.com\",\n    \"phone\": \"0412345678\",\n    \"partner_patient_id\": \"1234567890-1234567890\",\n    \"partner_id\": \"{{partnerId}}\",\n    \"australian_street_address\": {\n      \"street_number\": \"42\",\n      \"street_name\": \"Wallaby Way\",\n      \"suburb\": \"Sydney\",\n      \"state\": \"NSW\",\n      \"postcode\": \"2000\"\n    }\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -163,7 +163,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/{{userId}}/patients/:patient_id/prescriptions",
+							"raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/{{userId}}/patients/{{patientId}}/prescriptions",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -175,15 +175,8 @@
 								"users",
 								"{{userId}}",
 								"patients",
-								":patient_id",
+								"{{patientId}}",
 								"prescriptions"
-							],
-							"variable": [
-								{
-									"key": "patient_id",
-									"value": "",
-									"description": "Enter the patient ID here"
-								}
 							]
 						}
 					},
@@ -239,43 +232,6 @@
 			}
 		]
 	},
-	"variable": [
-		{
-			"key": "organizationId",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "organizationSecret",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "partnerId",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "partnerSecret",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "userId",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "accessToken",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "tokenExpiry",
-			"value": "0",
-			"type": "string"
-		}
-	],
 	"event": [
 		{
 			"listen": "prerequest",
@@ -364,6 +320,48 @@
 					""
 				]
 			}
+		}
+	],
+	"variable": [
+		{
+			"key": "organizationId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "organizationSecret",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "partnerId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "partnerSecret",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tokenExpiry",
+			"value": "0",
+			"type": "string"
+		},
+		{
+			"key": "patientId",
+			"value": "",
+			"type": "default"
 		}
 	]
 }

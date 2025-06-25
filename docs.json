@@ -38,6 +38,7 @@
             "group": "Endpoint Examples",
             "pages": [
               "api-reference/endpoint/v1/token",
+              "api-reference/endpoint/v1/validate-integration",
               "api-reference/endpoint/v1/create-patient",
               "api-reference/endpoint/v1/get-patient-prescriptions"
             ]

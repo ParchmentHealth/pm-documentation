@@ -25,6 +25,37 @@
     "/v1/organizations/{organization_id}/users/{user_id}/patients": {
       "post": {
         "description": "Creates a new patient in Parchment",
+        "parameters": [
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "requestBody": {
           "description": "Patient data to add to Parchment",
           "content": {
@@ -301,6 +332,142 @@
         }
       }
     },
+    "/v1/organizations/{organization_id}/validate": {
+      "get": {
+        "description": "Validate integration token and mark organization as integrated",
+        "parameters": [
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token validation successful and organization marked as integrated",
+            "content": {
+              "application/json": {
+                "example": {
+                  "statusCode": 200,
+                  "message": "Successfully validated token",
+                  "data": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - deprecated header used",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 400,
+                  "error": {
+                    "type": "https://parchment.health/errors/deprecated-header",
+                    "title": "Deprecated header used",
+                    "detail": "Please use x-organization-secret instead of x-partner-secret"
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_abc123"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid token, missing credentials, or insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "invalid_token": {
+                    "summary": "Invalid or expired token",
+                    "value": {
+                      "success": false,
+                      "statusCode": 401,
+                      "error": {
+                        "type": "https://parchment.health/errors/authentication-required",
+                        "title": "Unauthorized",
+                        "detail": "Invalid or expired authentication token"
+                      },
+                      "timestamp": "2024-01-15T10:30:00.000Z",
+                      "requestId": "req_1705312200000_def456"
+                    }
+                  },
+                  "missing_secret": {
+                    "summary": "Missing organization secret",
+                    "value": {
+                      "success": false,
+                      "statusCode": 401,
+                      "error": {
+                        "type": "https://parchment.health/errors/authentication-required",
+                        "title": "Unauthorized",
+                        "detail": "Organization secret is required"
+                      },
+                      "timestamp": "2024-01-15T10:30:00.000Z",
+                      "requestId": "req_1705312200000_ghi789"
+                    }
+                  },
+                  "insufficient_scope": {
+                    "summary": "Insufficient permissions",
+                    "value": {
+                      "success": false,
+                      "statusCode": 401,
+                      "error": {
+                        "type": "https://parchment.health/errors/insufficient-scope",
+                        "title": "Insufficient permissions",
+                        "detail": "Token does not have required CREATE_PATIENT scope"
+                      },
+                      "timestamp": "2024-01-15T10:30:00.000Z",
+                      "requestId": "req_1705312200000_jkl012"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 500,
+                  "error": {
+                    "type": "https://parchment.health/errors/internal-server-error",
+                    "title": "Internal Server Error",
+                    "detail": "An unexpected error occurred during validation"
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_mno345"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/organizations/{organization_id}/users/{user_id}/patients/{patient_id}/prescriptions": {
       "get": {
         "description": "Get prescriptions for a specific patient",
@@ -507,7 +674,14 @@
     "schemas": {
       "ExternalApiResponse": {
         "type": "object",
-        "required": ["success", "statusCode", "message", "data", "timestamp", "requestId"],
+        "required": [
+          "success",
+          "statusCode",
+          "message",
+          "data",
+          "timestamp",
+          "requestId"
+        ],
         "properties": {
           "success": {
             "type": "boolean",
@@ -570,7 +744,13 @@
       },
       "ExternalApiErrorResponse": {
         "type": "object",
-        "required": ["success", "statusCode", "error", "timestamp", "requestId"],
+        "required": [
+          "success",
+          "statusCode",
+          "error",
+          "timestamp",
+          "requestId"
+        ],
         "properties": {
           "success": {
             "type": "boolean",
@@ -708,8 +888,8 @@
             "type": "string",
             "description": "Patient's phone number"
           },
-          "address": {
-            "$ref": "#/components/schemas/AustralianAddress"
+          "australian_street_address": {
+            "$ref": "#/components/schemas/australian_street_address"
           },
           "medicare_valid_to": {
             "type": "string",
@@ -741,10 +921,14 @@
           "partner_patient_id": {
             "type": "string",
             "description": "Partner's unique identifier for the patient"
+          },
+          "partner_id": {
+            "type": "string",
+            "description": "Partner's unique identifier for the organization"
           }
         }
       },
-      "AustralianAddress": {
+      "australian_street_address": {
         "type": "object",
         "required": [
           "street_number",
@@ -777,7 +961,7 @@
       },
       "Sex": {
         "type": "string",
-        "enum": ["male", "female", "other", "unknown"],
+        "enum": ["M", "F", "N", "I"],
         "description": "Patient's sex"
       },
       "DVA_COLOR": {

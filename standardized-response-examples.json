@@ -1,0 +1,292 @@
+{
+  "standardized_response_examples": {
+    "create_patient_success": {
+      "name": "Create Patient - Success (201)",
+      "description": "Successful patient creation with standardized response format",
+      "response": {
+        "success": true,
+        "statusCode": 201,
+        "message": "Patient created successfully",
+        "data": {
+          "external_patient_id": "CLINIKO#12345",
+          "parchment_patient_id": "pat_abc123def456",
+          "url": "https://app.parchment.health/dashboard/patients/pat_abc123def456"
+        },
+        "timestamp": "2024-01-15T10:30:00.000Z",
+        "requestId": "req_1705312200000_abc123"
+      }
+    },
+    "create_patient_conflict": {
+      "name": "Create Patient - Conflict Detected (202)",
+      "description": "Patient creation accepted with demographic conflicts",
+      "response": {
+        "success": true,
+        "statusCode": 202,
+        "message": "Patient creation accepted - conflicts found",
+        "data": {
+          "external_patient_id": "CLINIKO#12345",
+          "parchment_patient_id": "pat_existing789",
+          "url": "https://app.parchment.health/dashboard/patients/pat_existing789"
+        },
+        "timestamp": "2024-01-15T10:30:00.000Z",
+        "requestId": "req_1705312200000_def456"
+      }
+    },
+    "validation_error": {
+      "name": "Validation Error (422)",
+      "description": "Request validation failed with field-level errors",
+      "response": {
+        "success": false,
+        "statusCode": 422,
+        "error": {
+          "type": "https://parchment.health/errors/validation-error",
+          "title": "Validation failed",
+          "detail": "There were some problems with your input.",
+          "validation": [
+            {
+              "field": "family_name",
+              "message": "Family name is required",
+              "code": "VALIDATION_ERROR"
+            },
+            {
+              "field": "date_of_birth",
+              "message": "Invalid date format. Use YYYY-MM-DD",
+              "code": "INVALID_FORMAT"
+            }
+          ]
+        },
+        "timestamp": "2024-01-15T10:30:00.000Z",
+        "requestId": "req_1705312200000_ghi789"
+      }
+    },
+    "partner_id_conflict": {
+      "name": "Partner Patient ID Conflict (409)",
+      "description": "Partner patient ID already exists error",
+      "response": {
+        "success": false,
+        "statusCode": 409,
+        "error": {
+          "type": "https://parchment.health/errors/partner-patient-id-conflict",
+          "title": "Partner patient ID conflict",
+          "detail": "Partner patient ID 'CLINIKO#12345' is already in use by another patient. Please use a unique identifier."
+        },
+        "timestamp": "2024-01-15T10:30:00.000Z",
+        "requestId": "req_1705312200000_jkl012"
+      }
+    },
+    "unauthorized_error": {
+      "name": "Unauthorized Error (401)",
+      "description": "Authentication required or token invalid",
+      "response": {
+        "success": false,
+        "statusCode": 401,
+        "error": {
+          "type": "https://parchment.health/errors/authentication-required",
+          "title": "Unauthorized",
+          "detail": "Valid authentication token is required"
+        },
+        "timestamp": "2024-01-15T10:30:00.000Z",
+        "requestId": "req_1705312200000_mno345"
+      }
+    },
+    "insufficient_permissions": {
+      "name": "Insufficient Permissions (403)",
+      "description": "Missing required scope permissions",
+      "response": {
+        "success": false,
+        "statusCode": 403,
+        "error": {
+          "type": "https://parchment.health/errors/insufficient-scope",
+          "title": "Insufficient permissions",
+          "detail": "This operation requires the 'CREATE_PATIENT' scope"
+        },
+        "timestamp": "2024-01-15T10:30:00.000Z",
+        "requestId": "req_1705312200000_pqr678"
+      }
+    },
+    "read_patient_success": {
+      "name": "Read Patient - Success (200)",
+      "description": "Successfully retrieved patient data",
+      "response": {
+        "success": true,
+        "statusCode": 200,
+        "message": "Patient retrieved successfully",
+        "data": {
+          "patient_id": "pat_abc123def456",
+          "family_name": "Smith",
+          "given_name": "John",
+          "date_of_birth": "1990-01-15",
+          "sex": "M",
+          "ihi_number": "8003608166690503",
+          "medicare_number": "1234567890",
+          "partner_patient_id": "CLINIKO#12345"
+        },
+        "timestamp": "2024-01-15T10:30:00.000Z",
+        "requestId": "req_1705312200000_stu901"
+      }
+    },
+    "patient_not_found": {
+      "name": "Patient Not Found (404)",
+      "description": "Requested patient does not exist",
+      "response": {
+        "success": false,
+        "statusCode": 404,
+        "error": {
+          "type": "https://parchment.health/errors/patient-not-found",
+          "title": "Patient not found",
+          "detail": "Patient with ID 'CLINIKO#invalid123' does not exist",
+          "instance": "/patients/CLINIKO#invalid123"
+        },
+        "timestamp": "2024-01-15T10:30:00.000Z",
+        "requestId": "req_1705312200000_vwx234"
+      }
+    },
+    "list_patients_success": {
+      "name": "List Patients - Success (200)",
+      "description": "Successfully retrieved patients list with pagination",
+      "response": {
+        "success": true,
+        "statusCode": 200,
+        "message": "Patients retrieved successfully",
+        "data": [
+          {
+            "patient_id": "pat_abc123def456",
+            "family_name": "Smith",
+            "given_name": "John",
+            "date_of_birth": "1990-01-15",
+            "partner_patient_id": "CLINIKO#12345"
+          },
+          {
+            "patient_id": "pat_def456ghi789",
+            "family_name": "Doe",
+            "given_name": "Jane",
+            "date_of_birth": "1985-08-22",
+            "partner_patient_id": "CLINIKO#67890"
+          }
+        ],
+        "timestamp": "2024-01-15T10:30:00.000Z",
+        "requestId": "req_1705312200000_yza567",
+        "pagination": {
+          "count": 2,
+          "hasNext": true,
+          "limit": 20,
+          "offset": 0,
+          "lastKey": "eyJwayI6ICJQQVRJRU5UIzIwYjA0OTM0LTJjZTUtNDYyOC1iYzZlLWVhMWNkM2I3MjllMyIsICJzayI6ICIyMDI1LTA1LTAyVDA1OjU5OjI3LjM0NFo..."
+        }
+      }
+    },
+    "patient_prescriptions_success": {
+      "name": "Patient Prescriptions - Success (200)",
+      "description": "Successfully retrieved patient prescriptions",
+      "response": {
+        "success": true,
+        "statusCode": 200,
+        "message": "Patient prescriptions retrieved successfully",
+        "data": {
+          "patient": {
+            "given_name": "John",
+            "family_name": "Smith",
+            "date_of_birth": "1990-01-15",
+            "partner_patient_id": "CLINIKO#12345"
+          },
+          "prescriber": {
+            "given_name": "Dr. Emily",
+            "family_name": "Johnson"
+          },
+          "prescriptions": [
+            {
+              "prescription_id": "rx_abc123",
+              "medication_name": "Amoxicillin 500mg",
+              "dosage": "500mg",
+              "frequency": "Three times daily",
+              "quantity": "21",
+              "created_date": "2024-01-10T14:30:00.000Z",
+              "status": "active"
+            }
+          ],
+          "pagination": {
+            "count": 1,
+            "hasNext": false,
+            "limit": 20,
+            "offset": 0,
+            "lastKey": null
+          }
+        },
+        "timestamp": "2024-01-15T10:30:00.000Z",
+        "requestId": "req_1705312200000_bcd890"
+      }
+    },
+    "internal_server_error": {
+      "name": "Internal Server Error (500)",
+      "description": "Unexpected server error occurred",
+      "response": {
+        "success": false,
+        "statusCode": 500,
+        "error": {
+          "type": "https://parchment.health/errors/internal-error",
+          "title": "Internal server error",
+          "detail": "An unexpected error occurred while processing your request"
+        },
+        "timestamp": "2024-01-15T10:30:00.000Z",
+        "requestId": "req_1705312200000_efg123"
+      }
+    },
+    "rate_limit_error": {
+      "name": "Rate Limit Exceeded (429)",
+      "description": "Too many requests sent in a given time period",
+      "response": {
+        "success": false,
+        "statusCode": 429,
+        "error": {
+          "type": "https://parchment.health/errors/rate-limit-exceeded",
+          "title": "Too many requests",
+          "detail": "Rate limit exceeded. Please try again later."
+        },
+        "timestamp": "2024-01-15T10:30:00.000Z",
+        "requestId": "req_1705312200000_hij456"
+      }
+    }
+  },
+  "integration_examples": {
+    "javascript_error_handling": {
+      "name": "JavaScript Error Handling Example",
+      "code": "async function handleApiResponse(response) {\n  const result = await response.json();\n  \n  // Always log request ID for debugging\n  console.log('Request ID:', result.requestId);\n  \n  if (result.success) {\n    // Handle success\n    console.log('Success:', result.data);\n    return result.data;\n  } else {\n    // Handle error\n    console.error('Error:', result.error.detail);\n    \n    switch (result.statusCode) {\n      case 422:\n        // Handle validation errors\n        result.error.validation?.forEach(err => {\n          console.error(`${err.field}: ${err.message}`);\n        });\n        break;\n      case 409:\n        console.error('Conflict: Please use a unique identifier');\n        break;\n      case 401:\n        console.error('Authentication required');\n        // Redirect to login\n        break;\n      case 403:\n        console.error('Insufficient permissions');\n        break;\n      default:\n        console.error('Unexpected error occurred');\n    }\n    \n    throw new Error(result.error.detail);\n  }\n}"
+    },
+    "request_id_logging": {
+      "name": "Request ID Logging Example",
+      "code": "// Log all API calls with request IDs\nconst apiLogger = {\n  logRequest: (method, url, requestId, responseTime) => {\n    console.log(`${method} ${url} - Request ID: ${requestId} (${responseTime}ms)`);\n  },\n  \n  logError: (error, requestId) => {\n    console.error(`Error in request ${requestId}:`, error);\n    // Send to error tracking service\n    errorTracker.captureException(error, {\n      tags: { requestId },\n      extra: { apiVersion: '1.0' }\n    });\n  }\n};\n\n// Usage\nconst response = await apiCall();\napiLogger.logRequest('POST', '/patients', response.requestId, response.meta.responseTime);"
+    }
+  },
+  "migration_guide": {
+    "legacy_format": {
+      "name": "Legacy Response Format",
+      "example": {
+        "statusCode": 200,
+        "message": "Success",
+        "data": {
+          "patient_id": "pat_abc123"
+        }
+      }
+    },
+    "new_format": {
+      "name": "New Standardized Response Format",
+      "example": {
+        "success": true,
+        "statusCode": 200,
+        "message": "Success",
+        "data": {
+          "patient_id": "pat_abc123"
+        },
+        "timestamp": "2024-01-15T10:30:00.000Z",
+        "requestId": "req_1705312200000_abc123"
+      }
+    },
+    "migration_steps": [
+      "1. Update success checks: Use `response.success` instead of checking `statusCode < 400`",
+      "2. Extract data: Access response data from `response.data` instead of the root",
+      "3. Handle errors: Use `response.error` object instead of `response.message`",
+      "4. Add request tracing: Store `response.requestId` for debugging",
+      "5. Check API version: Monitor API version for compatibility"
+    ]
+  }
+}
