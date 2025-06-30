@@ -899,10 +899,9 @@
         "description": "Patient information to be created",
         "required": [
           "family_name",
+          "given_name",
           "date_of_birth",
           "sex",
-          "email",
-          "phone",
           "partner_patient_id"
         ],
         "properties": {
@@ -920,11 +919,11 @@
           },
           "given_name": {
             "type": "string",
-            "description": "Patient's given name"
+            "description": "Patient's given name",
           },
           "family_name": {
             "type": "string",
-            "description": "Patient's family name"
+            "description": "Patient's family name",
           },
           "date_of_birth": {
             "type": "string",
@@ -937,11 +936,11 @@
           "email": {
             "type": "string",
             "format": "email",
-            "description": "Patient's email address"
+            "description": "Patient's email address (optional)",
           },
           "phone": {
             "type": "string",
-            "description": "Patient's phone number"
+            "description": "Patient's Australian phone number (optional). Must be a valid Australian number with digits only. Supports mobile (04xxxxxxxx) and landline (0[2378]xxxxxxxx) formats. International format with +61 or 61 prefix is also accepted.",
           },
           "australian_street_address": {
             "$ref": "#/components/schemas/australian_street_address"
@@ -975,7 +974,7 @@
           },
           "partner_patient_id": {
             "type": "string",
-            "description": "Partner's unique identifier for the patient"
+            "description": "Partner's unique identifier for the patient",
           },
           "partner_id": {
             "type": "string",
@@ -995,22 +994,22 @@
         "properties": {
           "street_number": {
             "type": "string",
-            "description": "Street number"
+            "description": "Street number",
           },
           "street_name": {
             "type": "string",
-            "description": "Street name"
+            "description": "Street name",
           },
           "suburb": {
             "type": "string",
-            "description": "Suburb"
+            "description": "Suburb",
           },
           "state": {
             "$ref": "#/components/schemas/AU_STATE"
           },
           "postcode": {
             "type": "string",
-            "description": "Postcode"
+            "description": "Australian postcode (4 digits)",
           }
         }
       },
