@@ -51,12 +51,22 @@ openapi: "POST /v1/organizations/{organization_id}/users/{user_id}/patients"
     "validation": [
       {
         "field": "family_name",
-        "message": "Family name is required",
+        "message": "Family name cannot be empty",
         "code": "VALIDATION_ERROR"
       },
       {
-        "field": "date_of_birth",
-        "message": "Invalid date format. Use YYYY-MM-DD",
+        "field": "given_name",
+        "message": "Given name cannot be empty",
+        "code": "VALIDATION_ERROR"
+      },
+      {
+        "field": "phone",
+        "message": "Phone number must be a valid Australian number (e.g., 0412345678, +61412345678)",
+        "code": "INVALID_FORMAT"
+      },
+      {
+        "field": "postcode",
+        "message": "Postcode must be 4 digits",
         "code": "INVALID_FORMAT"
       }
     ]
@@ -118,35 +128,35 @@ openapi: "POST /v1/organizations/{organization_id}/users/{user_id}/patients"
 
 ### Success Response Data
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `external_patient_id` | string | Your system's patient identifier (as provided in request) |
-| `parchment_patient_id` | string | Parchment's unique patient identifier |
-| `url` | string | Direct link to patient in Parchment portal |
+| Field                  | Type   | Description                                               |
+| ---------------------- | ------ | --------------------------------------------------------- |
+| `external_patient_id`  | string | Your system's patient identifier (as provided in request) |
+| `parchment_patient_id` | string | Parchment's unique patient identifier                     |
+| `url`                  | string | Direct link to patient in Parchment portal                |
 
 ### Common Response Fields
 
 All responses include these standard fields:
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `success` | boolean | Indicates if the request was successful |
-| `statusCode` | number | HTTP status code |
-| `timestamp` | string | ISO 8601 timestamp of the response |
-| `requestId` | string | Unique identifier for debugging |
+| Field        | Type    | Description                             |
+| ------------ | ------- | --------------------------------------- |
+| `success`    | boolean | Indicates if the request was successful |
+| `statusCode` | number  | HTTP status code                        |
+| `timestamp`  | string  | ISO 8601 timestamp of the response      |
+| `requestId`  | string  | Unique identifier for debugging         |
 
 ## Status Codes
 
-| Code | Status | Description |
-|------|--------|-------------|
-| `201` | Created | Patient successfully created |
-| `202` | Accepted | Patient creation accepted (demographic conflicts found) |
-| `400` | Bad Request | Invalid request format or missing required fields |
-| `401` | Unauthorized | Authentication required or token invalid |
-| `403` | Forbidden | Insufficient permissions (missing CREATE_PATIENT scope) |
-| `409` | Conflict | Partner patient ID already exists |
-| `422` | Unprocessable Entity | Request validation failed |
-| `500` | Internal Server Error | Unexpected server error |
+| Code  | Status                | Description                                             |
+| ----- | --------------------- | ------------------------------------------------------- |
+| `201` | Created               | Patient successfully created                            |
+| `202` | Accepted              | Patient creation accepted (demographic conflicts found) |
+| `400` | Bad Request           | Invalid request format or missing required fields       |
+| `401` | Unauthorized          | Authentication required or token invalid                |
+| `403` | Forbidden             | Insufficient permissions (missing CREATE_PATIENT scope) |
+| `409` | Conflict              | Partner patient ID already exists                       |
+| `422` | Unprocessable Entity  | Request validation failed                               |
+| `500` | Internal Server Error | Unexpected server error                                 |
 
 ## Error Handling
 
@@ -155,53 +165,90 @@ All responses include these standard fields:
 ```javascript
 async function createPatient(patientData) {
   try {
-    const response = await fetch('/v1/organizations/org123/users/user456/patients', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer your_jwt_token',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(patientData)
-    });
-    
+    const response = await fetch(
+      "/v1/organizations/org123/users/user456/patients",
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer your_jwt_token",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(patientData),
+      }
+    );
+
     const result = await response.json();
-    
+
     if (result.success) {
       // Handle success
-      console.log('Patient created:', result.data.parchment_patient_id);
+      console.log("Patient created:", result.data.parchment_patient_id);
       return result.data;
     } else {
       // Handle error
-      console.error('Error:', result.error.detail);
-      
+      console.error("Error:", result.error.detail);
+
       // Handle specific error types
       switch (result.statusCode) {
         case 422:
           // Show validation errors
-          result.error.validation.forEach(err => {
+          result.error.validation.forEach((err) => {
             console.error(`${err.field}: ${err.message}`);
           });
           break;
         case 409:
           // Handle partner patient ID conflict
-          console.error('Patient ID already exists');
+          console.error("Patient ID already exists");
           break;
         case 401:
           // Handle authentication error
-          console.error('Please log in again');
+          console.error("Please log in again");
           break;
         default:
-          console.error('Unexpected error occurred');
+          console.error("Unexpected error occurred");
       }
-      
+
       // Always log requestId for debugging
-      console.log('Request ID:', result.requestId);
+      console.log("Request ID:", result.requestId);
     }
   } catch (error) {
-    console.error('Network error:', error);
+    console.error("Network error:", error);
   }
 }
 ```
+
+## Field Validation Requirements
+
+### Phone Number Format
+
+The `phone` field accepts Australian phone numbers in the following formats:
+
+**✅ Valid Examples:**
+
+- `0412345678` - Mobile number (domestic format)
+- `0312345678` - Melbourne landline (domestic format)
+- `0212345678` - Sydney landline (domestic format)
+- `0712345678` - Brisbane landline (domestic format)
+- `0812345678` - Adelaide landline (domestic format)
+- `61412345678` - International mobile (without + prefix)
+- `+61312345678` - International landline (with + prefix)
+
+**❌ Invalid Examples:**
+
+- `0123456789` - Starts with 1 (invalid area code)
+- `04123456789` - Too many digits
+- `041234567` - Too few digits
+- `04-1234-5678` - Contains formatting characters
+- `+1234567890` - Non-Australian number
+
+### String Length Requirements
+
+- **Family Name**: 1-255 characters, cannot be empty
+- **Given Name**: 1-255 characters, cannot be empty
+- **Partner Patient ID**: 1-150 characters, must be unique
+- **Street Number**: 1-5 characters
+- **Street Name**: 1-100 characters
+- **Suburb**: 1-100 characters
+- **Postcode**: Exactly 4 digits (e.g., "3000", "2000")
 
 ## Integration Notes
 
@@ -210,3 +257,4 @@ async function createPatient(patientData) {
 3. **Validation Errors**: Use the `error.validation` array to display field-specific error messages
 4. **Partner Patient ID**: Must be unique across your organization; use the format returned in `external_patient_id`
 5. **URL Access**: The returned `url` provides direct access to the patient in the Parchment portal
+6. **Phone Validation**: Phone numbers must follow Australian format - see validation requirements above
