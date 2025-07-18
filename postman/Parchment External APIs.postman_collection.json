@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "eb60c193-3681-457b-ae38-c51510b09cfd",
+		"_postman_id": "6cb097e4-96ca-4c35-93b7-59e80b86d7f9",
 		"name": "Parchment External APIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "15250687",
-		"_collection_link": "https://solar-comet-693833.postman.co/workspace/Parchment~520846e6-1adf-4320-81d4-0793e2c85192/collection/15250687-eb60c193-3681-457b-ae38-c51510b09cfd?action=share&source=collection_link&creator=15250687"
+		"_collection_link": "https://solar-comet-693833.postman.co/workspace/Parchment~520846e6-1adf-4320-81d4-0793e2c85192/collection/15250687-6cb097e4-96ca-4c35-93b7-59e80b86d7f9?action=share&source=collection_link&creator=15250687"
 	},
 	"item": [
 		{
@@ -218,6 +218,47 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-organization-secret",
+								"value": "{{organizationSecret}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"given_name\":\"Stanley\",\n    \"family_name\": \"Griffith\",\n    \"date_of_birth\": \"1967-06-25\",\n    \"sex\": \"M\",\n    \"email\": \"thedsouzahome+api30@gmail.com\",\n    \"phone\": \"0412345678\",\n    \"access_roles\": [\"provider\", \"admin\"],\n    \"hpii_number\": \"8003616566696624\",\n    \"prescriber_type\":\"T\",\n    \"prescriber_number\": \"1234567\",\n    \"qualifications\": \"LLB\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/external/v1/organizations/{{organizationId}}/users/",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"external",
+								"v1",
+								"organizations",
+								"{{organizationId}}",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}
@@ -227,7 +268,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJraWQiOiJac0NvcktUWGo3XC9KY09ST2hNWG9kK3ZiN055VW5TWnlnWXRvUENvVjBmaz0iLCJhbGciOiJSUzI1NiJ9.eyJjdXN0b206YWNjZXNzX3JvbGVzIjoicHJvdmlkZXIiLCJzdWIiOiI4ZTFjOWJhYi02NjE0LTQ3MjMtODk4MS04N2M4ZmEwMjZkYWUiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiY3VzdG9tOm9yZ2FuaXphdGlvbl9pZCI6IjdmYTg0ZDJiLTI2ZDctNGM3MS05YjViLWU1OTFlZmY5N2U3ZCIsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5hcC1zb3V0aGVhc3QtMi5hbWF6b25hd3MuY29tXC9hcC1zb3V0aGVhc3QtMl9ZMUJiVDV0UVIiLCJjb2duaXRvOnVzZXJuYW1lIjoiOGUxYzliYWItNjYxNC00NzIzLTg5ODEtODdjOGZhMDI2ZGFlIiwib3JpZ2luX2p0aSI6IjJkOTNlYzhkLTBhZTYtNGRjMS05M2QzLTAyMzY4ZmE5OThmZCIsImF1ZCI6IjFkdnYzaHRicDRrc242ZWMxaDdkdnY1cWZpIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3MzIyMzc4MDQsIm5hbWUiOiJkaW1pdHkgZGVubmlzIiwiZXhwIjoxNzMyMjYzMDA0LCJpYXQiOjE3MzIyMzc4MDQsImp0aSI6IjgxZWY0ZGIwLWJiNWQtNDczNi05NGRiLTFhNzQ1OTViYzUxYyIsImVtYWlsIjoidGhlZHNvdXphaG9tZUBnbWFpbC5jb20ifQ.ovWJxoPCO8Q0UPnJIGGnIArJitMzwIHcVaMm3vJUm9MZGGKrpTTKhmjBMZ52ZCWZiCLs2U4-kPtlBWBnoDBU-P0PsgcjgvGtL7YoJ3__yQGH-XHRopO_2LwPVRbXFhhRVd4iHzthB75HZYzPi3qMDif9KRM8KUBxx8meYyOeZ11_w0H_U1P-Y0ayJW_Kfg6eWAnUqn57M5QV2zwG2jTaaXv2A2g3O001IFcpAaPbYftaKEeEFmuba_juYqP2wtTHnbtKCsm8lKnBKJDemfboZxHYkZZ2DaU1J0BnC67nbeUv5u_ft63J1EYGmd36myeNrktRcN5iuxYTtgEGOd4y3Q",
+				"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImtleTEifQ.eyJvcmdhbml6YXRpb25faWQiOiI3ZmE4NGQyYi0yNmQ3LTRjNzEtOWI1Yi1lNTkxZWZmOTdlN2QiLCJwYXJ0bmVyX2lkIjoidGFja2xpdCIsInVzZXJfaWQiOiI4ZTFjOWJhYi02NjE0LTQ3MjMtODk4MS04N2M4ZmEwMjZkYWUiLCJzY29wZSI6WyJjcmVhdGU6cGF0aWVudCIsInJlYWQ6cGF0aWVudF9wcmVzY3JpcHRpb24iLCJjcmVhdGU6dXNlciJdLCJpYXQiOjE3NTIwNDkzOTcsImV4cCI6MTc1MjA3MDk5N30.EkSwWeb3FnnPc4nz4RcutXc8_bbDAv409Q5-7hxVFFeNjOLPMy4tqglPVjn_7pARes0hUSDEc0lAzcXGGi0ll9A4NBS6AXFpr0AcwbQHcyzaHqr_BQE9h_j_mmzsUte_JxmqyRNbdElgKIIgEjatIhkMmIPeFhdzsLMNjnWRfatiw_Pf19Qzr-hweqaobknsDyBEMZzOxFZu5jdEFd-h6f-EWE4lt6_ip1H6pWSYsqL_wKhUgI6-0nD-Ht9Dc2Du1GoKFogTT05XoWDHY5iFL1TF1Rfg59vdjt1GLHajAamXrLl_ITkJTd2lBogo3jOJ75I4Kha-JGIij51EGG6X-w",
 				"type": "string"
 			}
 		]
