@@ -4,7 +4,7 @@
 		"name": "Parchment External APIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "15250687",
-		"_collection_link": "https://solar-comet-693833.postman.co/workspace/Parchment~520846e6-1adf-4320-81d4-0793e2c85192/collection/15250687-6cb097e4-96ca-4c35-93b7-59e80b86d7f9?action=share&source=collection_link&creator=15250687"
+		"_collection_link": "https://solar-comet-693833.postman.co/workspace/520846e6-1adf-4320-81d4-0793e2c85192/collection/15250687-6cb097e4-96ca-4c35-93b7-59e80b86d7f9?action=share&source=collection_link&creator=15250687"
 	},
 	"item": [
 		{
@@ -255,6 +255,76 @@
 								"{{organizationId}}",
 								"users",
 								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-organization-secret",
+								"value": "{{organizationSecret}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/external/v1/organizations/{{organizationId}}/users/",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"external",
+								"v1",
+								"organizations",
+								"{{organizationId}}",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-organization-secret",
+								"value": "{{organizationSecret}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/external/v1/organizations/{{organizationId}}/users/:userId",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"external",
+								"v1",
+								"organizations",
+								"{{organizationId}}",
+								"users",
+								":userId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": ""
+								}
 							]
 						}
 					},

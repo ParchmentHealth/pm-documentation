@@ -1,0 +1,372 @@
+---
+openapi: "GET /v1/organizations/{organization_id}/users"
+---
+
+## Response Examples
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Retrieved 3 users successfully",
+  "data": [
+    {
+      "user_id": "usr_abc123def456",
+      "email": "darlene.cameron@example.com"
+    },
+    {
+      "user_id": "usr_def456ghi789",
+      "email": "john.smith@example.com"
+    },
+    {
+      "user_id": "usr_ghi789jkl012",
+      "email": "sarah.jones@example.com"
+    }
+  ],
+  "timestamp": "2024-01-25T09:15:00.000Z",
+  "requestId": "req_1706171700000_abc123"
+}
+```
+
+### Empty Organization (200 OK)
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Retrieved 0 users successfully",
+  "data": [],
+  "timestamp": "2024-01-25T09:15:00.000Z",
+  "requestId": "req_1706171700000_def456"
+}
+```
+
+### Invalid Parameters (400 Bad Request)
+
+```json
+{
+  "success": false,
+  "statusCode": 400,
+  "error": {
+    "type": "https://parchment.health/errors/bad-request",
+    "title": "Bad Request",
+    "detail": "Organization ID is required"
+  },
+  "timestamp": "2024-01-25T09:15:00.000Z",
+  "requestId": "req_1706171700000_ghi789"
+}
+```
+
+### Unauthorized (401)
+
+```json
+{
+  "success": false,
+  "statusCode": 401,
+  "error": {
+    "type": "https://parchment.health/errors/authentication-required",
+    "title": "Unauthorized",
+    "detail": "Valid authentication token is required"
+  },
+  "timestamp": "2024-01-25T09:15:00.000Z",
+  "requestId": "req_1706171700000_jkl012"
+}
+```
+
+### Insufficient Permissions (403 Forbidden)
+
+```json
+{
+  "success": false,
+  "statusCode": 403,
+  "error": {
+    "type": "https://parchment.health/errors/insufficient-scope",
+    "title": "Insufficient permissions",
+    "detail": "This operation requires the 'READ_USER' scope"
+  },
+  "timestamp": "2024-01-25T09:15:00.000Z",
+  "requestId": "req_1706171700000_mno345"
+}
+```
+
+## Response Fields
+
+### Success Response Data
+
+The response returns an array of user objects, where each user contains:
+
+| Field     | Type   | Description                        |
+| --------- | ------ | ---------------------------------- |
+| `user_id` | string | Parchment's unique user identifier |
+| `email`   | string | User's email address               |
+
+**Note**: This endpoint only returns basic user identification fields (`user_id` and `email`) for security and performance reasons. Use the read-user endpoint to get detailed information about a specific user.
+
+### Common Response Fields
+
+All responses include these standard fields:
+
+| Field        | Type    | Description                             |
+| ------------ | ------- | --------------------------------------- |
+| `success`    | boolean | Indicates if the request was successful |
+| `statusCode` | number  | HTTP status code                        |
+| `message`    | string  | Human-readable status message           |
+| `timestamp`  | string  | ISO 8601 timestamp of the response      |
+| `requestId`  | string  | Unique identifier for debugging         |
+
+## Path Parameters
+
+| Parameter         | Type   | Required | Description             |
+| ----------------- | ------ | -------- | ----------------------- |
+| `organization_id` | string | Yes      | Organization identifier |
+
+## Status Codes
+
+| Code  | Status                | Description                                        |
+| ----- | --------------------- | -------------------------------------------------- |
+| `200` | OK                    | Users retrieved successfully (including empty list) |
+| `400` | Bad Request           | Invalid request format or missing parameters       |
+| `401` | Unauthorized          | Authentication required or token invalid           |
+| `403` | Forbidden             | Insufficient permissions (missing READ_USER scope) |
+| `500` | Internal Server Error | Unexpected server error                            |
+
+## Error Handling
+
+### Recommended Approach
+
+```javascript
+async function getUsers(organizationId) {
+  try {
+    const response = await fetch(
+      `/v1/organizations/${organizationId}/users`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer your_jwt_token",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const result = await response.json();
+
+    if (result.success) {
+      // Handle success
+      console.log(`Retrieved ${result.data.length} users`);
+      return result.data;
+    } else {
+      // Handle error
+      console.error("Error:", result.error.detail);
+
+      // Handle specific error types
+      switch (result.statusCode) {
+        case 400:
+          console.error("Invalid organization ID");
+          break;
+        case 401:
+          console.error("Please log in again");
+          break;
+        case 403:
+          console.error("Insufficient permissions to read users");
+          break;
+        default:
+          console.error("Unexpected error occurred");
+      }
+
+      // Always log requestId for debugging
+      console.log("Request ID:", result.requestId);
+    }
+  } catch (error) {
+    console.error("Network error:", error);
+  }
+}
+```
+
+## Integration Notes
+
+1. **Store Request ID**: Always log the `requestId` for debugging support requests
+2. **Handle Empty Results**: The API returns an empty array if no users are found
+3. **Permission Requirements**: Ensure your API token has the `READ_USER` scope
+4. **Organization Access**: You can only read users from organizations you have access to
+5. **Limited Data**: Only `user_id` and `email` are returned for security and performance reasons
+6. **Detailed Information**: Use the read-user endpoint (`GET /users/{user_id}`) to get full user details
+7. **Pagination**: This endpoint returns all users in the organization (no pagination currently)
+8. **Caching**: Consider caching user lists with appropriate TTL to reduce API calls
+
+## Example Usage
+
+### Basic User List Retrieval
+
+```javascript
+// Get all users in an organization
+const users = await getUsers("org_123456789");
+
+if (users && users.length > 0) {
+  console.log("Users in organization:");
+  users.forEach(user => {
+    console.log(`- ${user.email} (ID: ${user.user_id})`);
+  });
+} else {
+  console.log("No users found in organization");
+}
+```
+
+### User Lookup by Email
+
+```javascript
+async function findUserByEmail(organizationId, email) {
+  const users = await getUsers(organizationId);
+  
+  if (!users) {
+    return null;
+  }
+  
+  return users.find(user => 
+    user.email.toLowerCase() === email.toLowerCase()
+  );
+}
+
+// Usage
+const user = await findUserByEmail("org_123456789", "john@example.com");
+if (user) {
+  console.log(`Found user: ${user.user_id}`);
+} else {
+  console.log("User not found");
+}
+```
+
+### Bulk User Processing
+
+```javascript
+async function processAllUsers(organizationId) {
+  try {
+    const users = await getUsers(organizationId);
+    
+    if (!users || users.length === 0) {
+      console.log("No users to process");
+      return;
+    }
+    
+    console.log(`Processing ${users.length} users...`);
+    
+    const results = await Promise.allSettled(
+      users.map(async (user) => {
+        // Get detailed user information first
+        const detailedUser = await getUser(organizationId, user.user_id);
+        
+        if (detailedUser) {
+          // Process user with full details
+          return await processUserWithDetails(detailedUser);
+        }
+        
+        throw new Error(`Could not fetch details for user ${user.user_id}`);
+      })
+    );
+    
+    const successful = results.filter(r => r.status === 'fulfilled').length;
+    const failed = results.filter(r => r.status === 'rejected').length;
+    
+    console.log(`Processing complete: ${successful} successful, ${failed} failed`);
+    
+  } catch (error) {
+    console.error("Failed to get users:", error);
+  }
+}
+
+async function processUserWithDetails(user) {
+  console.log(`Processing ${user.full_name} (${user.email})`);
+  
+  // Example: Send notification to providers only
+  if (user.access_roles.includes("provider") && user.provider_details) {
+    await sendProviderNotification(user);
+  } else {
+    await sendGeneralNotification(user);
+  }
+}
+```
+
+### Getting Full User Details
+
+```javascript
+async function getUsersWithDetails(organizationId) {
+  try {
+    // First, get the list of users
+    const basicUsers = await getUsers(organizationId);
+    
+    if (!basicUsers || basicUsers.length === 0) {
+      return [];
+    }
+    
+    // Then fetch detailed information for each user
+    const detailedUsers = await Promise.allSettled(
+      basicUsers.map(async (basicUser) => {
+        const detailedUser = await getUser(organizationId, basicUser.user_id);
+        return detailedUser;
+      })
+    );
+    
+    // Filter out any failed requests and return successful ones
+    return detailedUsers
+      .filter(result => result.status === 'fulfilled')
+      .map(result => result.value);
+      
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    return [];
+  }
+}
+
+// Usage
+const allUsers = await getUsersWithDetails("org_123456789");
+console.log(`Found ${allUsers.length} users with full details`);
+
+allUsers.forEach(user => {
+  console.log(`- ${user.full_name} (${user.email})`);
+  if (user.provider_details) {
+    console.log(`  Provider: ${user.provider_details.qualifications}`);
+  }
+});
+```
+
+### Error Handling with Retry
+
+```javascript
+async function getUsersWithRetry(organizationId, maxRetries = 3) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const users = await getUsers(organizationId);
+      return users;
+    } catch (error) {
+      if (error.statusCode === 400 || error.statusCode === 403) {
+        // Don't retry for client errors
+        throw error;
+      }
+      
+      if (attempt === maxRetries) {
+        throw error;
+      }
+      
+      // Wait before retry (exponential backoff)
+      await new Promise(resolve => 
+        setTimeout(resolve, Math.pow(2, attempt) * 1000)
+      );
+    }
+  }
+}
+```
+
+## Security Considerations
+
+1. **Limited Data**: This endpoint only returns `user_id` and `email` to minimize exposure of sensitive information
+2. **Access Control**: Users are filtered based on your organization access permissions
+3. **Audit Logging**: All requests are logged with the `requestId` for security auditing
+4. **Rate Limiting**: Consider implementing client-side rate limiting for bulk operations
+
+## Performance Tips
+
+1. **Caching**: Cache user lists locally with appropriate TTL (e.g., 5-15 minutes)
+2. **Bulk Operations**: Use this endpoint to get all users, then make individual calls only when needed
+3. **Error Handling**: Implement proper retry logic with exponential backoff
+4. **Monitoring**: Monitor API usage to optimize call patterns

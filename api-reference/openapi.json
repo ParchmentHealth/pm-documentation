@@ -723,6 +723,149 @@
           }
         }
       }
+    },
+    "/v1/organizations/{organization_id}/users": {
+      "post": {
+        "description": "Creates a new user in Parchment",
+        "parameters": [
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "User data to add to Parchment",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewUser"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                },
+                "example": {
+                  "success": true,
+                  "statusCode": 201,
+                  "message": "User created successfully",
+                  "data": {
+                    "external_user_id": "PARTNER#USER_12345",
+                    "parchment_user_id": "usr_abc123def456",
+                    "url": "https://app.parchment.health/dashboard/users/usr_abc123def456"
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_abc123"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "User creation accepted - conflicts found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                },
+                "example": {
+                  "success": true,
+                  "statusCode": 202,
+                  "message": "User creation accepted - conflicts found",
+                  "data": {
+                    "external_user_id": "PARTNER#USER_12345",
+                    "parchment_user_id": "usr_existing789",
+                    "url": "https://app.parchment.health/dashboard/users/usr_existing789"
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_def456"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid request format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - Partner user ID already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1078,6 +1221,150 @@
               },
               "data": {
                 "$ref": "#/components/schemas/PatientData"
+              }
+            }
+          }
+        ]
+      },
+      "NewUser": {
+        "type": "object",
+        "description": "User information to be created",
+        "required": [
+          "family_name",
+          "given_name",
+          "date_of_birth",
+          "sex",
+          "partner_user_id"
+        ],
+        "properties": {
+          "given_name": {
+            "type": "string",
+            "description": "User's given name",
+            "example": "Darlene"
+          },
+          "family_name": {
+            "type": "string",
+            "description": "User's family name",
+            "example": "Cameron"
+          },
+          "date_of_birth": {
+            "type": "string",
+            "format": "date",
+            "description": "User's date of birth in YYYY-MM-DD format",
+            "example": "1969-10-02"
+          },
+          "sex": {
+            "type": "string",
+            "description": "User's sex",
+            "enum": ["M", "F", "I", "O"],
+            "example": "F"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User's email address (optional)",
+            "example": "darlene.cameron@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "description": "User's Australian phone number (optional). Must be a valid Australian number with digits only. Supports mobile (04xxxxxxxx) and landline (0[2378]xxxxxxxx) formats. International format with +61 or 61 prefix is also accepted.",
+            "example": "0412345678"
+          },
+          "access_roles": {
+            "type": "array",
+            "description": "List of access roles for the user",
+            "items": {
+              "type": "string",
+              "enum": ["admin", "provider"]
+            },
+            "example": ["admin", "provider"]
+          },
+          "hpii_number": {
+            "type": "string",
+            "description": "Healthcare Provider Individual Identifier (required if role includes 'provider')",
+            "example": "8003614900029560"
+          },
+          "prescriber_type": {
+            "type": "string",
+            "description": "Prescriber type (required if role includes 'provider')",
+            "enum": ["M", "N", "D", "P", "T"],
+            "example": "M"
+          },
+          "prescriber_number": {
+            "type": "string",
+            "description": "Prescriber number (required if role includes 'provider' and prescriber_type is not 'T')",
+            "example": "1234567"
+          },
+          "qualifications": {
+            "type": "string",
+            "description": "Professional qualifications (required if role includes 'provider')",
+            "example": "LLB"
+          },
+          "title": {
+            "type": "string",
+            "description": "Professional title",
+            "example": "Dr"
+          },
+          "provider_number": {
+            "type": "string",
+            "description": "Medicare provider number",
+            "example": "123456789"
+          },
+          "ahpra_number": {
+            "type": "string",
+            "description": "AHPRA registration number",
+            "example": "1234567896321"
+          },
+          "hospital_provider_number": {
+            "type": "string",
+            "description": "Hospital provider number",
+            "example": "H123456"
+          },
+          "partner_user_id": {
+            "type": "string",
+            "description": "Partner's unique identifier for the user",
+            "example": "CLINIKO#USER_12345"
+          }
+        }
+      },
+      "UserData": {
+        "type": "object",
+        "description": "User creation response data",
+        "required": ["external_user_id", "parchment_user_id", "url"],
+        "properties": {
+          "external_user_id": {
+            "type": "string",
+            "description": "Partner's unique identifier for the user",
+            "example": "PARTNER#USER_12345"
+          },
+          "parchment_user_id": {
+            "type": "string",
+            "description": "Parchment's unique identifier for the user",
+            "example": "usr_abc123def456"
+          },
+          "url": {
+            "type": "string",
+            "description": "Direct link to user in Parchment portal",
+            "example": "https://app.parchment.health/dashboard/users/usr_abc123def456"
+          }
+        }
+      },
+      "UserResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ExternalApiResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "statusCode": {
+                "example": 201
+              },
+              "message": {
+                "example": "User created successfully"
+              },
+              "data": {
+                "$ref": "#/components/schemas/UserData"
               }
             }
           }

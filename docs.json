@@ -42,6 +42,14 @@
               "api-reference/endpoint/v1/create-patient",
               "api-reference/endpoint/v1/get-patient-prescriptions"
             ]
+          },
+          {
+            "group": "User Management",
+            "pages": [
+              "api-reference/endpoint/v1/create-user",
+              "api-reference/endpoint/v1/read-user",
+              "api-reference/endpoint/v1/read-users"
+            ]
           }
         ]
       },

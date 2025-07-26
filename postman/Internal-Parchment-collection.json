@@ -1,0 +1,2148 @@
+{
+	"info": {
+		"_postman_id": "291bf2b8-e405-4e96-91da-48f373f8e6cd",
+		"name": "Parchment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15250687",
+		"_collection_link": "https://solar-comet-693833.postman.co/workspace/520846e6-1adf-4320-81d4-0793e2c85192/collection/15250687-291bf2b8-e405-4e96-91da-48f373f8e6cd?action=share&source=collection_link&creator=15250687"
+	},
+	"item": [
+		{
+			"name": "health-service",
+			"item": [
+				{
+					"name": "Health Service - Consumer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"KevinD\",\n    \"ihiNumber\": \"8003605681663049\",\n    \"familyName\": \"Barker\",\n    \"givenName\": \"Emily\",\n    \"dateOfBirth\": \"20110601\", \n    \"sex\": \"F\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/health-service/consumer/search/basic",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"health-service",
+								"consumer",
+								"search",
+								"basic"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Health Service - Consumer Medicare",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJraWQiOiJac0NvcktUWGo3XC9KY09ST2hNWG9kK3ZiN055VW5TWnlnWXRvUENvVjBmaz0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJlMjg0NjE2ZC05Yzc5LTQ0NGMtODYwMS0zMDAwZDUxZWI1M2IiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmFwLXNvdXRoZWFzdC0yLmFtYXpvbmF3cy5jb21cL2FwLXNvdXRoZWFzdC0yX1kxQmJUNXRRUiIsImNvZ25pdG86dXNlcm5hbWUiOiJlMjg0NjE2ZC05Yzc5LTQ0NGMtODYwMS0zMDAwZDUxZWI1M2IiLCJvcmlnaW5fanRpIjoiN2I5YmM5YjYtZjBiZS00MzEyLTlhMGEtYjJhZDY4ZDM0NjJlIiwiYXVkIjoiMWR2djNodGJwNGtzbjZlYzFoN2R2djVxZmkiLCJldmVudF9pZCI6IjMzYTc3NDNiLTEyNWItNGMxOS04MjJmLTdmYTMyOThlMzdkMSIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNjgxODE2Nzc5LCJuYW1lIjoia2V2aW4gZHNvdXphIiwiZXhwIjoxNjgxOTAzMTc5LCJpYXQiOjE2ODE4MTY3NzksImp0aSI6ImFiYzcxOTQxLTQxOGMtNDBjOC05ZmIxLWYzZTY4YjNlZTEwNSIsImVtYWlsIjoidGhlZHNvdXphaG9tZUBnbWFpbC5jb20ifQ.jLoaMwb_8FQ5CavKyxPd7KFuSyW4X45W7BdyKnn_VV1r5C1M8eFQUxFc67yJKCaO0L6pNdJ3kfLrSQdtd61umujlhtiM5_Ak2Ha_eDRXVmI73R3UmcoKXQJiuM5OgmtVMB3CHP5iy_YOpfs1F0uuIuPIC5fA9Svv3Duq5BUE4ex79FUrQ6LkpHmMQK4B9qVjf8xIUlqqNkMjI4V3ALo72c_OGoAqXR1D-V2D6ugOCn7FKl9qoL6d6kEKT287SFm-elafvjie8JgiY_bkd-A4POoJY2C47RfEDMvAyatvqtx529PaC_wjp4XJvFZvHupcn13_rL_ycYjeIz73Iq_e5w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"medicareCardNumber\": \"5950096793\",\n    \"medicareIRN\": \"1\",\n    \"familyName\": \"GREEN\",\n    \"dateOfBirth\": \"19780505\", \n    \"sex\": \"M\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/health-service/consumer/search/medicare",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"health-service",
+								"consumer",
+								"search",
+								"medicare"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Health Service - address",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"familyName\": \"Barker\",\n    \"givenName\": \"Emily\",\n    \"dateOfBirth\": \"20110601\", \n    \"sex\": \"F\",\n    \"australianStreetAddress\": {\n        \"streetNumber\": \"31\",\n        \"streetName\": \"Front Street\",\n        \"suburb\": \"Inala\",\n        \"postcode\": \"4077\",\n        \"state\": \"QLD\"\n    }\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/health-service/consumer/search/australian-street-address",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"health-service",
+								"consumer",
+								"search",
+								"australian-street-address"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Health Service - address international",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"familyName\": \"CRANE\",\n    \"dateOfBirth\": \"19821118\",\n    \"sex\": \"M\",\n    \"internationalAddress\": {\n        \"internationalStateProvince\": \"Temuka\",\n        \"internationalPostcode\": \"7920\",\n        \"country\": \"VALUE_155\",\n        \"internationalAddressLine\": \"145 Richard Pearse drive\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/health-service/consumer/search/international-address",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"health-service",
+								"consumer",
+								"search",
+								"international-address"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Health Service - HPI",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"KevinD\",\n    \"hpiiNumber\": \"8003611566715300\",\n    \"familyName\": \"FITZSIMMONS\",\n    \"given_names\": [\"Marilyn\"],\n    \"dateOfBirth\": \"19810710\", \n    \"sex\": \"F\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/health-service/provider-individual/search/identifier",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"health-service",
+								"provider-individual",
+								"search",
+								"identifier"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Health Service - HPI Demographics",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"KevinD\",\n    \"hpiiNumber\": \"8003611566700559\",\n    \"familyName\": \"WEST\",\n    \"dateOfBirth\": \"19820517\", \n    \"sex\": \"F\",\n    \"australianStreetAddress\": {\n        \"postcode\": \"2546\",\n        \"state\": \"NSW\",\n        \"suburb\": \"Narooma\"\n    }\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/health-service/provider-individual/search/demographic",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"health-service",
+								"provider-individual",
+								"search",
+								"demographic"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Health Service - HPIO",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"KevinD\",\n    \"hpioNumber\": \"8003628233370822\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/health-service/provider-organization/search",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"health-service",
+								"provider-organization",
+								"search"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "patient-service",
+			"item": [
+				{
+					"name": "Patient service - Search",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJraWQiOiJtSFRZbDNkUXQ1S09VSDVQM0JPMXIraEVHa2J0aGptWHdTWWZcL2FHczNKOD0iLCJhbGciOiJSUzI1NiJ9.eyJjdXN0b206YWNjZXNzX3JvbGVzIjoibWVtYmVyIiwic3ViIjoiNDlhZTE0MzgtYjA5MS03MGIyLWM2N2MtNTcwNDkyOWZkMzQwIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImN1c3RvbTpvcmdhbml6YXRpb25faWQiOiIxYjYyY2FjOS05MjRlLTQwZWYtYWQ5Mi0yZTQxZjdmNzc1ZjciLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuYXAtc291dGhlYXN0LTIuYW1hem9uYXdzLmNvbVwvYXAtc291dGhlYXN0LTJfZTJ3UWhWaUJqIiwiY29nbml0bzp1c2VybmFtZSI6IjQ5YWUxNDM4LWIwOTEtNzBiMi1jNjdjLTU3MDQ5MjlmZDM0MCIsIm9yaWdpbl9qdGkiOiIyZTAxNmIxZS1jMDg1LTQ4ZDMtYTg0Yi00NDk0NTBkOGE5NTgiLCJhdWQiOiI0N2ltbnRpNXZsbzJnb2M1dTNhb3RtZW4yNiIsImV2ZW50X2lkIjoiMGUwYWM4ZjEtMmQ1OC00M2UxLWE3NTMtZWE1NTRhMjA4OTc5IiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3NTE4Mzc1NTIsIm5hbWUiOiJib2IgZG9jX3Rlc3RfMSIsImV4cCI6MTc1MTg2Mjc1MiwiaWF0IjoxNzUxODM3NTUyLCJqdGkiOiJkMThiZjEwMC0xZWNmLTQwNzMtOWMxMS00MGRiMTM3NDQ2NjciLCJlbWFpbCI6ImtldmluK2RvYy10ZXN0LTFAcGFyY2htZW50LmhlYWx0aCJ9.LOTpaDgHz63m-TAkNxWDDfm9T6IJaEx-TZCWYb6lZyFst59PD31NfsswCX-LF9GZ1HSC7QE4PGrr1cQ6VOGWlxIoRTAELnwHlkxExQTcDosvP21z2cv8qHMJ_hfJoINjf6MhQIkF0CRqwHqgWWCOIHXQyW9FuAw7ccR7QQdMzpo-HH8Y_tIQ1f2V_Mqwzfti7sQvy9ZkKzUcAbHnmQI1HdpAulEa93CcDwl1uXCZqvwMq6qS4W4fYDc0j-HMnED6660RcZuXqI7moInpMwMQFoFubvTN2QChKr1nATWg_eKGXFNJYjvv10Me7s639MuM-yW2P5JM_SenpFxS-e6lyQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"given_name\": \"Natalie\",\n    \"family_name\": \"Hayman\",\n    \"date_of_birth\": \"1996-06-06T00:00:00.000Z\",\n    \"sex\": \"I\",\n    \"medicare_card_number\": \"3270091481\",\n    \"medicare_irn\": \"3\",\n    \"australian_street_address\": {\n        \"street_number\": \"\",\n        \"street_name\": \"\",\n        \"suburb\": \"\",\n        \"postcode\": \"\",\n        \"state\": \"\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.parchmenthealth.io/patient-service/search-hs?organization_id=1b62cac9-924e-40ef-ad92-2e41f7f775f7",
+							"protocol": "https",
+							"host": [
+								"api",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"patient-service",
+								"search-hs"
+							],
+							"query": [
+								{
+									"key": "organization_id",
+									"value": "1b62cac9-924e-40ef-ad92-2e41f7f775f7"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read Patients",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ihi_number\": \"8003605681663049\",\n    \"family_name\": \"Barker\",\n    \"given_name\": \"Kevin\",\n    \"date_of_birth\": \"20110601\",\n    \"sex\": \"F\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/patient-service/7fa84d2b-26d7-4c71-9b5b-e591eff97e7d/patients",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"patient-service",
+								"7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
+								"patients"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patient Service - Delete patient",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/patient-service/organizations/123/patients/416bf95a-15ee-44c8-b16e-e08e41367214",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"patient-service",
+								"organizations",
+								"123",
+								"patients",
+								"416bf95a-15ee-44c8-b16e-e08e41367214"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patient Service - Update patient",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/patient-service/organizations/123/patients/6d2e4be1-2db6-4f9e-8b32-0019d7a9b9ac?updateDemographics=false",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"patient-service",
+								"organizations",
+								"123",
+								"patients",
+								"6d2e4be1-2db6-4f9e-8b32-0019d7a9b9ac"
+							],
+							"query": [
+								{
+									"key": "updateDemographics",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user-service",
+			"item": [
+				{
+					"name": "Update role",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJraWQiOiJkYzc1ZWVEYjNGVGdyZUNqYzB6QWp1WlIyWm1iRjdVMkNqbmlndDlCK2QwPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI1MDYzYmM2MS01Njc4LTRhYmEtYTRlNC0xYWVkOTQ2MzkyMDAiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmFwLXNvdXRoZWFzdC0yLmFtYXpvbmF3cy5jb21cL2FwLXNvdXRoZWFzdC0yX29QRzVNZEluVSIsImNvZ25pdG86dXNlcm5hbWUiOiI1MDYzYmM2MS01Njc4LTRhYmEtYTRlNC0xYWVkOTQ2MzkyMDAiLCJvcmlnaW5fanRpIjoiMjE2ZWVlOGUtZDViNi00ZjFlLWI0ODMtYmZlMGEzODkxYTk4IiwiYXVkIjoiMm9jdWJzYTU0bW1sM3BzN211NWpkamdnaW0iLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTY3MzY0OTM1MywibmFtZSI6ImtldmluIGRzb3V6YSIsImV4cCI6MTY3MzY1MTU5MSwiaWF0IjoxNjczNjUwOTkyLCJqdGkiOiIxMzg4YzRlNy02YWEzLTQ3YjItYTM2Mi0yOTUxZmNmNTFlNDYiLCJlbWFpbCI6InRoZWRzb3V6YWhvbWVAZ21haWwuY29tIn0.yRtL4AjUhS-ZfHvrLDJX0ZFeD-621iR-vLUoNE63EFyC53apt_mkkwxkXgkEtw79cGLsJeiiMrOFGCH80vSBYxwNYMooHoQwHZQaLERS7SgKQde_jHf8aIrtaYUdV_VMjggbHjbiexhCWGRRvdDifkGXobzqznUKfTHymvU0XltYmz78MRkgYMyXyFQ3TiuASuX7OEKkGwKibko5opZArJr-uJPgZWxNwnS5Hbc-TpE93PizS6C_8DbecUamGEFb0uVDCr8gxV1u1iEKu4guv4Sjmhg8qkIXoKvK4MlNYL_R2Yk1RfAKLiSOmUfR1N90u9rMro0XF8RxiBn5Ktdj8g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"4a0fd8ff-f791-469c-b308-916ff16447db\",\n    \"new_roles\": [\"admin\", \"owner\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/user/update-role",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"user",
+								"update-role"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Service - Self",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJraWQiOiJac0NvcktUWGo3XC9KY09ST2hNWG9kK3ZiN055VW5TWnlnWXRvUENvVjBmaz0iLCJhbGciOiJSUzI1NiJ9.eyJjdXN0b206YWNjZXNzX3JvbGVzIjoicHJvdmlkZXIiLCJzdWIiOiI4ZTFjOWJhYi02NjE0LTQ3MjMtODk4MS04N2M4ZmEwMjZkYWUiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiY3VzdG9tOm9yZ2FuaXphdGlvbl9pZCI6IjdmYTg0ZDJiLTI2ZDctNGM3MS05YjViLWU1OTFlZmY5N2U3ZCIsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5hcC1zb3V0aGVhc3QtMi5hbWF6b25hd3MuY29tXC9hcC1zb3V0aGVhc3QtMl9ZMUJiVDV0UVIiLCJjb2duaXRvOnVzZXJuYW1lIjoiOGUxYzliYWItNjYxNC00NzIzLTg5ODEtODdjOGZhMDI2ZGFlIiwib3JpZ2luX2p0aSI6IjVhNDVmZjVjLTlhMTMtNDQ1Zi04MWU2LWIyNjEwZDBhZTJlNyIsImF1ZCI6IjFkdnYzaHRicDRrc242ZWMxaDdkdnY1cWZpIiwiZXZlbnRfaWQiOiIzYjNkYzJmNC01YTJmLTRiZGUtOTI5ZC01MGYwMzhjMzc1MWUiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTcwNzI2MTk2OCwibmFtZSI6ImRpbWl0eSBkZW5uaXMiLCJleHAiOjE3MDcyODcxNjgsImlhdCI6MTcwNzI2MTk2OCwianRpIjoiZGRhMDgxMTAtODYwMi00MGVhLWFhMmQtMDlkNzQ5NDUxZDA4IiwiZW1haWwiOiJ0aGVkc291emFob21lQGdtYWlsLmNvbSJ9.Co4ZB34ChTFmTGX4W0kjwYcywSPnNB50L9XQtnusm2iK84vFgZWUQKSjkbpw1wgot09ADeN3ig-201o6UJVwWRK_xPvlV2AoFcsoUJ_07f72Iz46fuWUQTS_mjpAiFbh4qBE05cHpeK_7hzJQmQ97ewNMEQPmRGFsCrV_jtO-ys3EAIzlBzi_Wdz5zkYsB0181WbtZ2y7TNvUkPjdbUv2nQz-_XSHLnbXJ9m1b4RROKz2GqxzxBUkzsEmK6E5Okqv4TPPcv9DUjpkwO3UieFbfY4pM6KcPyLqVn_Giv0UxXoVcobWQBrAcLATKmRBdnYZyXDJikRwgEkWMEAn-DQMg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/user-service/self",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"user-service",
+								"self"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Service - update-user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/user-service/organizations/111/users/222",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"user-service",
+								"organizations",
+								"111",
+								"users",
+								"222"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Service - create-organiation",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/user-service/organizations",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"user-service",
+								"organizations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Service - read-user",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/user-service/organizations/7fa84d2b-26d7-4c71-9b5b-e591eff97e7d/users/8e1c9bab-6614-4723-8981-87c8fa026dae",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"user-service",
+								"organizations",
+								"7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
+								"users",
+								"8e1c9bab-6614-4723-8981-87c8fa026dae"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Service - read-users",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/user-service/organizations/111/users",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"user-service",
+								"organizations",
+								"111",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Org",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "acl-service",
+			"item": [
+				{
+					"name": "access",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"roles\": [\"admin\", \"doctor\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/acl/access",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"acl",
+								"access"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "check",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"organization_id\": \"eadfb131-0456-404d-8d5a-959a2fa4a5f7\",\n    \"resource\": \"user_management\",\n    \"action\": \"delete\",\n    \"resource_organization_id\": \"eadfb131-0456-404d-8d5a-959a2fa4a5f7\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://d2r5wmwraf.execute-api.ap-southeast-2.amazonaws.com/dev/check",
+							"protocol": "https",
+							"host": [
+								"d2r5wmwraf",
+								"execute-api",
+								"ap-southeast-2",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"dev",
+								"check"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "erx-service",
+			"item": [
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-EntityId",
+								"value": "Y6PV9",
+								"type": "text"
+							},
+							{
+								"key": "X-DestinationId",
+								"value": "00000",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"patient\": {\n        \"ihi_status\": \"RETIRED\",\n        \"medicare_irn\": \"\",\n        \"created_at\": \"2023-06-20T00:47:54.482Z\",\n        \"medicare_card_number\": \"\",\n        \"organization_id\": \"eadfb131-0456-404d-8d5a-959a2fa4a5f7\",\n        \"sex\": \"M\",\n        \"given_name\": \"Pius\",\n        \"family_name\": \"GATES\",\n        \"dva_file_number\": \"\",\n        \"ihi_number\": \"8003608833403850\",\n        \"date_of_birth\": \"19660228\",\n        \"updated_at\": \"2023-06-22T01:03:58.480Z\",\n        \"demographic_key\": \"DEMOGRAPHICS#19660228-M-GATES\",\n        \"sk\": \"CURRENT#21c6a6ee-01b8-4a8f-9cda-12aae4327b75\",\n        \"escript_status\": \"ACTIVE\",\n        \"ihi_record_status\": \"VERIFIED\",\n        \"no_given_name\": false,\n        \"pk\": \"eadfb131-0456-404d-8d5a-959a2fa4a5f7\",\n        \"patient_id\": \"21c6a6ee-01b8-4a8f-9cda-12aae4327b75\"\n    },\n    \"provider\": {\n        \"created_at\": \"2023-06-17T10:59:47.109Z\",\n        \"organization_id\": \"eadfb131-0456-404d-8d5a-959a2fa4a5f7\",\n        \"sex\": \"F\",\n        \"given_name\": \"Jade\",\n        \"family_name\": \"Dyer\",\n        \"provider_id\": \"21b8c9bb-a89a-4be8-a538-db534a291a91\",\n        \"date_of_birth\": \"19670519\",\n        \"hpii_status\": \"A\",\n        \"hpii_number\": \"8003618233362432\",\n        \"updated_at\": \"2023-06-17T10:59:47.109Z\",\n        \"demographic_key\": \"DEMOGRAPHICS#19670519-F-DYER\",\n        \"sk\": \"PROVIDER#21b8c9bb-a89a-4be8-a538-db534a291a91\",\n        \"no_given_name\": false,\n        \"pk\": \"eadfb131-0456-404d-8d5a-959a2fa4a5f7\"\n    },\n    \"prescription\": {\n        \"active_ingredients\": \"\",\n        \"artg_category\": \"\",\n        \"artg_id\": \"\",\n        \"consumer_patient_info\": \"\",\n        \"container_material\": \"\",\n        \"container_type\": \"\",\n        \"ctpp_sctid\": \"\",\n        \"dosage_form\": \"\",\n        \"effective_date\": \"\",\n        \"indication_requirements\": \"\",\n        \"mp_pt\": \"\",\n        \"mp_sctid\": \"\",\n        \"mpp_pt\": \"\",\n        \"mpp_sctid\": \"\",\n        \"mpuu_pt\": \"\",\n        \"mpuu_sctid\": \"\",\n        \"objectID\": \"\",\n        \"pack_size\": \"\",\n        \"pk\": \"\",\n        \"poison_schedule\": \"\",\n        \"product_info\": \"\",\n        \"product_type\": \"\",\n        \"public_summary\": \"\",\n        \"route_of_administration\": null,\n        \"sk\": \"\",\n        \"start_date\": \"\",\n        \"therapeutic_type\": \"\",\n        \"tpp_pt\": \"\",\n        \"tpp_sctid\": \"\",\n        \"tpp_tp_pt\": \"\",\n        \"tpp_tp_sctid\": \"\",\n        \"tpuu_pt\": \"\",\n        \"tpuu_sctid\": \"\",\n        \"tpuu_tp_pt\": \"\",\n        \"tpuu_tp_sctid\": \"\",\n        \"warnings\": \"\",\n        \"script_type\": \"private\",\n        \"is_branded\": false,\n        \"is_substitution_allowed\": false,\n        \"prescription_type\": \"ELECTRONIC\",\n        \"pack_size_selected\": \"\",\n        \"repeats\": \"\",\n        \"repeats_interval\": \"\",\n        \"repeats_interval_type\": \"Days\",\n        \"quantity\": \"\",\n        \"other_instructions\": \"\",\n        \"administration\": \"\",\n        \"medication_reason\": \"\",\n        \"food_restrictions\": \"\",\n        \"route\": \"\",\n        \"dose\": \"\",\n        \"dose_frequency_schedule\": null,\n        \"interaction\": \"\",\n        \"is_allow_dispense_repeats_together\": false,\n        \"is_authority_for_urgent_supply\": false,\n        \"authority_number\": \"\",\n        \"indication\": null,\n        \"assessment\": \"\",\n        \"benefit_type\": \"\",\n        \"caution\": \"\",\n        \"complex_authority_required\": \"\",\n        \"email\": \"\",\n        \"phone\": \"\",\n        \"maximum_prescribable_pack\": \"\",\n        \"maximum_prescribable_unit_of_use\": \"\",\n        \"number_repeats\": \"\",\n        \"prescriber_types\": \"\",\n        \"program_category\": \"\",\n        \"program_code\": \"\",\n        \"program_title\": \"\",\n        \"restriction_maximum_prescribable\": \"\",\n        \"restriction_repeats\": \"\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/erx-service/",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"erx-service",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "authorityNumber",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-EntityId",
+								"value": "Y6PV9",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "X-DestinationId",
+								"value": "00000",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"input\": \"{}\",\n    \"stateMachineArn\": \"arn:aws:states:ap-southeast-2:271811663617:stateMachine:LookupValueSF\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/erx-service/authorityNumber",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"erx-service",
+								"authorityNumber"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "build-payload",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-EntityId",
+								"value": "Y6PV9",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "X-DestinationId",
+								"value": "00000",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"input\": \"{}\",\n    \"stateMachineArn\": \"arn:aws:states:ap-southeast-2:271811663617:stateMachine:LookupValueSF\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/erx-service/authorityNumber",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"erx-service",
+								"authorityNumber"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "scriptNumber",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-EntityId",
+								"value": "Y6PV9",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "X-DestinationId",
+								"value": "00000",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"input\": \"{}\",\n    \"stateMachineArn\": \"arn:aws:states:ap-southeast-2:271811663617:stateMachine:LookupValueSF\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/erx-service/authorityNumber",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"erx-service",
+								"authorityNumber"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ReadPrescriptions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-EntityId",
+								"value": "Y6PV9"
+							},
+							{
+								"key": "X-DestinationId",
+								"value": "00000"
+							}
+						],
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/erx-service/7fa84d2b-26d7-4c71-9b5b-e591eff97e7d/20b04934-2ce5-4628-bc6e-ea1cd3b729e3/prescriptions",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"erx-service",
+								"7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
+								"20b04934-2ce5-4628-bc6e-ea1cd3b729e3",
+								"prescriptions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-EntityId",
+								"value": "Y6PV9",
+								"type": "text"
+							},
+							{
+								"key": "X-DestinationId",
+								"value": "00000",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/erx-service/status",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"erx-service",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/erx-service/",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"erx-service",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cease",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/erx-service/",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"erx-service",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"scid\": \"2Y6PV9F2DDGJV79368\",\n    \"guid\": \"80351f07-0b45-4f77-8986-9cd4510006c2\",\n    \"createdDate\": \"2023-08-06T07:53:22.704+00:00\",\n    \"originalSCID\": null,\n    \"originalGUID\": null,\n    \"notificationConsentFlag\": false,\n    \"status\": \"Cancelled\",\n    \"prescriberToNotify\": \"Y6PV9\",\n    \"etpIdentifiers\": null,\n    \"items\": [\n        {\n            \"sequence\": 1,\n            \"originalSequence\": null,\n            \"state\": \"Active\",\n            \"sessionKey\": {\n                \"key\": \"EBJ79TvS54FpQwo5fEhilYUX7Glry6M/U6FcH0znOol+kUf+oD45pC0LabXHCOEptRpOES5rziTn4/VRZnIDVltEjG7PcJVv+emcZmIDePb3L/vFMX5oJWsEmePeHZG/yH3zfN3tj0TLtQbI/Aww6GpGantyWmamcVU6cVgUJyebrBLUH71oS0SRH0ptMLXuLZdYAy+hYTgI+i/6hnf7pmD6NT7fWzcFIbfg3KPvO3oV2GSUcGkZLVxs+vo+n9Hub3LC8ZAMbPMb/bcMyK5ftIaX7x+UoYFf873cf20GUKnbvePo0apMl+5+GTdLBiwNkfE/kn8JmZDeE6XgCF1wxw==\",\n                \"iv\": \"DULUhzxn7U4Sb8IsdO2Sj+1s4pIoG7KGq2hLaJOXikuwQjLQ+qNoKpp8S1MV3PBm/WLW6ZAn35vT8ft/TGOMBZlKeZXa9haV/OoVOvvCOoutb5oZJtSrGPi+qMYHwjnC9HBPphXQfYdf4rastbG3OUm+zvnzOM3u85LUX1wCnw/+Ch+mgn3Tncl3kYtwtynYTf/aKNgr6MGbvjDnt03ANTT2Vm4gDpqlm2KyhJKMts81p27xNSgp4HZm4PLZTXzMy7ljbQRpjmtiqS1PJQXu01UDK4/KG8JefGmj7J8WtAepF4jRsvPYECQF2pQEI3kQeG802dA6eTnwyW5LJqdd8g==\",\n                \"certificateVersion\": \"v4\"\n            },\n            \"content\": {\n                \"patient\": {\n                    \"patientUniqueID\": \"21c6a6ee-01b8-4a8f-9\",\n                    \"patientNumber\": null,\n                    \"patientFamilyName\": \"GATES\",\n                    \"patientFirstName\": \"Pius\",\n                    \"patientMedicareFamilyName\": \"GATES\",\n                    \"patientMedicareFirstName\": \"Pius\",\n                    \"patientTitle\": null,\n                    \"patientAddress1\": \"\",\n                    \"patientAddress2\": null,\n                    \"patientSuburb\": \"\",\n                    \"patientPostcode\": \"\",\n                    \"patientState\": \"\",\n                    \"patientSex\": \"M\",\n                    \"patientPhoneNumber\": \"\",\n                    \"patientMobileNumber\": \"\",\n                    \"patientEmail\": \"\",\n                    \"patientMedicareNumber\": \"\",\n                    \"patientMedicareSubNumerate\": \"\",\n                    \"patientMedicareValidTo\": null,\n                    \"concession_PensionNumber\": null,\n                    \"entitlementNumber\": null,\n                    \"dvaNumber\": \"\",\n                    \"dvaCardColour\": null,\n                    \"patientBirthdate\": \"1966-02-28T00:00:00\",\n                    \"patientCTGFlag\": false,\n                    \"patientIHI\": 8003608833403850,\n                    \"patientHospitalCategory\": false,\n                    \"patient_Reserved_01\": null,\n                    \"patient_Reserved_02\": null,\n                    \"patient_Reserved_03\": null,\n                    \"patient_Reserved_04\": null,\n                    \"patient_Reserved_05\": null\n                },\n                \"clinician\": {\n                    \"doctorPrescriberNumber\": null,\n                    \"doctorFirstName\": \"Jade\",\n                    \"doctorFamilyName\": \"Dyer\",\n                    \"doctorProviderNumber\": null,\n                    \"doctorMobileNumber\": \"\",\n                    \"doctorEmail\": \"\",\n                    \"practiceName\": null,\n                    \"practiceAddress1\": null,\n                    \"practiceAddress2\": null,\n                    \"practiceSuburb\": null,\n                    \"practicePostcode\": null,\n                    \"practiceState\": null,\n                    \"practiceEmail\": null,\n                    \"doctorPhoneNumber\": null,\n                    \"doctorFaxNumber\": null,\n                    \"prescribingSystemUsed\": null,\n                    \"prescriberType\": \"M\",\n                    \"prescriberHPIO\": 8003629900000429,\n                    \"prescriberHPII\": 8003618233362432,\n                    \"prescriberAHPRANumber\": null,\n                    \"clinician_Reserved_01\": null,\n                    \"clinician_Reserved_02\": null,\n                    \"clinician_Reserved_03\": null,\n                    \"clinician_Reserved_04\": null,\n                    \"clinician_Reserved_05\": null\n                },\n                \"prescribedItem\": {\n                    \"prescriptionDate\": \"2023-08-06T07:53:22.704Z\",\n                    \"itemUniqueID\": null,\n                    \"itemTradeName\": \"Curam 1000/200 powder for injection, 50 x 1.2 g vials\",\n                    \"itemGenericName\": \"amoxicillin 1 g + clavulanic acid 200 mg injection, 50 x 1.2 g vials\",\n                    \"itemForm\": \"injection\",\n                    \"itemStrength\": \"1g/200mg/1.2g\",\n                    \"itemGenericIntention\": \"B\",\n                    \"brandSubstitutionNotAllowed\": false,\n                    \"pbsCode\": \"\",\n                    \"pbsManufacturerCode\": \"\",\n                    \"quantity\": \"1\",\n                    \"unusualQtyFlag\": false,\n                    \"itemBarcode\": null,\n                    \"routeAdministration\": \"Rectal route\",\n                    \"numberOfRepeatsAuthorised\": \"9\",\n                    \"pbsdvaAuthorityNumber\": \"\",\n                    \"phoneApprovalAuthorityNumber\": \"\",\n                    \"scheduleNumber\": \"4\",\n                    \"patientInstructions\": \"\",\n                    \"repeatIntervals\": \"3\",\n                    \"doctorNotes\": \"\",\n                    \"reasonForPrescribing\": \"Traumatic complication of injury\",\n                    \"regulation24\": false,\n                    \"isExtemp\": false,\n                    \"extemporaneousDescription\": \"\",\n                    \"unlistedItemRepatAuthority\": false,\n                    \"privatePrescription\": true,\n                    \"scriptCTGAnnotation\": null,\n                    \"amT_MP\": \"21360011000036101\",\n                    \"amT_MPP\": \"975731000168109\",\n                    \"amT_TPP\": \"1310361000168106\",\n                    \"amT_MPUU\": \"975591000168101\",\n                    \"amT_TP\": null,\n                    \"amT_TPUU\": \"1310231000168105\",\n                    \"amT_CTPP\": \"1310371000168100\",\n                    \"prescribedItem_Reserved_01\": \"\",\n                    \"prescribedItem_Reserved_02\": null,\n                    \"prescribedItem_Reserved_03\": null,\n                    \"prescribedItem_Reserved_04\": null,\n                    \"prescribedItem_Reserved_05\": null,\n                    \"therapeuticGoodIdentificationCode\": null,\n                    \"therapeuticGoodIdentificationCodeSystem\": null,\n                    \"therapeuticGoodIdentificationCodeSystemName\": null,\n                    \"therapeuticGoodIdentificationCodeSystemVersion\": null,\n                    \"therapeuticGoodIdentificationDisplayName\": null,\n                    \"amT_CODE_SYSTEM\": null,\n                    \"quantityExtended\": null,\n                    \"amT_VERSION\": null,\n                    \"primarY_MEDICATION_CODE\": null,\n                    \"rtaCid\": null,\n                    \"prescriberScriptNumber\": \"\",\n                    \"privacyStatement\": true,\n                    \"emergencySupply\": null,\n                    \"annotations\": [],\n                    \"controlledSubstanceReference\": null,\n                    \"snomedctReasonforPrescribe\": \"57029005\",\n                    \"unusualDoseFlag\": false\n                },\n                \"pharmacy\": null,\n                \"dispensedItem\": null,\n                \"dispensedPatient\": null,\n                \"lastDispensedItem\": null,\n                \"tokenMetadata\": null\n            },\n            \"tags\": [],\n            \"updatedBy\": null,\n            \"updatedDate\": null,\n            \"dispensedDate\": null,\n            \"creatorVendorID\": 183,\n            \"dispenserVendorID\": null\n        }\n    ],\n    \"sourceType\": \"Prescriber\",\n    \"consolidatedSCIDs\": null,\n    \"viewConsent\": null,\n    \"tags\": [\n        {\n            \"key\": [\n                \"PatientIHI\"\n            ],\n            \"value\": [\n                \"\"\n            ]\n        }\n    ],\n    \"operationResult\": {\n        \"status\": 0,\n        \"errorList\": []\n    },\n    \"patient_id\": \"21c6a6ee-01b8-4a8f-9cda-12aae4327b75\",\n    \"provider_id\": \"TODO-Provider\",\n    \"pk\": \"eadfb131-0456-404d-8d5a-959a2fa4a5f7\",\n    \"sk\": \"SCID#2Y6PV9F2DDGJV79368\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/erx-service/eadfb131-0456-404d-8d5a-959a2fa4a5f7/3f85ebf8-9c39-4185-a085-4523d52c9f32",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"erx-service",
+								"eadfb131-0456-404d-8d5a-959a2fa4a5f7",
+								"3f85ebf8-9c39-4185-a085-4523d52c9f32"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "username",
+									"value": "F3WFX",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/xml;v=2024-03",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://integration-api.erx.com.au/eprescriptions/2Y6PV9HWD6WYP5QXP4/$erx001",
+							"protocol": "https",
+							"host": [
+								"integration-api",
+								"erx",
+								"com",
+								"au"
+							],
+							"path": [
+								"eprescriptions",
+								"2Y6PV9HWD6WYP5QXP4",
+								"$erx001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "checkPrescription",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "stripe-service",
+			"item": [
+				{
+					"name": "New Request",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"organization_id\" : \"2b7bf196-633b-4114-9c7b-d9f982002e10\",\n    \"customer_id\": \"cus_PYCJbCYPzTU93G\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/stripe-service/subscription-details",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"stripe-service",
+								"subscription-details"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "erxadapter-service",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-EntityId",
+								"value": "xxx"
+							},
+							{
+								"key": "X-DestinationId",
+								"value": "yyy"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/erxadapter-service/",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"erxadapter-service",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create Copy",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-EntityId",
+								"value": "xxx"
+							},
+							{
+								"key": "X-DestinationId",
+								"value": "yyy"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/erxadapter-service/",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"erxadapter-service",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "<abc></abc>",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/xml",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"xml"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "partner-service",
+			"item": [
+				{
+					"name": "getClinikoPatients",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/partner-service/organizations/7fa84d2b-26d7-4c71-9b5b-e591eff97e7d/partners/cliniko/patients",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"partner-service",
+								"organizations",
+								"7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
+								"partners",
+								"cliniko",
+								"patients"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getCoreplusPatient",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/partner-service/organizations/7fa84d2b-26d7-4c71-9b5b-e591eff97e7d/partners/coreplus/patients/597730",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"partner-service",
+								"organizations",
+								"7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
+								"partners",
+								"coreplus",
+								"patients",
+								"597730"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getScriptedPatient",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/partner-service/organizations/7fa84d2b-26d7-4c71-9b5b-e591eff97e7d/partners/scripted/patients/15d3745e-04df-48cc-9a04-c87a246c3ec8",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"partner-service",
+								"organizations",
+								"7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
+								"partners",
+								"scripted",
+								"patients",
+								"15d3745e-04df-48cc-9a04-c87a246c3ec8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getCoreplusPatients",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/partner-service/organizations/7fa84d2b-26d7-4c71-9b5b-e591eff97e7d/partners/coreplus/patients",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"partner-service",
+								"organizations",
+								"7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
+								"partners",
+								"coreplus",
+								"patients"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getClinikoPatient",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/partner-service/organizations/7fa84d2b-26d7-4c71-9b5b-e591eff97e7d/partners/cliniko/patients/1428001430966379715",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"partner-service",
+								"organizations",
+								"7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
+								"partners",
+								"cliniko",
+								"patients",
+								"1428001430966379715"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "savePartnerApiKeyForCoreplus",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"app_consumer_id\": \"cb63113f-f5dd-46c0-8147-decfed569f80\",\n    \"app_consumer_secret\": \"+H7eZjM/uCU4+5QophxcNNPYdALAgMP8PoSsNLOIYY7owcExDY87Pw==\",\n    \"app_access_token\": \"ac875af1-5e02-4081-95f6-125f884fe4e8\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/partner-service/organizations/7fa84d2b-26d7-4c71-9b5b-e591eff97e7d/partners/coreplus/apikey",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"partner-service",
+								"organizations",
+								"7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
+								"partners",
+								"coreplus",
+								"apikey"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "savePartnerApiKeyForCliniko",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"api_key\": \"MS0xNDI3OTk3NDc0MjUyOTI0MjA3LTNtWGFxdEhvak5qd1dzY0lkeHRYSm02aWh4RmdmdHBk-au4\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/partner-service/organizations/7fa84d2b-26d7-4c71-9b5b-e591eff97e7d/partners/cliniko/apikey",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"partner-service",
+								"organizations",
+								"7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
+								"partners",
+								"cliniko",
+								"apikey"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Nookal getPatients",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "key",
+									"value": "api_key",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "BeF47CBE-bF5F-d97F-26aB-22Cf4eFf87f7",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.nookal.com/production/v2/getPatients?patient_id=1&api_key=BeF47CBE-bF5F-d97F-26aB-22Cf4eFf87f7",
+							"protocol": "https",
+							"host": [
+								"api",
+								"nookal",
+								"com"
+							],
+							"path": [
+								"production",
+								"v2",
+								"getPatients"
+							],
+							"query": [
+								{
+									"key": "patient_id",
+									"value": "1"
+								},
+								{
+									"key": "api_key",
+									"value": "BeF47CBE-bF5F-d97F-26aB-22Cf4eFf87f7"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Nookal searchPatient",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "key",
+									"value": "api_key",
+									"type": "string"
+								},
+								{
+									"key": "value",
+									"value": "BeF47CBE-bF5F-d97F-26aB-22Cf4eFf87f7",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.nookal.com/production/v2/searchPatients?patient_id=2&api_key=BeF47CBE-bF5F-d97F-26aB-22Cf4eFf87f7",
+							"protocol": "https",
+							"host": [
+								"api",
+								"nookal",
+								"com"
+							],
+							"path": [
+								"production",
+								"v2",
+								"searchPatients"
+							],
+							"query": [
+								{
+									"key": "patient_id",
+									"value": "2"
+								},
+								{
+									"key": "api_key",
+									"value": "BeF47CBE-bF5F-d97F-26aB-22Cf4eFf87f7"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "email-service",
+			"item": [
+				{
+					"name": "send",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"to\": \"kevin@parchment.health\", \n    \"from\": \"no-reply@parchment.health\", \n    \"data\": {\n        \"full_name\": \"Bob Sacremento\"\n    }, \"template_type\": \"STANDARD_FLOW\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://34zi830ih0.execute-api.ap-southeast-2.amazonaws.com",
+							"protocol": "https",
+							"host": [
+								"34zi830ih0",
+								"execute-api",
+								"ap-southeast-2",
+								"amazonaws",
+								"com"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "impler-service",
+			"item": [
+				{
+					"name": "health-check",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/v1/health-check",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"v1",
+								"health-check"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Scripted",
+			"item": [
+				{
+					"name": "create apikey",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"partner\":\"parchment\", \"password\":\"scriptedParchment02102025!!*&\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://www.scriptedtech.com/api/apiKey",
+							"protocol": "https",
+							"host": [
+								"www",
+								"scriptedtech",
+								"com"
+							],
+							"path": [
+								"api",
+								"apiKey"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://www.scriptedtech.com/api/apiKey",
+							"protocol": "https",
+							"host": [
+								"www",
+								"scriptedtech",
+								"com"
+							],
+							"path": [
+								"api",
+								"apiKey"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"partner\":\"parchment\", \"password\":\"scriptedParchment02102025!!*&\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://www.scriptedtech.com/api/apiKey",
+							"protocol": "https",
+							"host": [
+								"www",
+								"scriptedtech",
+								"com"
+							],
+							"path": [
+								"api",
+								"apiKey"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get patient",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "195c981feb61630a5efce87ab665e5502e596340484ea114c0c3e5986e0f5f63",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://www.scriptedtech.com/api/getPatient?patientId=a6389edb-98b7-4d51-86cf-684d6c7daa35",
+							"protocol": "https",
+							"host": [
+								"www",
+								"scriptedtech",
+								"com"
+							],
+							"path": [
+								"api",
+								"getPatient"
+							],
+							"query": [
+								{
+									"key": "patientId",
+									"value": "a6389edb-98b7-4d51-86cf-684d6c7daa35"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "external-service",
+			"item": [
+				{
+					"name": "generate token",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-organization-id",
+								"value": "{{organizationId}}",
+								"type": "text"
+							},
+							{
+								"key": "x-organization-secret",
+								"value": "{{organizationSecret}}",
+								"type": "text"
+							},
+							{
+								"key": "x-partner-secret",
+								"value": "{{partnerSecret}}",
+								"type": "text"
+							},
+							{
+								"key": "x-partner-id",
+								"value": "{{partnerId}}",
+								"type": "text"
+							},
+							{
+								"key": "x-user-id",
+								"value": "{{userId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"grantType\": \"client_credentials\",\n    \"scope\": [\"create:patient\", \"read:patient_prescription\", \"create:user\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/external/v1/token",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"external",
+								"v1",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create patient",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-organization-secret",
+								"value": "b81999b08cfa1c43a7aa1eb3796bee818c9a359289ab7c30839aca6b875bea3b",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"given_name\":\"kevin\",\n    \"family_name\": \"Lester\",\n    \"medicare_card_number\": \"3950113551\", \n    \"medicare_irn\": \"1\",\n    \"date_of_birth\": \"1995-02-17\",\n    \"sex\": \"M\",\n    \"no_given_name\": false,\n    \"email\": \"john.smith@example.com\",\n    \"phone\": \"0412345678\",\n    \"partner_patient_id\": \"20250710\",\n    \"partner_id\": \"tacklit\",\n    \"australian_street_address\": {\n      \"street_number\": \"42\",\n      \"street_name\": \"Wallaby Way\",\n      \"suburb\": \"Sydney\",\n      \"state\": \"NSW\",\n      \"postcode\": \"2000\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/external/v1/organizations/7fa84d2b-26d7-4c71-9b5b-e591eff97e7d/users/8e1c9bab-6614-4723-8981-87c8fa026dae/patients",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"external",
+								"v1",
+								"organizations",
+								"7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
+								"users",
+								"8e1c9bab-6614-4723-8981-87c8fa026dae",
+								"patients"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-user",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-organization-secret",
+								"value": "{{organizationSecret}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"given_name\":\"Lindsay\",\n    \"family_name\": \"Hinson\",\n    \"date_of_birth\": \"1968-11-19\",\n    \"sex\": \"M\",\n    \"email\": \"thedsouzahome+api58@gmail.com\",\n    \"phone\": \"0412345678\",\n    \"access_roles\": [\"provider\", \"admin\"],\n    \"hpii_number\": \"8003619900029635\",\n    \"prescriber_type\":\"T\",\n    \"prescriber_number\": \"1234567\",\n    \"qualifications\": \"LLB\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/external/v1/organizations/7fa84d2b-26d7-4c71-9b5b-e591eff97e7d/users/",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"external",
+								"v1",
+								"organizations",
+								"7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read Patient Prescriptions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImtleTEifQ.eyJvcmdhbml6YXRpb25faWQiOiI3ZmE4NGQyYi0yNmQ3LTRjNzEtOWI1Yi1lNTkxZWZmOTdlN2QiLCJwYXJ0bmVyX2lkIjoidGFja2xpdCIsInVzZXJfaWQiOiI4ZTFjOWJhYi02NjE0LTQ3MjMtODk4MS04N2M4ZmEwMjZkYWUiLCJzY29wZSI6WyJjcmVhdGU6cGF0aWVudCIsInJlYWQ6cGF0aWVudF9wcmVzY3JpcHRpb24iXSwiaWF0IjoxNzUxMDY3NDQwLCJleHAiOjE3NTEwODkwNDB9.BHhlWRXUT6mHRmeS1XZ8Oh71Bxjq2AoV7-JltR1HhsIoCvFSQb7JNJhg289cJ3K-b-fanGuXV-AJMa2yybzgQuR4MI3_NGGzLqmXF8rzSBYlZyDFAai8XdrCgP4QdoUEJvdZlHNfMOo6x8T82s242XF_3trccqBDKREnlD3K3DWfT8c7j8qYDEgerU6EVNUJ9iRNHeXm3Pz4IxMxJ7QfgPUBbeSeL4lEIV-8Td2MCOWzzvl3pP5C2yJWPSou2zzAC04ikZN69_fZbiKi52iaweclj5k2Or2-d6dJ8b42yjuVG65TqkQlUKDdbunV0no6SWgVwOqFaZQV5Ak2c2a67g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-organization-secret",
+								"value": "b81999b08cfa1c43a7aa1eb3796bee818c9a359289ab7c30839aca6b875bea3b",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/external/v1/organizations/:organization_id/users/:user_id/patients/:patient_id/prescriptions",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"external",
+								"v1",
+								"organizations",
+								":organization_id",
+								"users",
+								":user_id",
+								"patients",
+								":patient_id",
+								"prescriptions"
+							],
+							"variable": [
+								{
+									"key": "organization_id",
+									"value": "7fa84d2b-26d7-4c71-9b5b-e591eff97e7d"
+								},
+								{
+									"key": "user_id",
+									"value": "8e1c9bab-6614-4723-8981-87c8fa026dae"
+								},
+								{
+									"key": "patient_id",
+									"value": "20b04934-2ce5-4628-bc6e-ea1cd3b729e3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "validate-integration",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImtleTEifQ.eyJvcmdhbml6YXRpb25faWQiOiI3ZmE4NGQyYi0yNmQ3LTRjNzEtOWI1Yi1lNTkxZWZmOTdlN2QiLCJwYXJ0bmVyX2lkIjoidGFja2xpdCIsInVzZXJfaWQiOiI4ZTFjOWJhYi02NjE0LTQ3MjMtODk4MS04N2M4ZmEwMjZkYWUiLCJzY29wZSI6WyJjcmVhdGU6cGF0aWVudCIsInJlYWQ6cGF0aWVudF9wcmVzY3JpcHRpb24iXSwiaWF0IjoxNzQ3NjQ5MzU3LCJleHAiOjE3NDc2NzA5NTd9.eQD6moMNd80rL-F_oPuGDuX6yBL7wK7PjZslf4EWau3PQk-G_-hGzWDY7DSPjfIvSCTBaxYi1z18nIWxq_LSu_S6EKPCvMLzgLVPrnaD40V3cROvKI_7j2rQtvzrs-PBZ7jIsbOcY27Z_yY1vl5rgBZsDZ2ZYlQpu1wcegx3fQRy9tzTKQmW6GaHdvULLrEUkWD5MpVvsnP_Z76bwMzlsOxfX04KLgTnXOmHF6HiD6owqEMoQqGpm57X0I5I3XIPe1Q5s7Y7iN3vanPUbks1zdFdRsLacLBevYifTsaBVUCf1SzH3f4zoo4IyRR0m43jBFFiTtO_mDnW9aV822XScg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-organization-secret",
+								"value": "55e9546cc08b2eb67e3395eb2c9d1d98e9ca6e4c2956a61d6b13ac97fa360aa9",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/external/v1/organizations/:organization_id/validate",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"external",
+								"v1",
+								"organizations",
+								":organization_id",
+								"validate"
+							],
+							"variable": [
+								{
+									"key": "organization_id",
+									"value": "7fa84d2b-26d7-4c71-9b5b-e591eff97e7d"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register partner organization ",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJraWQiOiJac0NvcktUWGo3XC9KY09ST2hNWG9kK3ZiN055VW5TWnlnWXRvUENvVjBmaz0iLCJhbGciOiJSUzI1NiJ9.eyJjdXN0b206YWNjZXNzX3JvbGVzIjoicHJvdmlkZXIiLCJzdWIiOiI4ZTFjOWJhYi02NjE0LTQ3MjMtODk4MS04N2M4ZmEwMjZkYWUiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiY3VzdG9tOm9yZ2FuaXphdGlvbl9pZCI6IjdmYTg0ZDJiLTI2ZDctNGM3MS05YjViLWU1OTFlZmY5N2U3ZCIsImlzcyI6Imh0dHBzOlwvXC9jb2duaXRvLWlkcC5hcC1zb3V0aGVhc3QtMi5hbWF6b25hd3MuY29tXC9hcC1zb3V0aGVhc3QtMl9ZMUJiVDV0UVIiLCJjb2duaXRvOnVzZXJuYW1lIjoiOGUxYzliYWItNjYxNC00NzIzLTg5ODEtODdjOGZhMDI2ZGFlIiwib3JpZ2luX2p0aSI6ImI4YjZiYTlmLTZmYjQtNGVhNC04Yzc4LTM0ZmIxMjRkM2IwYiIsImF1ZCI6IjFkdnYzaHRicDRrc242ZWMxaDdkdnY1cWZpIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3NDcxODg4NzksIm5hbWUiOiJkaW1pdHkgZGVubmlzIiwiZXhwIjoxNzQ3MjE0MDc5LCJpYXQiOjE3NDcxODg4NzksImp0aSI6ImE0OGJiM2ZhLWRjNzMtNGNhZi04YjA5LTM4ODg1MWFiNjc4MCIsImVtYWlsIjoidGhlZHNvdXphaG9tZUBnbWFpbC5jb20ifQ.nqo82MvRYExmUVv3DmM-18b-RnE2-CUVkOiJec5v7GxyX_IkhMnCe_RBG_3143tigDGP2MPBLYqfzOwfEEximnMv5lmsaow-CzhNMfhTru_ky6njj-IluQbJtYWBOeCyY9HGbf74f6hGX86HbwbTMuGovITD_phPqK743WL6vAH2UDlefvSP7mI5rYY6MAOldcn4ww-QH_K2oqeONSRKyhHRxuUwqkNgQTmZV07Vf3KI5YhzfaJokTYi4hDoMAg8Wlopmc_CsXVHOG5tRRbSGhA-Tmz38xrHqfbFqf4_rRVSwvOwSt05iMF4wNVNuaUniecZT_XUO24bBZL6pjHWxQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"organization_name\": \"Childrens Medical\",\n    \"email\": \"kev18284@gmail.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://api.dev.parchmenthealth.io/partner-service/organizations/e4be5310-7762-4af9-8167-557cd030eb8d/partners/optomate/register",
+							"protocol": "https",
+							"host": [
+								"api",
+								"dev",
+								"parchmenthealth",
+								"io"
+							],
+							"path": [
+								"partner-service",
+								"organizations",
+								"e4be5310-7762-4af9-8167-557cd030eb8d",
+								"partners",
+								"optomate",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "PreCheck",
+			"item": [
+				{
+					"name": "precheck",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Ocp-Apim-Subscription-Key",
+								"value": "9d57574223ac46279cb9bcfa1b9f1e8d",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \n    \"Patient\":{  \n       \"NamePrefix\":\"Mr\",\n       \"NameFamily\":\"Family\",\n       \"NameMiddle\":\"\",\n       \"NameGiven\":\"Tom\",\n       \"NameMedicareFamily\": \"FAMILY\",\n       \"NameMedicareGiven\": \"Tom\",\n       \"BirthDate\":\"1928-11-27\",\n       \"Gender\":\"M\",\n       \"IHI\":8003606134490436,\n       \"MedicareNumber\":\"37643856822\",\n       \"DVANumber\":\"\",\n       \"DVAColour\":\"\",\n       \"CTG\": false,\n       \"Phone\":\"0394181800\",\n       \"Mobile\":\"\",\n       \"Email\":\"patient@mailprovider.com\",\n       \"Address1\":\"20 Trenerry Crescent\",\n       \"Address2\":\"\",\n       \"Suburb\":\"ABBOTSFORD\",\n       \"PostCode\":\"3067\",\n       \"State\":\"VIC\",\n       \"HospitalInpatient\": false\n    },\n    \"Prescriber\":{  \n       \"NamePrefix\":\"Mr\",\n       \"NameFamily\":\"Hertz\",\n       \"NameMiddle\":\"\",\n       \"NameGiven\":\"Howard\",\n       \"PrescriberType\":\"M\",\n       \"AHPRA\":\"\",\n       \"PrescriberNo\":\"469242\",\n       \"ProviderNo\":\"2145171X\",\n       \"HPII\":8003611362324166,\n       \"Phone\":\"1300700921\",\n       \"Mobile\":\"0394181800\",\n       \"Fax\":\"0394181800\",\n       \"Email\":\"HowieHertz@sampleclinic.com.au\"\n    },\n    \"Pharmacist\":{  \n       \"NamePrefix\":\"Mr\",\n       \"NameFamily\":\"Lennon\",\n       \"NameMiddle\":\"\",\n       \"NameGiven\":\"George\",\n       \"AHPRA\":\"\",\n       \"HPII\":8003615164841319,\n       \"Username\":\"\"\n    },\n    \"Clinic\":{  \n       \"Name\":\"Super Clinic\",\n       \"HPIO\":8003622207710238,\n       \"Email\":\"email@sampleclinic.com.au\",\n       \"Address1\":\"20 Trenerry Cres\",\n       \"Address2\":\"\",\n       \"Suburb\":\"ABBOTSFORD\",\n       \"PostCode\":\"\",\n       \"State\":\"VIC\"\n    },\n    \"MedicationRequest\":[  \n       {\n                    \"AuthoredOn\": \"2025-02-28T01:09:13\",\n                    \"RepeatInterval\": 0,\n                    \"NumberOfRepeatsAllowed\": 0,\n                    \"PrescriberScriptNumber\": \"18137\",\n                    \"Route\": \"Oral\",\n                    \"AuthorityNumber\": \"0\",\n                    \"TradeName\": \"Amoxicillin 100 mg/mL powder for oral liquid, 20 mL\",\n                    \"GenericName\": \"Amoxicillin 100 mg/mL powder for oral liquid, 20 mL\",\n                    \"Strength\": \"0\",\n                    \"Form\": \" \",\n                    \"PBSCode\": \"\",\n                    \"ManufacturerCode\": \"\",\n                    \"EAN\": \"0\",\n                    \"AMT_MPCode\": 0,\n                    \"AMT_MPPCode\": 26624011000036108,\n                    \"AMT_MPUUCode\": 0,\n                    \"AMT_TPCode\": 0,\n                    \"AMT_TPPCode\": 0,\n                    \"AMT_TPUUCode\": 0,\n                    \"AMT_CTPPCode\": 0,\n                    \"UnitQuantity\": 1,\n                    \"DosageInstruction\": \"xxx\",\n                    \"PatientCategory\": null,\n                    \"ExtempType\": false,\n                    \"ExtempDescription\": \"\"\n                }\n    ]\n }\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://nde-sha-int-apimgt-app-au-c1.azure-api.net/api/PreCheck",
+							"protocol": "https",
+							"host": [
+								"nde-sha-int-apimgt-app-au-c1",
+								"azure-api",
+								"net"
+							],
+							"path": [
+								"api",
+								"PreCheck"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
