@@ -269,7 +269,10 @@
                     "accessToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImtleTEifQ...",
                     "expiresIn": 3600,
                     "tokenType": "Bearer",
-                    "scope": ["create:patient", "read:patient_prescription"]
+                    "scope": [
+                      "create:patient",
+                      "read:patient_prescription"
+                    ]
                   },
                   "timestamp": "2024-01-15T10:30:00.000Z",
                   "requestId": "req_1705312200000_pqr678",
@@ -963,7 +966,11 @@
           "error": {
             "type": "object",
             "description": "RFC 7807 compliant error details",
-            "required": ["type", "title", "detail"],
+            "required": [
+              "type",
+              "title",
+              "detail"
+            ],
             "properties": {
               "type": {
                 "type": "string",
@@ -1158,12 +1165,21 @@
       },
       "Sex": {
         "type": "string",
-        "enum": ["M", "F", "N", "I"],
+        "enum": [
+          "M",
+          "F",
+          "N",
+          "I"
+        ],
         "description": "Patient's sex"
       },
       "DVA_COLOR": {
         "type": "string",
-        "enum": ["gold", "white", "orange"],
+        "enum": [
+          "gold",
+          "white",
+          "orange"
+        ],
         "description": "DVA card color"
       },
       "IndigenousType": {
@@ -1179,13 +1195,26 @@
       },
       "AU_STATE": {
         "type": "string",
-        "enum": ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"],
+        "enum": [
+          "NSW",
+          "VIC",
+          "QLD",
+          "WA",
+          "SA",
+          "TAS",
+          "ACT",
+          "NT"
+        ],
         "description": "Australian state or territory"
       },
       "PatientData": {
         "type": "object",
         "description": "Patient creation response data",
-        "required": ["external_patient_id", "parchment_patient_id", "url"],
+        "required": [
+          "external_patient_id",
+          "parchment_patient_id",
+          "url"
+        ],
         "properties": {
           "external_patient_id": {
             "type": "string",
@@ -1256,7 +1285,12 @@
           "sex": {
             "type": "string",
             "description": "User's sex",
-            "enum": ["M", "F", "I", "O"],
+            "enum": [
+              "M",
+              "F",
+              "I",
+              "O"
+            ],
             "example": "F"
           },
           "email": {
@@ -1275,9 +1309,15 @@
             "description": "List of access roles for the user",
             "items": {
               "type": "string",
-              "enum": ["admin", "provider"]
+              "enum": [
+                "admin",
+                "provider"
+              ]
             },
-            "example": ["admin", "provider"]
+            "example": [
+              "admin",
+              "provider"
+            ]
           },
           "hpii_number": {
             "type": "string",
@@ -1287,7 +1327,13 @@
           "prescriber_type": {
             "type": "string",
             "description": "Prescriber type (required if role includes 'provider')",
-            "enum": ["M", "N", "D", "P", "T"],
+            "enum": [
+              "M",
+              "N",
+              "D",
+              "P",
+              "T"
+            ],
             "example": "M"
           },
           "prescriber_number": {
@@ -1330,7 +1376,11 @@
       "UserData": {
         "type": "object",
         "description": "User creation response data",
-        "required": ["external_user_id", "parchment_user_id", "url"],
+        "required": [
+          "external_user_id",
+          "parchment_user_id",
+          "url"
+        ],
         "properties": {
           "external_user_id": {
             "type": "string",
@@ -1372,14 +1422,19 @@
       },
       "TokenRequest": {
         "type": "object",
-        "required": ["grantType", "scope"],
+        "required": [
+          "grantType",
+          "scope"
+        ],
         "properties": {
           "grantType": {
             "type": "string",
             "description": "Type of grant for OAuth2 authentication",
             "example": "client_credentials",
             "default": "client_credentials",
-            "enum": ["client_credentials"]
+            "enum": [
+              "client_credentials"
+            ]
           },
           "scope": {
             "type": "array",
@@ -1393,18 +1448,27 @@
                 "read:patient_prescription",
                 "create:user",
                 "read:user",
+                "read:users",
                 "update:user",
                 "delete:user"
               ]
             },
-            "example": ["create:patient", "read:patient_prescription"]
+            "example": [
+              "create:patient",
+              "read:patient_prescription"
+            ]
           }
         }
       },
       "TokenData": {
         "type": "object",
         "description": "Authentication token data",
-        "required": ["accessToken", "expiresIn", "tokenType", "scope"],
+        "required": [
+          "accessToken",
+          "expiresIn",
+          "tokenType",
+          "scope"
+        ],
         "properties": {
           "accessToken": {
             "type": "string",
@@ -1427,7 +1491,10 @@
             "items": {
               "type": "string"
             },
-            "example": ["create:patient", "read:patient_prescription"]
+            "example": [
+              "create:patient",
+              "read:patient_prescription"
+            ]
           }
         }
       },
@@ -1455,62 +1522,143 @@
       "Prescription": {
         "type": "object",
         "properties": {
-          "url": { "type": "string", "format": "uri" },
-          "scid": { "type": "string" },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "scid": {
+            "type": "string"
+          },
           "status": {
             "type": "string",
-            "enum": ["Active", "Ceased", "Cancelled"],
+            "enum": [
+              "Active",
+              "Ceased",
+              "Cancelled"
+            ],
             "description": "Current status of the prescription"
           },
-          "created_date": { "type": "string", "format": "date-time" },
-          "item_name": { "type": "string" },
-          "quantity": { "type": "string" },
-          "number_of_repeats_authorised": { "type": "string" },
-          "repeat_intervals": { "type": "string" },
-          "pbs_code": { "type": "string" },
-          "item_strength": { "type": "string" },
-          "item_form": { "type": "string" },
-          "route_administration": { "type": "string" },
-          "pbsdva_authority_number": { "type": "string" },
-          "phone_approval_authority_number": { "type": "string" },
-          "schedule_number": { "type": "string" },
-          "private_prescription": { "type": "boolean" },
-          "emergency_supply": { "type": "boolean" },
-          "brand_substitution_not_allowed": { "type": "boolean" },
-          "reason_for_prescribing": { "type": "string" },
-          "patient_instructions": { "type": "string" },
-          "doctor_notes": { "type": "string" },
-          "pharmacy_name": { "type": "string" },
-          "regulation_24": { "type": "boolean" },
-          "controlled_substance_reference": { "type": "string" },
-          "unusual_dose_flag": { "type": "boolean" },
-          "unusual_qty_flag": { "type": "boolean" },
-          "my_sl_consent": { "type": "boolean" },
-          "send_to_pharmacy": { "type": "string" },
-          "unlisted_item_repat_authority": { "type": "boolean" },
-          "prescriber_script_number": { "type": "string" }
+          "created_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "item_name": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "number_of_repeats_authorised": {
+            "type": "string"
+          },
+          "repeat_intervals": {
+            "type": "string"
+          },
+          "pbs_code": {
+            "type": "string"
+          },
+          "item_strength": {
+            "type": "string"
+          },
+          "item_form": {
+            "type": "string"
+          },
+          "route_administration": {
+            "type": "string"
+          },
+          "pbsdva_authority_number": {
+            "type": "string"
+          },
+          "phone_approval_authority_number": {
+            "type": "string"
+          },
+          "schedule_number": {
+            "type": "string"
+          },
+          "private_prescription": {
+            "type": "boolean"
+          },
+          "emergency_supply": {
+            "type": "boolean"
+          },
+          "brand_substitution_not_allowed": {
+            "type": "boolean"
+          },
+          "reason_for_prescribing": {
+            "type": "string"
+          },
+          "patient_instructions": {
+            "type": "string"
+          },
+          "doctor_notes": {
+            "type": "string"
+          },
+          "pharmacy_name": {
+            "type": "string"
+          },
+          "regulation_24": {
+            "type": "boolean"
+          },
+          "controlled_substance_reference": {
+            "type": "string"
+          },
+          "unusual_dose_flag": {
+            "type": "boolean"
+          },
+          "unusual_qty_flag": {
+            "type": "boolean"
+          },
+          "my_sl_consent": {
+            "type": "boolean"
+          },
+          "send_to_pharmacy": {
+            "type": "string"
+          },
+          "unlisted_item_repat_authority": {
+            "type": "boolean"
+          },
+          "prescriber_script_number": {
+            "type": "string"
+          }
         }
       },
       "Patient": {
         "type": "object",
         "properties": {
-          "given_name": { "type": "string" },
-          "family_name": { "type": "string" },
-          "date_of_birth": { "type": "string", "format": "date-time" },
-          "partner_patient_id": { "type": "string" }
+          "given_name": {
+            "type": "string"
+          },
+          "family_name": {
+            "type": "string"
+          },
+          "date_of_birth": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "partner_patient_id": {
+            "type": "string"
+          }
         }
       },
       "Prescriber": {
         "type": "object",
         "properties": {
-          "given_name": { "type": "string" },
-          "family_name": { "type": "string" }
+          "given_name": {
+            "type": "string"
+          },
+          "family_name": {
+            "type": "string"
+          }
         }
       },
       "PatientPrescriptionsData": {
         "type": "object",
         "description": "Patient prescription data",
-        "required": ["patient", "prescriber", "prescriptions"],
+        "required": [
+          "patient",
+          "prescriber",
+          "prescriptions"
+        ],
         "properties": {
           "patient": {
             "$ref": "#/components/schemas/Patient"
