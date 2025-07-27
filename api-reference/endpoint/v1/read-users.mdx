@@ -80,11 +80,11 @@ openapi: "GET /v1/organizations/{organization_id}/users"
 ```json
 {
   "success": false,
-  "statusCode": 403,
+  "statusCode": 401,
   "error": {
-    "type": "https://parchment.health/errors/insufficient-scope",
-    "title": "Insufficient permissions",
-    "detail": "This operation requires the 'READ_USER' scope"
+    "type": "https://parchment.health/errors/authentication-required",
+    "title": "Unauthorized",
+    "detail": "Insufficient scope"
   },
   "timestamp": "2024-01-25T09:15:00.000Z",
   "requestId": "req_1706171700000_mno345"
@@ -128,8 +128,7 @@ All responses include these standard fields:
 | ----- | --------------------- | -------------------------------------------------- |
 | `200` | OK                    | Users retrieved successfully (including empty list) |
 | `400` | Bad Request           | Invalid request format or missing parameters       |
-| `401` | Unauthorized          | Authentication required or token invalid           |
-| `403` | Forbidden             | Insufficient permissions (missing READ_USER scope) |
+| `401` | Unauthorized          | Authentication required or token invalid or scope invalid         |
 | `500` | Internal Server Error | Unexpected server error                            |
 
 ## Error Handling

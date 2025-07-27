@@ -16,11 +16,12 @@ openapi: "GET /v1/organizations/{organization_id}/users/{user_id}"
     "email": "darlene.cameron@example.com",
     "full_name": "Dr Darlene Cameron",
     "access_roles": ["admin", "provider"],
-    "title": "Dr",
-    "erx_entity_id": "erx_456789012",
     "provider_details": {
+      "title": "Dr",
       "hpii_number": "8003614900029560",
+      "erx_entity_id": "F3WFX",
       "prescriber_number": "1234567",
+      "provider_number": "123456",
       "prescriber_type": "M",
       "ahpra_number": "1234567896321",
       "qualifications": "MBBS",
@@ -117,11 +118,11 @@ openapi: "GET /v1/organizations/{organization_id}/users/{user_id}"
 ```json
 {
   "success": false,
-  "statusCode": 403,
+  "statusCode": 401,
   "error": {
-    "type": "https://parchment.health/errors/insufficient-scope",
-    "title": "Insufficient permissions",
-    "detail": "This operation requires the 'READ_USER' scope"
+    "type": "https://parchment.health/errors/authentication-required",
+    "title": "Unauthorized",
+    "detail": "Insufficient scope"
   },
   "timestamp": "2024-01-25T09:15:00.000Z",
   "requestId": "req_1706171700000_mno345"
@@ -193,8 +194,7 @@ All responses include these standard fields:
 | ----- | --------------------- | ------------------------------------------------ |
 | `200` | OK                    | User details retrieved successfully              |
 | `400` | Bad Request           | Invalid request format or missing parameters     |
-| `401` | Unauthorized          | Authentication required or token invalid         |
-| `403` | Forbidden             | Insufficient permissions (missing READ_USER scope) |
+| `401` | Unauthorized          | Authentication required or token invalid or scope invalid        |
 | `404` | Not Found             | User not found                                   |
 | `500` | Internal Server Error | Unexpected server error                          |
 
