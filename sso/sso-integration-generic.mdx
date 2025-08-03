@@ -1,5 +1,5 @@
 ---
-title: "Partner SSO Implementation"
+title: "Partner SSO Implementation (recommended)"
 description: "Server-to-server SSO implementation guide for partners"
 ---
 
@@ -12,13 +12,27 @@ This guide covers implementing server-to-server SSO authentication to allow your
 - Valid partner credentials (partner_id, partner_secret, organization_id, organization_secret)
 - User must exist in Parchment, create either via Parchment portal or via `/organizations/{organizationId}/users` API
 
+
+
+## Setup 
+1. Signup to Parchment via Portal
+2. Setup Organisation
+3. Setup Partner integration using one of the Partner tiles 
+4. Copy the credentials into your system. 
+
+**Note:** If you are not using the create-user API you will need a way to manually capture the Parchment `user_id` of the user, in your system. 
+
 ## Implementation Steps
 
 ### 1. Initiate SSO Token
 
 Make a server-to-server API call to generate an SSO token:
 
-**Endpoint:** `POST /v1/sso`
+> 🚀 **API Endpoint**
+> 
+> ```
+> POST /v1/sso
+> ```
 
 **Headers:**
 - `x-partner-id`: Your partner ID
@@ -38,7 +52,7 @@ Make a server-to-server API call to generate an SSO token:
 }
 ```
 
-2. If you want to go to patients new prescription page
+2. If you want to directly prescribe
 
 ```json
 {
@@ -58,13 +72,14 @@ Make a server-to-server API call to generate an SSO token:
 }
 ```
 
-### 2. Redirect User
+### 2. Open Parchment Portal
 
-Redirect the user's browser to the `redirect_url` from the response:
+Create a button to open Parchment Portal in a new tab:
 
-```javascript
-// Example implementation
-window.location.href = response.data.redirect_url;
+```html
+<button onclick="window.open(response.data.redirect_url, '_blank')">
+  Prescribe
+</button>
 ```
 
 ### 3. User Authentication
@@ -80,7 +95,7 @@ window.location.href = response.data.redirect_url;
 - Generate new tokens for each SSO attempt
 
 ### Server-Side Only
-- **Never expose partner credentials to client-side code**
+- 🚨**Never expose partner credentials to client-side code**
 - SSO token generation must happen on your backend server
 - Only redirect URLs should be sent to the client
 

@@ -15,7 +15,11 @@
         "groups": [
           {
             "group": "Get Started",
-            "pages": ["introduction", "development", "docs/faq"]
+            "pages": [
+              "introduction",
+              "development",
+              "docs/faq"
+            ]
           }
         ]
       },
@@ -24,7 +28,9 @@
         "groups": [
           {
             "group": "API Documentation",
-            "pages": ["api-reference/introduction"]
+            "pages": [
+              "api-reference/introduction"
+            ]
           },
           {
             "group": "Authentication",
@@ -56,6 +62,12 @@
       {
         "tab": "Single Sign-On (SSO)",
         "groups": [
+          {
+            "group": "SSO Integration",
+            "pages": [
+              "sso/sso-introduction"
+            ]
+          },
           {
             "group": "SSO Integration",
             "pages": [
