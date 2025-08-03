@@ -1,82 +1,175 @@
 ---
-title: SSO Integration (generic)
+title: "Partner SSO Implementation"
+description: "Server-to-server SSO implementation guide for partners"
 ---
 
-Parchment Health supports **SAML 2.0-based Single Sign-On (SSO)**. This guide is for IT administrators or identity provider (IdP) teams who want to integrate with our platform to enable secure, seamless user authentication.
+# Partner SSO Implementation Guide
 
----
+This guide covers implementing server-to-server SSO authentication to allow your users to seamlessly access Parchment Portal without re-entering credentials.
 
-## Overview
+## Prerequisites
 
-- **Protocol**: SAML 2.0
-- **Supported IdPs**: Any that support SAML 2.0 (e.g. Azure AD, Okta, Ping Identity, Google Workspace, etc.)
-- **Flow**: SP-initiated login only
+- Valid partner credentials (partner_id, partner_secret, organization_id, organization_secret)
+- User must exist in Parchment, create either via Parchment portal or via `/organizations/{organizationId}/users` API
 
----
+## Implementation Steps
 
-## SAML Configuration
+### 1. Initiate SSO Token
 
-Set up a new **SAML 2.0 application** in your identity provider with the following details:
+Make a server-to-server API call to generate an SSO token:
 
-### Assertion Consumer Service (ACS) URL
+**Endpoint:** `POST /sso`
 
-| Environment | ACS URL                                               |
-| ----------- | ----------------------------------------------------- |
-| Development | `https://auth-dev.parchment.health/saml2/idpresponse` |
-| Production  | `https://auth.parchment.health/saml2/idpresponse`     |
+**Headers:**
+- `x-partner-id`: Your partner ID
+- `x-partner-secret`: Your partner secret
+- `x-organization-id`: Target organization ID
+- `x-organization-secret`: Organization secret
+- `x-user-id`: Parchment user ID to authenticate
+- `Content-Type`: application/json
 
----
+**Request Body:**
 
-### Entity ID / Audience URI
+1. If you want to go to patient profile
 
-| Environment | Entity ID (Audience URI)                         |
-| ----------- | ------------------------------------------------ |
-| Development | `urn:amazon:cognito:sp:ap-southeast-2_Y1BbT5tQR` |
-| Production  | Provided upon successful DEV environment testing |
+```json
+{
+  "redirect_path": "/dashboard/patients/1234-5678-3456-2345"
+}
+```
 
-> You can request your production Entity ID after testing is complete.
+2. If you want to go to patients new prescription page
 
----
+```json
+{
+  "redirect_path": "/dashboard/patients/1234-5678-3456-2345/prescriptions"
+}
+```
 
-### Required Attributes
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "sso_token": "eyJ...",
+    "redirect_url": "https://portal.parchment.health/auth/sso?token=eyJ...&redirect=%2Fdashboard%2Fpatients%2F...",
+    "expires_in": 300
+  }
+}
+```
 
-The following attributes must be included in the SAML assertion:
+### 2. Redirect User
 
-| Attribute Name | Description                     |
-| -------------- | ------------------------------- |
-| `user_id`      | Unique user identifier (string) |
-| `email`        | Email address                   |
-| `name`         | Full name (first + last)        |
-| `given_name`   | First name                      |
-| `family_name`  | Last name                       |
+Redirect the user's browser to the `redirect_url` from the response:
 
-> ⚠️ All attributes are **case-sensitive** and must be present in the SAML response.
+```javascript
+// Example implementation
+window.location.href = response.data.redirect_url;
+```
 
----
+### 3. User Authentication
 
-## Send configuration to Parchment
+- User is automatically authenticated in Parchment Portal
+- After successful authentication ,user is redirected to the specified `redirect_path`
+- Session is established for the user's Parchment account
 
-Once you have configured the SAML integration, send the following to Parchment support:
+## Important Security Notes
 
-- SAML metadata file (XML)
+### Token Expiry
+- SSO tokens expire in 5 minutes
+- Generate new tokens for each SSO attempt
 
-or
+### Server-Side Only
+- **Never expose partner credentials to client-side code**
+- SSO token generation must happen on your backend server
+- Only redirect URLs should be sent to the client
 
-- SAML metadata URL
+### User Validation
+- Ensure the user_id corresponds to a valid user in your system
+- Verify user permissions before generating SSO tokens
+- Log all SSO attempts for audit purposes
 
----
+## Error Handling
 
-## Testing & Going Live
+### Common Error Responses
 
-1. **Set up** the SAML integration using the development ACS URL and Entity ID.
-2. **Test** SSO by initiating login from the Parchment platform.
-3. Once successful, contact [hello@parchment.health](mailto:hello@parchment.health) to:
-   - Confirm your test results
-   - Receive your **production Entity ID**
-   - Finalize production access
+**400 Bad Request:**
+```json
+{
+  "success": false,
+  "error": {
+    "type": "https://parchment.health/errors/invalid-request",
+    "title": "Invalid request",
+    "detail": "Missing required headers: x-user-id"
+  }
+}
+```
 
----
+**401 Unauthorized:**
+```json
+{
+  "success": false,
+  "error": {
+    "type": "https://parchment.health/errors/authentication-required",
+    "title": "Unauthorized",
+    "detail": "Invalid partner credentials"
+  }
+}
+```
+
+### Error Handling Best Practices
+
+- Always validate API responses before redirecting users
+- Implement fallback authentication method if SSO fails
+- Display user-friendly error messages
+- Log errors for troubleshooting
+
+## Implementation Example
+
+```javascript
+// Backend server endpoint
+app.post('/sso-login-endpoint-in-your-backend', async (req, res) => {
+  try {
+    const { userId, redirectPath } = req.body;
+    
+    // Validate user permissions in your system
+    if (!isUserAuthorized(userId)) {
+      return res.status(403).json({ error: 'User not authorized' });
+    }
+    
+    // Generate SSO token
+    const response = await fetch('https://api.parchment.health/external/v1/sso', {
+      method: 'POST',
+      headers: {
+        'x-partner-id': process.env.PARCHMENT_PARTNER_ID,
+        'x-partner-secret': process.env.PARCHMENT_PARTNER_SECRET,
+        'x-organization-id': process.env.PARCHMENT_ORG_ID,
+        'x-organization-secret': process.env.PARCHMENT_ORG_SECRET,
+        'x-user-id': userId,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        redirect_path: redirectPath || '/dashboard'
+      })
+    });
+    
+    const ssoData = await response.json();
+    
+    if (ssoData.success) {
+      res.json({ redirect_url: ssoData.data.redirect_url });
+    } else {
+      res.status(response.status).json({ error: 'SSO token generation failed' });
+    }
+    
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+```
 
 ## Support
 
-If you encounter issues or need help, please contact us at [hello@parchment.health](mailto:hello@parchment.health)
+For implementation assistance or troubleshooting:
+- Review API logs for detailed error messages
+- Contact Parchment support with specific error responses
+- Include request/response examples when reporting issues
