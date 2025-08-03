@@ -138,7 +138,7 @@ app.post('/sso-login-endpoint-in-your-backend', async (req, res) => {
     }
     
     // Generate SSO token
-    const response = await fetch('https://api.parchment.health/external/v1/sso', {
+    const response = await fetch('https://api.parchmenthealth.io/external/v1/sso', {
       method: 'POST',
       headers: {
         'x-partner-id': process.env.PARCHMENT_PARTNER_ID,
