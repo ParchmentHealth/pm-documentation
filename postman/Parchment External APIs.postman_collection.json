@@ -94,6 +94,90 @@
 					"response": []
 				},
 				{
+					"name": "SSO",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Save token to collection variables when successful",
+									"if (pm.response.code === 200) {",
+									"    const responseBody = pm.response.json();",
+									"    const accessToken = responseBody.access_token;",
+									"    const expiresIn = responseBody.expires_in || 21600; // Default 6 hours",
+									"    const expiry = Math.floor(Date.now() / 1000) + expiresIn;",
+									"    ",
+									"    pm.collectionVariables.set('accessToken', accessToken);",
+									"    pm.collectionVariables.set('tokenExpiry', expiry);",
+									"    ",
+									"    console.log('Token saved to collection variables');",
+									"    console.log('Access Token:', accessToken);",
+									"    console.log('Expires at:', new Date(expiry * 1000).toISOString());",
+									"} else {",
+									"    console.log('Failed to generate token. Status:', pm.response.code);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-organization-id",
+								"value": "{{organizationId}}",
+								"type": "text"
+							},
+							{
+								"key": "x-organization-secret",
+								"value": "{{organizationSecret}}",
+								"type": "text"
+							},
+							{
+								"key": "x-partner-secret",
+								"value": "{{partnerSecret}}",
+								"type": "text"
+							},
+							{
+								"key": "x-partner-id",
+								"value": "{{partnerId}}",
+								"type": "text"
+							},
+							{
+								"key": "x-user-id",
+								"value": "{{userId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"redirect_path\": \"/dashboard/patients/f8ac85fd-2a24-402f-a227-756c8357cbe4\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/external/v1/sso",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"external",
+								"v1",
+								"sso"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Create Patient",
 					"request": {
 						"auth": {
