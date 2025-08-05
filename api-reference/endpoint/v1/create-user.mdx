@@ -230,7 +230,7 @@ async function createUser(userData) {
 | `given_name`     | string   | Always                                                  | User's given name                                |
 | `family_name`    | string   | Always                                                  | User's family name                               |
 | `date_of_birth`  | string   | Always                                                  | Date of birth in YYYY-MM-DD format              |
-| `sex`            | string   | Always                                                  | Sex (M/F/I/O)                                    |
+| `sex`            | string   | Always                                                  | Sex                                   |
 | `email`                    | string   | User's email address                  |
 | `phone`                    | string   | Australian phone number               |
 | `hpii_number`    | string   | When `access_roles` includes "provider"                 | Healthcare Provider Individual Identifier       |
@@ -242,7 +242,7 @@ async function createUser(userData) {
 
 | Field                      | Type     | Description                           |
 | -------------------------- | -------- | ------------------------------------- |
-| `access_roles`             | array    | User roles (admin, provider)          |
+| `access_roles`             | array    | User roles          |
 | `title`                    | string   | Professional title                    |
 | `provider_number`          | string   | Medicare provider number              |
 | `ahpra_number`             | string   | AHPRA registration number             |
@@ -280,12 +280,22 @@ The `phone` field accepts Australian phone numbers in the following formats:
 - **Provider Number**: 1-15 characters
 - **Qualifications**: 1-255 characters
 
+
+### Sex
+
+- `M` (Male)
+- `F` (Female)
+- `I` (Indeterminate)
+- `N` (Not-stated)
+
 ### Access Roles
 
 Valid values for `access_roles` array:
 
-- `admin` - Administrative access
-- `provider` - Healthcare provider access
+- `admin` (Administrative access)
+- `provider` (Healthcare provider access)
+- `receptionist` (Can read patient demographics)
+- `rx_reader` (Can reissue scripts)
 
 When `provider` role is included, additional fields become required.
 
@@ -293,11 +303,16 @@ When `provider` role is included, additional fields become required.
 
 Valid values for `prescriber_type` when role is "provider":
 
-- `M` - Medical practitioner
-- `N` - Nurse practitioner  
-- `D` - Dentist
-- `P` - Podiatrist
-- `T` - Trainee (prescriber_number not required)
+
+
+- `M` (Medical Practitioner)
+- `E` (Eye/Optometrist)
+- `U` (Nurse) 
+- `F` (Midwife)
+- `D` (Dentist)
+- `V` (Vetinarian)
+- `T` (PodiatrisT)
+- `C` (Pharmacist)
 
 ## Integration Notes
 
