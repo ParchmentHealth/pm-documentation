@@ -53,7 +53,8 @@
             "pages": [
               "api-reference/endpoint/v1/create-user",
               "api-reference/endpoint/v1/read-user",
-              "api-reference/endpoint/v1/read-users"
+              "api-reference/endpoint/v1/read-users",
+              "api-reference/endpoint/v1/update-user"
             ]
           }
         ]
