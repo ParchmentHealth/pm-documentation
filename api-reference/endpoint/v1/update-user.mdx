@@ -214,9 +214,7 @@ Valid values for `prescriber_type`:
 
 ```json
 {
-  "given_name": "Darlene",
-  "family_name": "Cameron-Smith",
-  "phone": "0412345678"
+  "full_name": "Darlene Scott"
 }
 ```
 
@@ -225,6 +223,8 @@ Valid values for `prescriber_type`:
 ```json
 {
   "provider_details": {
+    "given_name": "Darlene",
+    "family_name": "Scott",
     "prescriber_type": "M",
     "prescriber_number": "1234567",
     "qualifications": "MBBS, FRACGP",
@@ -238,17 +238,18 @@ Valid values for `prescriber_type`:
 
 ```json
 {
-  "given_name": "Darlene",
-  "family_name": "Cameron",
-  "date_of_birth": "1969-10-02",
-  "sex": "F",
-  "provider_details": {
-    "title": "Dr",
-    "prescriber_type": "M",
-    "prescriber_number": "1234567",
-    "qualifications": "MBBS, FRACGP",
-    "ahpra_number": "MED0001234567",
-    "hospital_provider_number": "H123456"
+    "full_name": "Darlene Scott",
+    "provider_details": {
+      "given_name": "Darlene",
+      "family_name": "Cameron",
+      "date_of_birth": "1969-10-02",
+      "sex": "F",
+      "title": "Dr",
+      "prescriber_type": "M",
+      "prescriber_number": "1234567",
+      "qualifications": "MBBS, FRACGP",
+      "ahpra_number": "MED0001234567",
+      "hospital_provider_number": "H123456"
   }
 }
 ```
