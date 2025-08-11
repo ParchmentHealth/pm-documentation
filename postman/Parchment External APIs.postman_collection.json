@@ -34,7 +34,8 @@
 									"    console.log('Failed to generate token. Status:', pm.response.code);",
 									"}"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -72,7 +73,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"grantType\": \"client_credentials\",\n    \"scope\": [\"create:patient\", \"read:patient_prescription\"]\n}",
+							"raw": "{\n    \"grantType\": \"client_credentials\",\n    \"scope\": [\"create:patient\", \"read:patient_prescription\",\"create:user\",\"read:user\",\"read:users\", \"update:user\"]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -156,7 +157,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"redirect_path\": \"/dashboard/patients/f8ac85fd-2a24-402f-a227-756c8357cbe4\"\n}",
+							"raw": "{\n    \"redirect_path\": \"/dashboard/patients\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -324,13 +325,9 @@
 							}
 						},
 						"url": {
-							"raw": "https://api.dev.parchmenthealth.io/external/v1/organizations/{{organizationId}}/users/",
-							"protocol": "https",
+							"raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/",
 							"host": [
-								"api",
-								"dev",
-								"parchmenthealth",
-								"io"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"external",
@@ -356,13 +353,9 @@
 							}
 						],
 						"url": {
-							"raw": "https://api.dev.parchmenthealth.io/external/v1/organizations/{{organizationId}}/users/",
-							"protocol": "https",
+							"raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/",
 							"host": [
-								"api",
-								"dev",
-								"parchmenthealth",
-								"io"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"external",
@@ -388,13 +381,9 @@
 							}
 						],
 						"url": {
-							"raw": "https://api.dev.parchmenthealth.io/external/v1/organizations/{{organizationId}}/users/:userId",
-							"protocol": "https",
+							"raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/:userId",
 							"host": [
-								"api",
-								"dev",
-								"parchmenthealth",
-								"io"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"external",
@@ -407,7 +396,7 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": ""
+									"value": "49ae1438-b091-70b2-c67c-5704929fd340"
 								}
 							]
 						}
@@ -422,7 +411,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImtleTEifQ.eyJvcmdhbml6YXRpb25faWQiOiI3ZmE4NGQyYi0yNmQ3LTRjNzEtOWI1Yi1lNTkxZWZmOTdlN2QiLCJwYXJ0bmVyX2lkIjoidGFja2xpdCIsInVzZXJfaWQiOiI4ZTFjOWJhYi02NjE0LTQ3MjMtODk4MS04N2M4ZmEwMjZkYWUiLCJzY29wZSI6WyJjcmVhdGU6cGF0aWVudCIsInJlYWQ6cGF0aWVudF9wcmVzY3JpcHRpb24iLCJjcmVhdGU6dXNlciJdLCJpYXQiOjE3NTIwNDkzOTcsImV4cCI6MTc1MjA3MDk5N30.EkSwWeb3FnnPc4nz4RcutXc8_bbDAv409Q5-7hxVFFeNjOLPMy4tqglPVjn_7pARes0hUSDEc0lAzcXGGi0ll9A4NBS6AXFpr0AcwbQHcyzaHqr_BQE9h_j_mmzsUte_JxmqyRNbdElgKIIgEjatIhkMmIPeFhdzsLMNjnWRfatiw_Pf19Qzr-hweqaobknsDyBEMZzOxFZu5jdEFd-h6f-EWE4lt6_ip1H6pWSYsqL_wKhUgI6-0nD-Ht9Dc2Du1GoKFogTT05XoWDHY5iFL1TF1Rfg59vdjt1GLHajAamXrLl_ITkJTd2lBogo3jOJ75I4Kha-JGIij51EGG6X-w",
+				"value": "{{accessToken}}",
 				"type": "string"
 			}
 		]

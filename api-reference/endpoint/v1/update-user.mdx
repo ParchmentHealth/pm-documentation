@@ -161,13 +161,8 @@ All responses include these standard fields:
 
 | Field           | Type   | Required | Description                               |
 | --------------- | ------ | -------- | ----------------------------------------- |
-| `given_name`    | string | No       | User's given name                        |
-| `family_name`   | string | No       | User's family name                       |
-| `date_of_birth` | string | No       | Date of birth in YYYY-MM-DD format       |
-| `sex`           | string | No       | Sex (M/F/I/N)                           |
-| `phone`         | string | No       | Phone number                            |
-| `title`         | string | No       | Professional title                       |
-| `hpii_number`   | string | No       | Healthcare Provider Individual Identifier |
+| `full_name`     | string | No       | User's given name                         |
+
 
 ### Provider Details
 
@@ -175,6 +170,10 @@ When updating provider-specific information, use the `provider_details` object:
 
 | Field                      | Type   | Required When                              | Description                     |
 | -------------------------- | ------ | ------------------------------------------ | ------------------------------- |
+| `given_name`               | string | No                                         | Prescribers's given name        |
+| `family_name`              | string | No                                         | Prescribers's family name                       |
+| `date_of_birth`            | string | No                                         | Date of birth in YYYY-MM-DD format       |
+| `sex`                      | string | No                                         | Sex (M/F/I/N)                           |
 | `hpii_number`              | string | No                                         | Healthcare Provider Identifier  |
 | `phone`                    | string | No                                         | Provider phone number           |
 | `title`                    | string | No                                         | Professional title              |
