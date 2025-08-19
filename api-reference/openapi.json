@@ -293,17 +293,21 @@
                 },
                 "example": {
                   "success": false,
-                  "statusCode": 400,
+                  "statusCode": 422,
                   "error": {
-                    "type": "https://parchment.health/errors/invalid-request",
-                    "title": "Bad request",
-                    "detail": "Invalid grant type or scope provided."
+                    "type": "https://parchment.health/errors/validation-error",
+                    "title": "Validation failed",
+                    "detail": "There were some problems with your input.",
+                    "validation": [
+                      {
+                        "field": "scope",
+                        "message": "Invalid enum value. Expected 'create:patient' | 'read:patient' | 'update:patient' | 'delete:patient' | 'read:patient_prescription' | 'create:user' | 'read:user' | 'read:users' | 'update:user' | 'delete:user', received 'remove:patient'",
+                        "code": "VALIDATION_ERROR"
+                      }
+                    ]
                   },
-                  "timestamp": "2024-01-15T10:30:00.000Z",
-                  "requestId": "req_1705312200000_stu901",
-                  "meta": {
-                    "apiVersion": "1.0"
-                  }
+                  "timestamp": "2025-08-19T10:11:57.268Z",
+                  "requestId": "1-68a44ded-5c4fdd75455250d518c3bab2"
                 }
               }
             }
