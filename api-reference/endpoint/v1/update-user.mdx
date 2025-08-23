@@ -4,7 +4,7 @@ openapi: "PUT /v1/organizations/{organization_id}/users/{user_id}"
 
 ## Integration Notes
 
-1. **No role udpates**: `access_roles`, `email` updates will be ignored.
+1. **No role updates**: `access_roles`, `email` attributes will be ignored.
 2. **Partial Updates**: Only include fields you want to update. Omitted fields will not be modified.
 3. **Provider Updates**: Use the `provider_details` object for provider-specific fields to ensure proper validation.
 4. **Validation Dependencies**: Be aware of field dependencies, especially for provider details.
@@ -12,7 +12,108 @@ openapi: "PUT /v1/organizations/{organization_id}/users/{user_id}"
 6. **Request ID**: Always log the `requestId` for debugging support requests.
 
 
-## Response Examples
+
+## Request
+
+### Update Basic User Information
+
+```json
+{
+  "full_name": "Darlene Scott"
+}
+```
+
+### Update Provider Details
+
+```json
+{
+  "provider_details": {
+    "given_name": "Darlene",
+    "family_name": "Scott",
+    "prescriber_type": "M",
+    "prescriber_number": "1234567",
+    "qualifications": "MBBS, FRACGP",
+    "ahpra_number": "MED0001234567",
+    "provider_number": "123456789"
+  }
+}
+```
+
+### Update Both User and Provider Information
+
+```json
+{
+    "full_name": "Darlene Scott",
+    "provider_details": {
+      "given_name": "Darlene",
+      "family_name": "Cameron",
+      "date_of_birth": "1969-10-02",
+      "sex": "F",
+      "title": "Dr",
+      "prescriber_type": "M",
+      "prescriber_number": "1234567",
+      "qualifications": "MBBS, FRACGP",
+      "ahpra_number": "MED0001234567",
+      "hospital_provider_number": "H123456"
+  }
+}
+```
+
+
+### User Fields
+
+| Field           | Type   | Required | Description                               |
+| --------------- | ------ | -------- | ----------------------------------------- |
+| `full_name`     | string | No       | User's given name                         |
+
+
+### Provider Details
+
+When updating provider-specific information, use the `provider_details` object:
+
+| Field                      | Type   | Required When                              | Description                     |
+| -------------------------- | ------ | ------------------------------------------ | ------------------------------- |
+| `given_name`               | string | No                                         | Prescriber's given name         |
+| `family_name`              | string | No                                         | Prescriber's family name                        |
+| `date_of_birth`            | string | No                                         | Date of birth in YYYY-MM-DD format       |
+| `sex`                      | string | No                                         | Sex (M/F/I/N)                           |
+| `hpii_number`              | string | No                                         | Healthcare Provider Identifier  |
+| `phone`                    | string | No                                         | Provider phone number           |
+| `title`                    | string | No                                         | Professional title              |
+| `prescriber_number`        | string | When prescriber_type is not 'T' (podiatrist) | 7-character prescriber number |
+| `provider_number`          | string | No                                         | 9-character provider number     |
+| `prescriber_type`          | string | No                                         | Prescriber type (M/N/D/P/T)    |
+| `ahpra_number`             | string | No                                         | AHPRA registration number       |
+| `qualifications`           | string | When prescriber_type is provided          | Professional qualifications    |
+| `hospital_provider_number` | string | No                                         | Hospital provider number        |
+
+### Validation Rules
+
+1. **Prescriber Number**: Must be exactly 7 characters when provided
+2. **Provider Number**: Must be exactly 9 characters containing only alphanumeric characters
+3. **Provider Details Dependencies**: 
+   - If `prescriber_type` is provided, `qualifications` must also be provided
+   - If `prescriber_type` is not 'T' (podiatrist), `prescriber_number` is required
+4. **Date Format**: Date of birth must be in YYYY-MM-DD format
+5. **Sex Values**: Must be one of: M (Male), F (Female), I (Indeterminate), N (Not-stated)
+
+### Prescriber Types
+
+Valid values for `prescriber_type`:
+
+- `M` (Medical Practitioner)
+- `E` (Eye/Optometrist)
+- `U` (Nurse)
+- `F` (Midwife)
+- `D` (Dentist)
+- `V` (Veterinarian)
+- `T` (Podiatrist)
+- `C` (Pharmacist)
+
+
+
+
+## Response 
 
 ### Success Response (200 OK)
 
@@ -155,101 +256,3 @@ All responses include these standard fields:
 | `500` | Internal Server Error | Unexpected server error                         |
 
 
-## Field Validation Requirements
-
-### User Fields
-
-| Field           | Type   | Required | Description                               |
-| --------------- | ------ | -------- | ----------------------------------------- |
-| `full_name`     | string | No       | User's given name                         |
-
-
-### Provider Details
-
-When updating provider-specific information, use the `provider_details` object:
-
-| Field                      | Type   | Required When                              | Description                     |
-| -------------------------- | ------ | ------------------------------------------ | ------------------------------- |
-| `given_name`               | string | No                                         | Prescribers's given name        |
-| `family_name`              | string | No                                         | Prescribers's family name                       |
-| `date_of_birth`            | string | No                                         | Date of birth in YYYY-MM-DD format       |
-| `sex`                      | string | No                                         | Sex (M/F/I/N)                           |
-| `hpii_number`              | string | No                                         | Healthcare Provider Identifier  |
-| `phone`                    | string | No                                         | Provider phone number           |
-| `title`                    | string | No                                         | Professional title              |
-| `prescriber_number`        | string | When prescriber_type is not 'T' (podiatrist) | 7-character prescriber number |
-| `provider_number`          | string | No                                         | 9-character provider number     |
-| `prescriber_type`          | string | No                                         | Prescriber type (M/N/D/P/T)    |
-| `ahpra_number`             | string | No                                         | AHPRA registration number       |
-| `qualifications`           | string | When prescriber_type is provided          | Professional qualifications    |
-| `hospital_provider_number` | string | No                                         | Hospital provider number        |
-
-### Validation Rules
-
-1. **Prescriber Number**: Must be exactly 7 characters when provided
-2. **Provider Number**: Must be exactly 9 characters containing only alphanumeric characters
-3. **Provider Details Dependencies**: 
-   - If `prescriber_type` is provided, `qualifications` must also be provided
-   - If `prescriber_type` is not 'T' (podiatrist), `prescriber_number` is required
-4. **Date Format**: Date of birth must be in YYYY-MM-DD format
-5. **Sex Values**: Must be one of: M (Male), F (Female), I (Indeterminate), N (Not-stated)
-
-### Prescriber Types
-
-Valid values for `prescriber_type`:
-
-- `M` (Medical Practitioner)
-- `E` (Eye/Optometrist)
-- `U` (Nurse)
-- `F` (Midwife)
-- `D` (Dentist)
-- `V` (Veterinarian)
-- `T` (Podiatrist)
-- `C` (Pharmacist)
-
-
-## Example Requests
-
-### Update Basic User Information
-
-```json
-{
-  "full_name": "Darlene Scott"
-}
-```
-
-### Update Provider Details
-
-```json
-{
-  "provider_details": {
-    "given_name": "Darlene",
-    "family_name": "Scott",
-    "prescriber_type": "M",
-    "prescriber_number": "1234567",
-    "qualifications": "MBBS, FRACGP",
-    "ahpra_number": "MED0001234567",
-    "provider_number": "123456789"
-  }
-}
-```
-
-### Update Both User and Provider Information
-
-```json
-{
-    "full_name": "Darlene Scott",
-    "provider_details": {
-      "given_name": "Darlene",
-      "family_name": "Cameron",
-      "date_of_birth": "1969-10-02",
-      "sex": "F",
-      "title": "Dr",
-      "prescriber_type": "M",
-      "prescriber_number": "1234567",
-      "qualifications": "MBBS, FRACGP",
-      "ahpra_number": "MED0001234567",
-      "hospital_provider_number": "H123456"
-  }
-}
-```
