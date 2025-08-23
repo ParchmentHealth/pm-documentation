@@ -19,6 +19,13 @@
               "introduction",
               "docs/faq"
             ]
+          },
+          {
+            "group": "Integration Process",
+            "pages": [
+              "partner-integration-guide",
+              "post-integration-guide"
+            ]
           }
         ]
       },
