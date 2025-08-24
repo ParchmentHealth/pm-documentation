@@ -873,6 +873,22 @@
           }
         }
       }
+    },
+    "/v1/organizations/{organization_id}/users/{user_id}/roles": {
+      "put": {
+        "description": "Updates the roles of a user in Parchment",
+        "parameters": [
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
