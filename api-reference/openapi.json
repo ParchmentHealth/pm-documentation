@@ -886,8 +886,105 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
-        ]
+        ],
+        "requestBody": {
+          "description": "User roles data to update in Parchment",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRoles"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "User roles updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRolesResponse"
+                },
+                "example": {
+                  "success": true,
+                  "statusCode": 200,
+                  "message": "User roles updated successfully",
+                  "data": {
+                    "user_id": "usr_abc123def456",
+                    "access_roles": [
+                      "admin",
+                      "provider"
+                    ]
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_abc123"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid request format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -1435,6 +1532,80 @@
               },
               "data": {
                 "$ref": "#/components/schemas/UserData"
+              }
+            }
+          }
+        ]
+      },
+      "UpdateUserRoles": {
+        "type": "object",
+        "description": "User roles update request",
+        "required": [
+          "access_roles"
+        ],
+        "properties": {
+          "access_roles": {
+            "type": "array",
+            "description": "Array of roles to assign to the user",
+            "items": {
+              "type": "string",
+              "enum": [
+                "admin",
+                "provider",
+                "receptionist",
+                "rx_reader",
+                "rx_queue_manager"
+              ]
+            },
+            "example": [
+              "admin",
+              "provider"
+            ]
+          }
+        }
+      },
+      "UserRolesData": {
+        "type": "object",
+        "description": "User roles update response data",
+        "required": [
+          "user_id",
+          "access_roles"
+        ],
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "description": "Parchment's unique identifier for the user",
+            "example": "usr_abc123def456"
+          },
+          "access_roles": {
+            "type": "array",
+            "description": "Updated array of roles assigned to user",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "admin",
+              "provider"
+            ]
+          }
+        }
+      },
+      "UserRolesResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ExternalApiResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "statusCode": {
+                "example": 200
+              },
+              "message": {
+                "example": "User roles updated successfully"
+              },
+              "data": {
+                "$ref": "#/components/schemas/UserRolesData"
               }
             }
           }
