@@ -196,57 +196,7 @@ All responses include these standard fields:
 | `404` | Not Found             | User not found                                   |
 | `500` | Internal Server Error | Unexpected server error                          |
 
-## Error Handling
 
-### Recommended Approach
-
-```javascript
-async function getUser(organizationId, userId) {
-  try {
-    const response = await fetch(
-      `/v1/organizations/${organizationId}/users/${userId}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: "Bearer your_jwt_token",
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    const result = await response.json();
-
-    if (result.success) {
-      // Handle success
-      console.log("User retrieved:", result.data.full_name);
-      return result.data;
-    } else {
-      // Handle error
-      console.error("Error:", result.error.detail);
-
-      // Handle specific error types
-      switch (result.statusCode) {
-        case 404:
-          console.error("User not found");
-          break;
-        case 401:
-          console.error("Please log in again");
-          break;
-        case 403:
-          console.error("Insufficient permissions to read user");
-          break;
-        default:
-          console.error("Unexpected error occurred");
-      }
-
-      // Always log requestId for debugging
-      console.log("Request ID:", result.requestId);
-    }
-  } catch (error) {
-    console.error("Network error:", error);
-  }
-}
-```
 
 ## Integration Notes
 
@@ -254,95 +204,8 @@ async function getUser(organizationId, userId) {
 2. **Handle 404 Status**: Check if the user exists before attempting to read
 3. **Permission Requirements**: Ensure your API token has the `READ_USER` scope
 4. **Organization Access**: You can only read users from organizations you have access to
-5. **Data Security**: User data returned excludes sensitive internal fields like ACL information
-6. **Provider Details**: When user has "provider" role, additional provider details are automatically included
-7. **Provider Data Availability**: If provider details cannot be retrieved, `provider_details` will be `null`
-8. **Caching**: Consider caching user data with appropriate TTL to reduce API calls
-9. **Role-Based Fields**: Non-provider users will not have the `provider_details` field in the response
+5. **Provider Data Availability**: If provider details cannot be retrieved, `provider_details` will be `null`
+6. **Caching**: Consider caching user data with appropriate TTL to reduce API calls
+7. **Role-Based Fields**: Non-provider users will not have the `provider_details` field in the response
 
-## Example Usage
 
-### Basic User Lookup
-
-```javascript
-// Get user details
-const user = await getUser("org_123456789", "usr_abc123def456");
-
-if (user) {
-  console.log(`User: ${user.full_name} (${user.email})`);
-  console.log(`Roles: ${user.access_roles.join(", ")}`);
-  
-  // Check if user is a provider and has provider details
-  if (user.access_roles.includes("provider")) {
-    if (user.provider_details) {
-      console.log(`Provider Details:`);
-      console.log(`- HPII: ${user.provider_details.hpii_number}`);
-      console.log(`- Prescriber Number: ${user.provider_details.prescriber_number}`);
-      console.log(`- Qualifications: ${user.provider_details.qualifications}`);
-      console.log(`- Type: ${user.provider_details.prescriber_type}`);
-    } else {
-      console.log(`Provider role detected but details not available`);
-    }
-  }
-}
-```
-
-### Checking Provider Status
-
-```javascript
-async function checkProviderStatus(organizationId, userId) {
-  const user = await getUser(organizationId, userId);
-  
-  if (!user) {
-    return { isProvider: false, hasDetails: false };
-  }
-  
-  const isProvider = user.access_roles.includes("provider");
-  const hasProviderDetails = isProvider && user.provider_details !== null;
-  
-  return {
-    isProvider,
-    hasDetails: hasProviderDetails,
-    providerData: hasProviderDetails ? user.provider_details : null
-  };
-}
-
-// Usage
-const providerStatus = await checkProviderStatus("org_123", "usr_456");
-if (providerStatus.isProvider) {
-  console.log("User is a healthcare provider");
-  
-  if (providerStatus.hasDetails) {
-    console.log("Provider details available:", providerStatus.providerData);
-  } else {
-    console.log("Provider details not available");
-  }
-}
-```
-
-### Error Handling with Retry
-
-```javascript
-async function getUserWithRetry(organizationId, userId, maxRetries = 3) {
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      const user = await getUser(organizationId, userId);
-      return user;
-    } catch (error) {
-      if (error.statusCode === 404) {
-        // Don't retry for 404 errors
-        throw error;
-      }
-      
-      if (attempt === maxRetries) {
-        throw error;
-      }
-      
-      // Wait before retry (exponential backoff)
-      await new Promise(resolve => 
-        setTimeout(resolve, Math.pow(2, attempt) * 1000)
-      );
-    }
-  }
-}
-```
