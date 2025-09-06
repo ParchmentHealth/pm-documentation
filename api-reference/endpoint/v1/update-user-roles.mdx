@@ -6,9 +6,9 @@ openapi: "PUT /v1/organizations/{organization_id}/users/{user_id}/roles"
 
 1. **Role Management**: This endpoint specifically handles user role assignments within an organization.
 2. **Complete Replacement**: The `access_roles` array completely replaces the user's current roles.
-3. **Role Validation**: All roles must be valid system roles. Invalid roles will be rejected.
+3. **Role Validation**: Invalid roles (not in the allowed list) will cause the request to fail with a 400 error.
 4. **Authorization**: Requires `update:user` scope to modify user roles.
-6. **Request ID**: Always log the `requestId` for debugging support requests.
+5. **Request ID**: Always log the `requestId` for debugging support requests.
 
 ## Request
 
@@ -36,7 +36,7 @@ openapi: "PUT /v1/organizations/{organization_id}/users/{user_id}/roles"
 
 ### Valid Roles
 
-The following roles are supported in the Parchment system:
+The following roles can be assigned via this API:
 
 | Role                | Description                                    |
 | ------------------- | ---------------------------------------------- |
@@ -45,6 +45,7 @@ The following roles are supported in the Parchment system:
 | `receptionist`      | Front desk/reception staff                     |
 | `rx_reader`         | Read-only access to prescriptions              |
 | `rx_queue_manager`  | Manage prescription queues `coming soon`       |
+
 
 ### Validation Rules
 
@@ -72,6 +73,7 @@ The following roles are supported in the Parchment system:
 
 ### Bad Request (400 Bad Request)
 
+#### Invalid Roles
 ```json
 {
     "success": false,
@@ -80,6 +82,21 @@ The following roles are supported in the Parchment system:
         "type": "https://parchment.health/errors/invalid-request",
         "title": "Invalid request",
         "detail": "access_roles must be a non-empty array of valid roles"
+    },
+    "timestamp": "2025-08-24T08:41:50.042Z",
+    "requestId": "1-68aad04d-10c08dde5682893b35b89265"
+}
+```
+
+#### Empty After Filtering
+```json
+{
+    "success": false,
+    "statusCode": 400,
+    "error": {
+        "type": "https://parchment.health/errors/invalid-request",
+        "title": "Invalid request",
+        "detail": "access_roles must contain at least one valid role after filtering"
     },
     "timestamp": "2025-08-24T08:41:50.042Z",
     "requestId": "1-68aad04d-10c08dde5682893b35b89265"

@@ -562,6 +562,7 @@
                     },
                     "prescriptions": [
                       {
+                        "prescription_type": "ELECTRONIC",
                         "url": "https://egw-etp-int-qrcode-web-au-se.azurewebsites.net/scripts/2F3WFX8J4WQH8T72X9",
                         "scid": "2F3WFX8J4WQH8T72X9",
                         "status": "Active",
@@ -594,6 +595,7 @@
                         "prescriber_script_number": "19192"
                       },
                       {
+                        "prescription_type": "ELECTRONIC",
                         "url": "https://egw-etp-int-qrcode-web-au-se.azurewebsites.net/scripts/2F3WFX8B8K66686MVA",
                         "scid": "2F3WFX8B8K66686MVA",
                         "status": "Ceased",
@@ -1945,7 +1947,8 @@
                 "receptionist",
                 "rx_reader",
                 "rx_queue_manager"
-              ]
+              ],
+              "description": "Valid user roles. Note: owner, support, and member roles cannot be assigned via API."
             },
             "example": [
               "admin",
@@ -2103,6 +2106,11 @@
       "Prescription": {
         "type": "object",
         "properties": {
+          "prescription_type": {
+            "type": "string",
+            "enum": ["ELECTRONIC", "PAPER"],
+            "description": "Type of prescription"
+          },
           "url": {
             "type": "string",
             "format": "uri"
@@ -2199,6 +2207,9 @@
             "type": "boolean"
           },
           "prescriber_script_number": {
+            "type": "string"
+          },
+          "annotations": {
             "type": "string"
           }
         }
