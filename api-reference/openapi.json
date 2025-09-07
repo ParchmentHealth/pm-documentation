@@ -1770,8 +1770,7 @@
         "required": [
           "family_name",
           "given_name",
-          "date_of_birth",
-          "sex",
+          "email",
           "partner_user_id"
         ],
         "properties": {
@@ -1788,12 +1787,12 @@
           "date_of_birth": {
             "type": "string",
             "format": "date",
-            "description": "User's date of birth in YYYY-MM-DD format",
+            "description": "User's date of birth in YYYY-MM-DD format (required if role includes 'provider')",
             "example": "1969-10-02"
           },
           "sex": {
             "type": "string",
-            "description": "User's sex",
+            "description": "User's sex (required if role includes 'provider')",
             "enum": [
               "M",
               "F",
@@ -1805,12 +1804,12 @@
           "email": {
             "type": "string",
             "format": "email",
-            "description": "User's email address (optional)",
+            "description": "User's email address",
             "example": "darlene.cameron@example.com"
           },
           "phone": {
             "type": "string",
-            "description": "User's Australian phone number (optional). Must be a valid Australian number with digits only. Supports mobile (04xxxxxxxx) and landline (0[2378]xxxxxxxx) formats. International format with +61 or 61 prefix is also accepted.",
+            "description": "User's Australian phone number (required if role includes 'provider'). Must be a valid Australian number with digits only. Supports mobile (04xxxxxxxx) and landline (0[2378]xxxxxxxx) formats. International format with +61 or 61 prefix is also accepted.",
             "example": "0412345678"
           },
           "access_roles": {
