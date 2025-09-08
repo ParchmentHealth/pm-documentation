@@ -369,30 +369,14 @@
             "content": {
               "application/json": {
                 "example": {
+                  "success": true,
                   "statusCode": 200,
-                  "message": "Successfully validated token",
-                  "data": null
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - deprecated header used",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "example": {
-                  "success": false,
-                  "statusCode": 400,
-                  "error": {
-                    "type": "https://parchment.health/errors/deprecated-header",
-                    "title": "Deprecated header used",
-                    "detail": "Please use x-organization-secret instead of x-partner-secret"
+                  "data": {
+                    "validated": true
                   },
+                  "message": "Successfully validated token",
                   "timestamp": "2024-01-15T10:30:00.000Z",
-                  "requestId": "req_1705312200000_abc123"
+                  "requestId": "req_1705312200000_xyz123"
                 }
               }
             }
@@ -413,7 +397,7 @@
                       "error": {
                         "type": "https://parchment.health/errors/authentication-required",
                         "title": "Unauthorized",
-                        "detail": "Invalid or expired authentication token"
+                        "detail": "invalid token"
                       },
                       "timestamp": "2024-01-15T10:30:00.000Z",
                       "requestId": "req_1705312200000_def456"
@@ -427,24 +411,10 @@
                       "error": {
                         "type": "https://parchment.health/errors/authentication-required",
                         "title": "Unauthorized",
-                        "detail": "Organization secret is required"
+                        "detail": "Missing x-organization-secret"
                       },
                       "timestamp": "2024-01-15T10:30:00.000Z",
                       "requestId": "req_1705312200000_ghi789"
-                    }
-                  },
-                  "insufficient_scope": {
-                    "summary": "Insufficient permissions",
-                    "value": {
-                      "success": false,
-                      "statusCode": 401,
-                      "error": {
-                        "type": "https://parchment.health/errors/insufficient-scope",
-                        "title": "Insufficient permissions",
-                        "detail": "Token does not have required CREATE_PATIENT scope"
-                      },
-                      "timestamp": "2024-01-15T10:30:00.000Z",
-                      "requestId": "req_1705312200000_jkl012"
                     }
                   }
                 }
@@ -2107,7 +2077,10 @@
         "properties": {
           "prescription_type": {
             "type": "string",
-            "enum": ["ELECTRONIC", "PAPER"],
+            "enum": [
+              "ELECTRONIC",
+              "PAPER"
+            ],
             "description": "Type of prescription"
           },
           "url": {
