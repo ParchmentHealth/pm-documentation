@@ -47,21 +47,21 @@
             ]
           },
           {
-            "group": "Authentication",
+            "group": "Authentication Endpoints",
             "pages": [
               "api-reference/endpoint/v1/token",
               "api-reference/endpoint/v1/validate-integration"
             ]
           },
           {
-            "group": "Patient Management",
+            "group": "Patient Management Endpoints",
             "pages": [
               "api-reference/endpoint/v1/create-patient",
               "api-reference/endpoint/v1/get-patient-prescriptions"
             ]
           },
           {
-            "group": "User Management",
+            "group": "User Management Endpoints",
             "pages": [
               "api-reference/endpoint/v1/create-user",
               "api-reference/endpoint/v1/read-user",
