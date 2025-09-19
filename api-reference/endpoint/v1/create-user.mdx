@@ -232,7 +232,6 @@ async function createUser(userData) {
 | `email`          | string   | Always                                                  | User's email address                             |
 | `date_of_birth`  | string   | When `access_roles` includes "provider"                 | Date of birth in YYYY-MM-DD format              |
 | `sex`            | string   | When `access_roles` includes "provider"                 | Sex (M/F/I/N)                                    |
-| `phone`          | string   | When `access_roles` includes "provider"                 | Australian phone number                          |
 | `hpii_number`    | string   | When `access_roles` includes "provider"                 | Healthcare Provider Individual Identifier       |
 | `prescriber_type`| string   | When `access_roles` includes "provider"                 | Prescriber type (M/N/D/P/T)                     |
 | `prescriber_number` | string | When role is "provider" and `prescriber_type` is not "T" | Prescriber number                              |
@@ -242,11 +241,13 @@ async function createUser(userData) {
 
 | Field                      | Type     | Description                           |
 | -------------------------- | -------- | ------------------------------------- |
-| `access_roles`             | array    | User roles          |
+| `access_roles`             | array    | User roles                            |
 | `title`                    | string   | Professional title                    |
 | `provider_number`          | string   | Medicare provider number              |
 | `ahpra_number`             | string   | AHPRA registration number             |
 | `hospital_provider_number` | string   | Hospital provider number              |
+| `phone`                    | string   | Clinic's Number                        |
+
 
 ### Phone Number Format
 
