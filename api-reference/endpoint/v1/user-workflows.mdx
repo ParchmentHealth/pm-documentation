@@ -39,7 +39,7 @@ A common scenario is creating a user with basic access and later upgrading them 
     ```
 
     <Warning>
-      Role changes take effect immediately. Ensure the user has the necessary qualifications before granting provider access.
+       Adding a `provider` role -> switching to non `provider` role -> then switching back to `provider` role may cause issues due to dependencies on downstream third party services
     </Warning>
   </Step>
 
