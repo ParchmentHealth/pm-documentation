@@ -8,33 +8,65 @@ openapi: "POST /v1/organizations/{organization_id}/users"
 
 ```json
 {
-  "success": true,
-  "statusCode": 201,
-  "message": "User created successfully",
-  "data": {
-    "external_user_id": "CLINIKO#USER_12345",
-    "parchment_user_id": "usr_abc123def456",
-    "url": "https://app.parchment.health/dashboard/users/usr_abc123def456"
-  },
-  "timestamp": "2024-01-15T10:30:00.000Z",
-  "requestId": "req_1705312200000_abc123"
+    "success": true,
+    "statusCode": 201,
+    "message": "User created successfully",
+    "code": "USER_CREATED",
+    "data": {
+        "user_id": "0b4c1a49-fea8-4922-a3da-2ca8jf8af9bd"
+    },
+    "timestamp": "2025-09-22T20:31:54.558Z",
+    "requestId": "1-68d1b225-2a98752c7b2da3fa489267fc"
 }
 ```
 
-### Conflict Detected (202 Accepted)
+### Partial Success - User Already Exists (201 Created)
 
 ```json
 {
-  "success": true,
-  "statusCode": 202,
-  "message": "User creation accepted - conflicts found",
-  "data": {
-    "external_user_id": "CLINIKO#USER_12345",
-    "parchment_user_id": "usr_existing789",
-    "url": "https://app.parchment.health/dashboard/users/usr_existing789"
-  },
-  "timestamp": "2024-01-15T10:30:00.000Z",
-  "requestId": "req_1705312200000_def456"
+    "success": false,
+    "statusCode": 409,
+    "code": "USER_ALREADY_EXISTS",
+    "error": {
+        "type": "https://parchment.health/errors/resource-conflict",
+        "title": "Resource conflict",
+        "detail": "User with this email already exists"
+    },
+    "timestamp": "2025-09-22T20:46:51.702Z",
+    "requestId": "1-68d1b5b6-31fbc67e15cff9b13268e6f0"
+}
+```
+
+### Partial Success = Provider Already Exists (201 Created)
+```json
+{
+    "success": true,
+    "statusCode": 201,
+    "message": "User created but provider already exists",
+    "code": "USER_CREATED_PROVIDER_ALREADY_EXISTS",
+    "data": {
+        "user_id": "5b048ac0-b078-4955-88d5-1c4bc5147d3b",
+        "warning": "User created successfully but provider creation failed"
+    },
+    "timestamp": "2025-09-22T21:15:45.541Z",
+    "requestId": "1-68d1bc7a-2249a4da021230520c2dc288"
+}
+```
+
+### Partial Success - Provider Creation Failed (201 Created)
+
+```json
+{
+    "success": true,
+    "statusCode": 201,
+    "message": "User created but provider not found",
+    "code": "USER_CREATED_PROVIDER_NOT_FOUND",
+    "data": {
+        "user_id": "faa41171-235e-4822-b524-9f8bb07ebd3d",
+        "warning": "User created successfully but provider search failed"
+    },
+    "timestamp": "2025-09-22T20:48:47.878Z",
+    "requestId": "1-68d1b61a-156915754ad812fd58a24d90"
 }
 ```
 
@@ -42,92 +74,44 @@ openapi: "POST /v1/organizations/{organization_id}/users"
 
 ```json
 {
-  "success": false,
-  "statusCode": 422,
-  "error": {
-    "type": "https://parchment.health/errors/validation-error",
-    "title": "Validation failed",
-    "detail": "There were some problems with your input.",
-    "validation": [
-      {
-        "field": "family_name",
-        "message": "Family name cannot be empty",
-        "code": "VALIDATION_ERROR"
-      },
-      {
-        "field": "given_name",
-        "message": "Given name cannot be empty",
-        "code": "VALIDATION_ERROR"
-      },
-      {
-        "field": "hpii_number",
-        "message": "HPII number is required for provider role",
-        "code": "VALIDATION_ERROR"
-      },
-      {
-        "field": "prescriber_number",
-        "message": "Prescriber number is required for provider role when prescriber_type is not 'T'",
-        "code": "VALIDATION_ERROR"
-      },
-      {
-        "field": "qualifications",
-        "message": "Qualifications are required for provider role",
-        "code": "VALIDATION_ERROR"
-      }
-    ]
-  },
-  "timestamp": "2024-01-15T10:30:00.000Z",
-  "requestId": "req_1705312200000_ghi789"
+    "success": false,
+    "statusCode": 422,
+    "code": "VALIDATION_ERROR",
+    "error": {
+        "type": "https://parchment.health/errors/validation-error",
+        "title": "Validation failed",
+        "detail": "There were some problems with your input.",
+        "validation": [
+            {
+                "field": "hpii_number",
+                "message": "HPII Number is required and must be valid when access_roles contains \"provider\"",
+                "code": "VALIDATION_ERROR"
+            }
+        ]
+    },
+    "timestamp": "2025-09-22T20:47:35.790Z",
+    "requestId": "1-68d1b5e7-0a243a3a24ba148126eff847"
 }
 ```
 
-### Partner User ID Conflict (409 Conflict)
-
-```json
-{
-  "success": false,
-  "statusCode": 409,
-  "error": {
-    "type": "https://parchment.health/errors/partner-user-id-conflict",
-    "title": "Partner user ID conflict",
-    "detail": "Partner user ID 'CLINIKO#USER_12345' is already in use by another user. Please use a unique identifier."
-  },
-  "timestamp": "2024-01-15T10:30:00.000Z",
-  "requestId": "req_1705312200000_jkl012"
-}
-```
 
 ### Unauthorized (401)
 
 ```json
 {
-  "success": false,
-  "statusCode": 401,
-  "error": {
-    "type": "https://parchment.health/errors/authentication-required",
-    "title": "Unauthorized",
-    "detail": "Valid authentication token is required"
-  },
-  "timestamp": "2024-01-15T10:30:00.000Z",
-  "requestId": "req_1705312200000_mno345"
+    "success": false,
+    "statusCode": 401,
+    "code": "UNAUTHORIZED",
+    "error": {
+        "type": "https://parchment.health/errors/authentication-required",
+        "title": "Unauthorized",
+        "detail": "invalid signature"
+    },
+    "timestamp": "2025-09-22T20:50:36.942Z",
+    "requestId": "1-68d1b69c-3599f32a653cd17e49a79a07"
 }
 ```
 
-### Insufficient Permissions (403 Forbidden)
-
-```json
-{
-  "success": false,
-  "statusCode": 403,
-  "error": {
-    "type": "https://parchment.health/errors/insufficient-scope",
-    "title": "Insufficient permissions",
-    "detail": "This operation requires the 'CREATE_USER' scope"
-  },
-  "timestamp": "2024-01-15T10:30:00.000Z",
-  "requestId": "req_1705312200000_pqr678"
-}
-```
 
 ## Response Fields
 

@@ -1,0 +1,135 @@
+---
+title: "User Management Workflows"
+description: "Common workflows for creating and managing users in the Parchment platform"
+---
+
+
+
+## Upgrading a User to Prescriber
+
+A common scenario is creating a user with basic access and later upgrading them to have prescriber capabilities. This workflow shows how to transform an `rx_reader` into a `provider` with full prescriber details.
+
+<Steps>
+  <Step title="Create User with Basic Access">
+    Start by creating a user with the `rx_reader` role for basic prescription reading access.
+
+    ```json
+    POST /v1/organizations/{organizationId}/users
+    {
+      "given_name": "Ben",
+      "family_name": "Smith",
+      "email": "user-email@my-practice.com",
+      "access_roles": ["rx_reader"]
+    }
+    ```
+
+    <Info>
+      The `rx_reader` role allows users to view and read prescriptions but not create them.
+    </Info>
+  </Step>
+
+  <Step title="Update User Roles">
+    Upgrade the user's access level by changing their role to `provider`.
+
+    ```json
+    PUT /v1/organizations/{organizationId}/users/{userId}/roles
+    {
+      "access_roles": ["provider"]
+    }
+    ```
+
+    <Warning>
+      Role changes take effect immediately. Ensure the user has the necessary qualifications before granting provider access.
+    </Warning>
+  </Step>
+
+  <Step title="Add Provider Details">
+    Complete the provider setup by adding professional details and prescriber information.
+
+    ```json
+    PUT /v1/organizations/{organizationId}/users/{userId}
+    {
+      "provider_details": {
+        "given_name": "Ben",
+        "family_name": "Smith",
+        "date_of_birth": "1975-12-25",
+        "sex": "M",
+        "phone": "0432333333",
+        "hpii_number": "8003614900000000",
+        "prescriber_type": "M",
+        "prescriber_number": "1234567",
+        "qualifications": "MD"
+      }
+    }
+    ```
+
+    <Info>
+      **Required Provider Fields:**
+      - `hpii_number`: Healthcare Provider Identifier Individual number
+      - `prescriber_type`: Prescriber type (M/N/D/P/T) 
+      - `prescriber_number`: Unique prescriber identification number
+      - `qualifications`: Professional qualifications (MD, RN, etc.)
+    </Info>
+  </Step>
+</Steps>
+
+
+
+## Other Common Workflows
+
+### Creating a Provider from Scratch
+
+If you know the user will be a provider from the beginning:
+
+```json
+POST /v1/organizations/{organizationId}/users
+{
+  "given_name": "Sarah",
+  "family_name": "Johnson",
+  "email": "sarah.johnson@clinic.com",
+  "access_roles": ["provider"],
+  "date_of_birth": "1980-03-15",
+  "sex": "F",
+  "phone": "0455666777",
+  "hpii_number": "8003614900000001",
+  "prescriber_type": "M",
+  "prescriber_number": "2345678",
+  "qualifications": "MBBS"
+}
+```
+
+### Downgrading Provider Access
+
+To remove provider privileges while keeping basic access:
+
+```json
+PUT /v1/organizations/{organizationId}/users/{userId}/roles
+{
+  "access_roles": ["rx_reader"]
+}
+```
+
+<Note>
+  Provider details are retained when downgrading roles and can be reactivated by upgrading the role back to `provider`.
+</Note>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Validation" icon="shield-check">
+    Always validate HPII and prescriber numbers before creating provider accounts
+  </Card>
+
+  <Card title="Role Management" icon="users">
+    Start with minimal permissions and upgrade as needed for security
+  </Card>
+
+  <Card title="Data Consistency" icon="database">
+    Ensure provider details match official registration records
+  </Card>
+
+  <Card title="Audit Trail" icon="list-check">
+    Role changes are logged for compliance and audit purposes
+  </Card>
+</CardGroup>
+
