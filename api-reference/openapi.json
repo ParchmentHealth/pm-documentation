@@ -562,7 +562,10 @@
                         "my_sl_consent": true,
                         "send_to_pharmacy": "",
                         "unlisted_item_repat_authority": false,
-                        "prescriber_script_number": "19192"
+                        "prescriber_script_number": "19192",
+                        "custom_drug_details": {
+                          "custom_product_id": "1234567890"
+                        }
                       },
                       {
                         "prescription_type": "ELECTRONIC",
@@ -595,7 +598,8 @@
                         "my_sl_consent": true,
                         "send_to_pharmacy": "",
                         "unlisted_item_repat_authority": false,
-                        "prescriber_script_number": "18631"
+                        "prescriber_script_number": "18631",
+                        "custom_drug_details": {}
                       }
                     ]
                   },
