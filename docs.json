@@ -84,6 +84,17 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Embedded iFrame",
+        "groups": [
+          {
+            "group": "iFrame Integration",
+            "pages": [
+              "sso/embedded-iframe"
+            ]
+          }
+        ]
       }
     ],
     "global": {

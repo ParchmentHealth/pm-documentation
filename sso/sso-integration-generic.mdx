@@ -60,6 +60,18 @@ Make a server-to-server API call to generate an SSO token:
 }
 ```
 
+3. **For Embedded iFrame Integration** - use `/embed/` prefix
+
+```json
+{
+  "redirect_path": "/embed/patients/1234-5678-3456-2345/prescriptions"
+}
+```
+
+<Note>
+**Embedded iFrame Integration:** If you want to embed Parchment Portal directly into your website using an iframe, use the `/embed/` prefix in your redirect path. This optimizes the page for iframe display by removing navigation elements. See the [Embedded iFrame Integration Guide](/sso/embedded-iframe) for complete implementation details.
+</Note>
+
 **Response:**
 ```json
 {

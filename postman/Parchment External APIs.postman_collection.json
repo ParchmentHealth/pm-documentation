@@ -4,7 +4,7 @@
 		"name": "Parchment External APIs",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "15250687",
-		"_collection_link": "https://solar-comet-693833.postman.co/workspace/520846e6-1adf-4320-81d4-0793e2c85192/collection/15250687-6cb097e4-96ca-4c35-93b7-59e80b86d7f9?action=share&source=collection_link&creator=15250687"
+		"_collection_link": "https://solar-comet-693833.postman.co/workspace/Parchment~520846e6-1adf-4320-81d4-0793e2c85192/collection/15250687-6cb097e4-96ca-4c35-93b7-59e80b86d7f9?action=share&source=collection_link&creator=15250687"
 	},
 	"item": [
 		{
@@ -119,7 +119,8 @@
 									"}"
 								],
 								"type": "text/javascript",
-								"packages": {}
+								"packages": {},
+								"requests": {}
 							}
 						}
 					],
@@ -157,7 +158,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"redirect_path\": \"/dashboard/patients\"\n}",
+							"raw": "{\n    \"redirect_path\": \"/embed/patients/f03b972b-53ea-452d-ae48-024817f6c3b0/prescriptions\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -342,6 +343,93 @@
 					"response": []
 				},
 				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-organization-secret",
+								"value": "{{organizationSecret}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"full_name\": \"Frank Reynolds\",\n    \"prescriber_details\": {\n        \"given_name\": \"Frank\",\n        \"family_name\": \"Reynolds\",\n        \"date_of_birth\": \"1967-06-25\",\n        \"sex\": \"M\",\n        \"phone\": \"0412345678\",\n        \"hpii_number\": \"8003616566696624\",\n        \"prescriber_type\": \"T\",\n        \"prescriber_number\": \"1234567\",\n        \"qualifications\": \"MBBS\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/:userId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"external",
+								"v1",
+								"organizations",
+								"{{organizationId}}",
+								"users",
+								":userId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User Roles",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-organization-secret",
+								"value": "{{organizationSecret}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"access_roles\": [\"admin\", \"provider\", \"rx_reader\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/:userId/roles",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"external",
+								"v1",
+								"organizations",
+								"{{organizationId}}",
+								"users",
+								":userId",
+								"roles"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "8e1c9bab-6614-4723-8981-87c8fa026dae"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Read Users",
 					"request": {
 						"method": "GET",
@@ -396,7 +484,7 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": "49ae1438-b091-70b2-c67c-5704929fd340"
+									"value": "8e1c9bab-6614-4723-8981-87c8fa026dae"
 								}
 							]
 						}
