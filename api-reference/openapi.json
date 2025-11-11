@@ -524,6 +524,8 @@
                       "given_name": "John",
                       "family_name": "Smith",
                       "date_of_birth": "1990-01-15T00:00:00.000Z",
+                      "sex": "M",
+                      "patient_id": "1234567890",
                       "partner_patient_id": "PARTNER#12345"
                     },
                     "prescriber": {
@@ -2202,6 +2204,12 @@
           "date_of_birth": {
             "type": "string",
             "format": "date-time"
+          },
+          "sex": {
+            "type": "string"
+          },
+          "patient_id": {
+            "type": "string"
           },
           "partner_patient_id": {
             "type": "string"
