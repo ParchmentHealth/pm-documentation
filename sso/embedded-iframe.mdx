@@ -1,0 +1,73 @@
+---
+title: "Embedded iFrame Integration"
+description: "Guide for embedding Parchment Portal directly into your application using an iframe"
+---
+
+## Prerequisites
+
+- Valid partner credentials (partner_id, partner_secret, organization_id, organization_secret)
+- **Parchment SSO Integration**: You must first set up [Parchment SSO](/sso/sso-integration-generic) before implementing iframe embedding
+- Your domain needs to be **whitelisted** in Parchment's environments
+
+
+## Implementation Steps
+
+### 1. Generate SSO Token with Embed Path
+
+When generating an SSO token for iframe embedding, use the `/embed/` prefix in your redirect path:
+
+> 🚀 **API Endpoint**
+>
+> ```
+> POST /v1/sso
+> ```
+
+**Headers:**
+- `x-partner-id`: Your partner ID
+- `x-partner-secret`: Your partner secret
+- `x-organization-id`: Target organization ID
+- `x-organization-secret`: Organization secret
+- `x-user-id`: Parchment user ID to authenticate
+- `Content-Type`: application/json
+
+**Request Body:**
+
+```json
+{
+  "redirect_path": "/embed/patients/f03b972b-53ea-452d-ae48-024817f6c3b0/prescriptions"
+}
+```
+
+
+<Note>
+**Important:** The `/embed/` prefix in the redirect_path tells Parchment to render the page in iframe-optimized mode, removing navigation elements and adjusting the layout for embedded display.
+</Note>
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "sso_token": "eyJ...",
+    "redirect_url": "https://portal.parchment.health/auth/sso?token=eyJ...&redirect=%2Fembed%2Fpatients%2F...",
+    "expires_in": 300
+  }
+}
+```
+
+### 2. Embed in Your Application
+
+Use the returned `redirect_url` as the iframe source:
+
+
+```jsx
+<iframe
+  src={iframeUrl}
+  className="absolute inset-0 size-full border-0"
+  allow="clipboard-write; publickey-credentials-get *; publickey-credentials-create *"
+  referrerPolicy="strict-origin-when-cross-origin"
+  title="Parchment Portal"
+/>
+```
+
+

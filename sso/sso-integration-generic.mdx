@@ -1,82 +1,202 @@
 ---
-title: SSO Integration (generic)
+title: "Partner SSO Implementation (recommended)"
+description: "Server-to-server SSO implementation guide for partners"
 ---
 
-Parchment Health supports **SAML 2.0-based Single Sign-On (SSO)**. This guide is for IT administrators or identity provider (IdP) teams who want to integrate with our platform to enable secure, seamless user authentication.
+# Partner SSO Implementation Guide
 
----
+This guide covers implementing server-to-server SSO authentication to allow your users to seamlessly access Parchment Portal without re-entering credentials.
 
-## Overview
+## Prerequisites
 
-- **Protocol**: SAML 2.0
-- **Supported IdPs**: Any that support SAML 2.0 (e.g. Azure AD, Okta, Ping Identity, Google Workspace, etc.)
-- **Flow**: SP-initiated login only
+- Valid partner credentials (partner_id, partner_secret, organization_id, organization_secret)
+- User must exist in Parchment, create either via Parchment portal or via `/organizations/{organizationId}/users` API
 
----
 
-## SAML Configuration
 
-Set up a new **SAML 2.0 application** in your identity provider with the following details:
+## Setup 
+1. Signup to Parchment via Portal
+2. Setup Organisation
+3. Setup Partner integration using one of the Partner tiles 
+4. Copy the credentials into your system. 
 
-### Assertion Consumer Service (ACS) URL
+**Note:** If you are not using the create-user API you will need a way to manually capture the Parchment `user_id` of the user, in your system. 
 
-| Environment | ACS URL                                               |
-| ----------- | ----------------------------------------------------- |
-| Development | `https://auth-dev.parchment.health/saml2/idpresponse` |
-| Production  | `https://auth.parchment.health/saml2/idpresponse`     |
+## Implementation Steps
 
----
+### 1. Initiate SSO Token
 
-### Entity ID / Audience URI
+Make a server-to-server API call to generate an SSO token:
 
-| Environment | Entity ID (Audience URI)                         |
-| ----------- | ------------------------------------------------ |
-| Development | `urn:amazon:cognito:sp:ap-southeast-2_Y1BbT5tQR` |
-| Production  | Provided upon successful DEV environment testing |
+> 🚀 **API Endpoint**
+> 
+> ```
+> POST /v1/sso
+> ```
 
-> You can request your production Entity ID after testing is complete.
+**Headers:**
+- `x-partner-id`: Your partner ID
+- `x-partner-secret`: Your partner secret
+- `x-organization-id`: Target organization ID
+- `x-organization-secret`: Organization secret
+- `x-user-id`: Parchment user ID to authenticate
+- `Content-Type`: application/json
 
----
+**Request Body:**
 
-### Required Attributes
+1. If you want to go to patient profile
 
-The following attributes must be included in the SAML assertion:
+```json
+{
+  "redirect_path": "/dashboard/patients/1234-5678-3456-2345"
+}
+```
 
-| Attribute Name | Description                     |
-| -------------- | ------------------------------- |
-| `user_id`      | Unique user identifier (string) |
-| `email`        | Email address                   |
-| `name`         | Full name (first + last)        |
-| `given_name`   | First name                      |
-| `family_name`  | Last name                       |
+2. If you want to directly prescribe
 
-> ⚠️ All attributes are **case-sensitive** and must be present in the SAML response.
+```json
+{
+  "redirect_path": "/dashboard/patients/1234-5678-3456-2345/prescriptions"
+}
+```
 
----
+3. **For Embedded iFrame Integration** - use `/embed/` prefix
 
-## Send configuration to Parchment
+```json
+{
+  "redirect_path": "/embed/patients/1234-5678-3456-2345/prescriptions"
+}
+```
 
-Once you have configured the SAML integration, send the following to Parchment support:
+<Note>
+**Embedded iFrame Integration:** If you want to embed Parchment Portal directly into your website using an iframe, use the `/embed/` prefix in your redirect path. This optimizes the page for iframe display by removing navigation elements. See the [Embedded iFrame Integration Guide](/sso/embedded-iframe) for complete implementation details.
+</Note>
 
-- SAML metadata file (XML)
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "sso_token": "eyJ...",
+    "redirect_url": "https://portal.parchment.health/auth/sso?token=eyJ...&redirect=%2Fdashboard%2Fpatients%2F...",
+    "expires_in": 300
+  }
+}
+```
 
-or
+### 2. Open Parchment Portal
 
-- SAML metadata URL
+Create a button to open Parchment Portal in a new tab:
 
----
+```html
+<button onclick="window.open(response.data.redirect_url, '_blank')">
+  Prescribe
+</button>
+```
 
-## Testing & Going Live
+### 3. User Authentication
 
-1. **Set up** the SAML integration using the development ACS URL and Entity ID.
-2. **Test** SSO by initiating login from the Parchment platform.
-3. Once successful, contact [hello@parchment.health](mailto:hello@parchment.health) to:
-   - Confirm your test results
-   - Receive your **production Entity ID**
-   - Finalize production access
+- User is automatically authenticated in Parchment Portal
+- After successful authentication ,user is redirected to the specified `redirect_path`
+- Session is established for the user's Parchment account
 
----
+## Important Security Notes
+
+### Token Expiry
+- SSO tokens expire in 5 minutes
+- Generate new tokens for each SSO attempt
+
+### Server-Side Only
+- 🚨**Never expose partner credentials to client-side code**
+- SSO token generation must happen on your backend server
+- Only redirect URLs should be sent to the client
+
+### User Validation
+- Ensure the user_id corresponds to a valid user in your system
+- Verify user permissions before generating SSO tokens
+- Log all SSO attempts for audit purposes
+
+## Error Handling
+
+### Common Error Responses
+
+**400 Bad Request:**
+```json
+{
+  "success": false,
+  "error": {
+    "type": "https://parchment.health/errors/invalid-request",
+    "title": "Invalid request",
+    "detail": "Missing required headers: x-user-id"
+  }
+}
+```
+
+**401 Unauthorized:**
+```json
+{
+  "success": false,
+  "error": {
+    "type": "https://parchment.health/errors/authentication-required",
+    "title": "Unauthorized",
+    "detail": "Invalid partner credentials"
+  }
+}
+```
+
+### Error Handling Best Practices
+
+- Always validate API responses before redirecting users
+- Implement fallback authentication method if SSO fails
+- Display user-friendly error messages
+- Log errors for troubleshooting
+
+## Implementation Example
+
+```javascript
+// Backend server endpoint
+app.post('/sso-login-endpoint-in-your-backend', async (req, res) => {
+  try {
+    const { userId, redirectPath } = req.body;
+    
+    // Validate user permissions in your system
+    if (!isUserAuthorized(userId)) {
+      return res.status(403).json({ error: 'User not authorized' });
+    }
+    
+    // Generate SSO token
+    const response = await fetch('https://api.parchmenthealth.io/external/v1/sso', {
+      method: 'POST',
+      headers: {
+        'x-partner-id': process.env.PARCHMENT_PARTNER_ID,
+        'x-partner-secret': process.env.PARCHMENT_PARTNER_SECRET,
+        'x-organization-id': process.env.PARCHMENT_ORG_ID,
+        'x-organization-secret': process.env.PARCHMENT_ORG_SECRET,
+        'x-user-id': userId,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        redirect_path: redirectPath || '/dashboard'
+      })
+    });
+    
+    const ssoData = await response.json();
+    
+    if (ssoData.success) {
+      res.json({ redirect_url: ssoData.data.redirect_url });
+    } else {
+      res.status(response.status).json({ error: 'SSO token generation failed' });
+    }
+    
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+```
 
 ## Support
 
-If you encounter issues or need help, please contact us at [hello@parchment.health](mailto:hello@parchment.health)
+For implementation assistance or troubleshooting:
+- Review API logs for detailed error messages
+- Contact Parchment support with specific error responses
+- Include request/response examples when reporting issues

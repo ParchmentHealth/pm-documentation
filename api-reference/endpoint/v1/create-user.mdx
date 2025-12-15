@@ -1,0 +1,336 @@
+---
+openapi: "POST /v1/organizations/{organization_id}/users"
+---
+
+## Response Examples
+
+### Success Response (201 Created)
+
+```json
+{
+    "success": true,
+    "statusCode": 201,
+    "message": "User created successfully",
+    "code": "USER_CREATED",
+    "data": {
+        "user_id": "0b4c1a49-fea8-4922-a3da-2ca8jf8af9bd"
+    },
+    "timestamp": "2025-09-22T20:31:54.558Z",
+    "requestId": "1-68d1b225-2a98752c7b2da3fa489267fc"
+}
+```
+
+### Partial Success - User Already Exists (201 Created)
+
+```json
+{
+    "success": false,
+    "statusCode": 409,
+    "code": "USER_ALREADY_EXISTS",
+    "error": {
+        "type": "https://parchment.health/errors/resource-conflict",
+        "title": "Resource conflict",
+        "detail": "User with this email already exists"
+    },
+    "timestamp": "2025-09-22T20:46:51.702Z",
+    "requestId": "1-68d1b5b6-31fbc67e15cff9b13268e6f0"
+}
+```
+
+### Partial Success = Provider Already Exists (201 Created)
+```json
+{
+    "success": true,
+    "statusCode": 201,
+    "message": "User created but provider already exists",
+    "code": "USER_CREATED_PROVIDER_ALREADY_EXISTS",
+    "data": {
+        "user_id": "5b048ac0-b078-4955-88d5-1c4bc5147d3b",
+        "warning": "User created successfully but provider creation failed"
+    },
+    "timestamp": "2025-09-22T21:15:45.541Z",
+    "requestId": "1-68d1bc7a-2249a4da021230520c2dc288"
+}
+```
+
+### Partial Success - Provider Creation Failed (201 Created)
+
+```json
+{
+    "success": true,
+    "statusCode": 201,
+    "message": "User created but provider not found",
+    "code": "USER_CREATED_PROVIDER_NOT_FOUND",
+    "data": {
+        "user_id": "faa41171-235e-4822-b524-9f8bb07ebd3d",
+        "warning": "User created successfully but provider search failed"
+    },
+    "timestamp": "2025-09-22T20:48:47.878Z",
+    "requestId": "1-68d1b61a-156915754ad812fd58a24d90"
+}
+```
+
+### Validation Error (422 Unprocessable Entity)
+
+```json
+{
+    "success": false,
+    "statusCode": 422,
+    "code": "VALIDATION_ERROR",
+    "error": {
+        "type": "https://parchment.health/errors/validation-error",
+        "title": "Validation failed",
+        "detail": "There were some problems with your input.",
+        "validation": [
+            {
+                "field": "hpii_number",
+                "message": "HPII Number is required and must be valid when access_roles contains \"provider\"",
+                "code": "VALIDATION_ERROR"
+            }
+        ]
+    },
+    "timestamp": "2025-09-22T20:47:35.790Z",
+    "requestId": "1-68d1b5e7-0a243a3a24ba148126eff847"
+}
+```
+
+
+### Unauthorized (401)
+
+```json
+{
+    "success": false,
+    "statusCode": 401,
+    "code": "UNAUTHORIZED",
+    "error": {
+        "type": "https://parchment.health/errors/authentication-required",
+        "title": "Unauthorized",
+        "detail": "invalid signature"
+    },
+    "timestamp": "2025-09-22T20:50:36.942Z",
+    "requestId": "1-68d1b69c-3599f32a653cd17e49a79a07"
+}
+```
+
+
+## Response Fields
+
+### Success Response Data
+
+| Field                | Type   | Description                                             |
+| -------------------- | ------ | ------------------------------------------------------- |
+| `external_user_id`   | string | Your system's user identifier (as provided in request) |
+| `parchment_user_id`  | string | Parchment's unique user identifier                      |
+| `url`                | string | Direct link to user in Parchment portal                |
+
+### Common Response Fields
+
+All responses include these standard fields:
+
+| Field        | Type    | Description                             |
+| ------------ | ------- | --------------------------------------- |
+| `success`    | boolean | Indicates if the request was successful |
+| `statusCode` | number  | HTTP status code                        |
+| `timestamp`  | string  | ISO 8601 timestamp of the response      |
+| `requestId`  | string  | Unique identifier for debugging         |
+
+## Status Codes
+
+| Code  | Status                | Description                                           |
+| ----- | --------------------- | ----------------------------------------------------- |
+| `201` | Created               | User successfully created                             |
+| `202` | Accepted              | User creation accepted (demographic conflicts found)  |
+| `400` | Bad Request           | Invalid request format or missing required fields     |
+| `401` | Unauthorized          | Authentication required or token invalid              |
+| `403` | Forbidden             | Insufficient permissions (missing CREATE_USER scope) |
+| `409` | Conflict              | Partner user ID already exists                        |
+| `422` | Unprocessable Entity  | Request validation failed                             |
+| `500` | Internal Server Error | Unexpected server error                               |
+
+## Error Handling
+
+### Recommended Approach
+
+```javascript
+async function createUser(userData) {
+  try {
+    const response = await fetch(
+      "/v1/organizations/org123/users",
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer your_jwt_token",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      }
+    );
+
+    const result = await response.json();
+
+    if (result.success) {
+      // Handle success
+      console.log("User created:", result.data.parchment_user_id);
+      return result.data;
+    } else {
+      // Handle error
+      console.error("Error:", result.error.detail);
+
+      // Handle specific error types
+      switch (result.statusCode) {
+        case 422:
+          // Show validation errors
+          result.error.validation.forEach((err) => {
+            console.error(`${err.field}: ${err.message}`);
+          });
+          break;
+        case 409:
+          // Handle partner user ID conflict
+          console.error("User ID already exists");
+          break;
+        case 401:
+          // Handle authentication error
+          console.error("Please log in again");
+          break;
+        default:
+          console.error("Unexpected error occurred");
+      }
+
+      // Always log requestId for debugging
+      console.log("Request ID:", result.requestId);
+    }
+  } catch (error) {
+    console.error("Network error:", error);
+  }
+}
+```
+
+## Field Validation Requirements
+
+### Required Fields
+
+| Field            | Type     | Required When                                           | Description                                      |
+| ---------------- | -------- | ------------------------------------------------------- | ------------------------------------------------ |
+| `given_name`     | string   | Always                                                  | User's given name                                |
+| `family_name`    | string   | Always                                                  | User's family name                               |
+| `email`          | string   | Always                                                  | User's email address                             |
+| `date_of_birth`  | string   | When `access_roles` includes "provider"                 | Date of birth in YYYY-MM-DD format              |
+| `sex`            | string   | When `access_roles` includes "provider"                 | Sex (M/F/I/N)                                    |
+| `hpii_number`    | string   | When `access_roles` includes "provider"                 | Healthcare Provider Individual Identifier       |
+| `prescriber_type`| string   | When `access_roles` includes "provider"                 | Prescriber type (M/N/D/P/T)                     |
+| `prescriber_number` | string | When role is "provider" and `prescriber_type` is not "T" | Prescriber number                              |
+| `qualifications` | string   | When `access_roles` includes "provider"                 | Professional qualifications                     |
+
+### Optional Fields
+
+| Field                      | Type     | Description                           |
+| -------------------------- | -------- | ------------------------------------- |
+| `access_roles`             | array    | User roles                            |
+| `title`                    | string   | Professional title                    |
+| `provider_number`          | string   | Medicare provider number              |
+| `ahpra_number`             | string   | AHPRA registration number             |
+| `hospital_provider_number` | string   | Hospital provider number              |
+| `phone`                    | string   | Clinic's Number                        |
+
+
+### Phone Number Format
+
+The `phone` field accepts Australian phone numbers in the following formats:
+
+**✅ Valid Examples:**
+
+- `0412345678` - Mobile number (domestic format)
+- `0312345678` - Melbourne landline (domestic format)
+- `0212345678` - Sydney landline (domestic format)
+- `0712345678` - Brisbane landline (domestic format)
+- `0812345678` - Adelaide landline (domestic format)
+- `61412345678` - International mobile (without + prefix)
+- `+61312345678` - International landline (with + prefix)
+
+**❌ Invalid Examples:**
+
+- `0123456789` - Starts with 1 (invalid area code)
+- `04123456789` - Too many digits
+- `041234567` - Too few digits
+- `04-1234-5678` - Contains formatting characters
+- `+1234567890` - Non-Australian number
+
+### String Length Requirements
+
+- **Family Name**: 1-255 characters, cannot be empty
+- **Given Name**: 1-255 characters, cannot be empty
+- **HPII Number**: 16 digits exactly
+- **Prescriber Number**: 1-10 characters
+- **AHPRA Number**: 1-15 characters
+- **Provider Number**: 1-15 characters
+- **Qualifications**: 1-255 characters
+
+
+### Sex
+
+- `M` (Male)
+- `F` (Female)
+- `I` (Indeterminate)
+- `N` (Not-stated)
+
+### Access Roles
+
+Valid values for `access_roles` array:
+
+- `admin` (Administrative access)
+- `provider` (Healthcare provider access)
+- `receptionist` (Can read patient demographics)
+- `rx_reader` (Can reissue scripts)
+
+When `provider` role is included, additional fields become required.
+
+### Prescriber Types
+
+Valid values for `prescriber_type` when role is "provider":
+
+
+
+- `M` (Medical Practitioner)
+- `E` (Eye/Optometrist)
+- `U` (Nurse) 
+- `F` (Midwife)
+- `D` (Dentist)
+- `V` (Vetinarian)
+- `T` (Podiatrist)
+- `C` (Pharmacist)
+
+## Integration Notes
+
+1. **Store Request ID**: Always log the `requestId` for debugging support requests
+2. **Handle 202 Status**: A 202 response indicates demographic conflicts were found but a matching user was returned
+3. **Validation Errors**: Use the `error.validation` array to display field-specific error messages
+4. **Partner User ID**: Must be unique across your organization; use the format returned in `external_user_id`
+5. **URL Access**: The returned `url` provides direct access to the user in the Parchment portal
+6. **Provider Role Requirements**: When creating users with provider role, ensure all required provider fields are included
+7. **Phone Validation**: Phone numbers must follow Australian format - see validation requirements above
+
+## Example Request
+
+```json
+{
+  "given_name": "Darlene",
+  "family_name": "Cameron",
+  "date_of_birth": "1969-10-02",
+  "sex": "F",
+  "email": "darlene.cameron@example.com",
+  "phone": "0412345678",
+  "access_roles": [
+    "admin",
+    "provider"
+  ],
+  "hpii_number": "8003614900029560",
+  "prescriber_type": "M",
+  "prescriber_number": "1234567",
+  "qualifications": "LLB",
+  "title": "Dr",
+  "provider_number": "123456789",
+  "ahpra_number": "1234567896321",
+  "hospital_provider_number": "H123456",
+  "partner_user_id": "CLINIKO#USER_12345"
+}
+```

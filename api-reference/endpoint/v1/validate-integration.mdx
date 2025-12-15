@@ -2,11 +2,22 @@
 openapi: "GET /v1/organizations/{organization_id}/validate"
 ---
 
-## Overview
 
-The validate integration endpoint verifies partner authentication tokens and confirms successful integration with Parchment. This endpoint performs comprehensive validation of JWT tokens, organization credentials, and required scopes.
+## Why invoke the endpoint?
 
-When validation succeeds, the organization is automatically marked as integrated in Parchment's system, enabling full API access for subsequent requests.
+This enpoint allows partners to check if they have the right credentials and gives users an indication of successful integration.
+ 
+<div style={{ textAlign: 'center' }}>
+  <img 
+    src="/images/integration-validated.png" 
+    alt="Integration validated success message" 
+    width="600" 
+    loading="lazy" 
+    style={{ borderRadius: '8px', margin: '8px auto', maxWidth: '100%', height: 'auto', display: 'block' }}
+  />
+</div>
+
+
 
 ## Response Examples
 
@@ -14,9 +25,14 @@ When validation succeeds, the organization is automatically marked as integrated
 
 ```json
 {
+  "success": true,
   "statusCode": 200,
+  "data": {
+    "validated": true
+  },
   "message": "Successfully validated token",
-  "data": null
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_xyz123"
 }
 ```
 
@@ -29,7 +45,7 @@ When validation succeeds, the organization is automatically marked as integrated
   "error": {
     "type": "https://parchment.health/errors/authentication-required",
     "title": "Unauthorized",
-    "detail": "Invalid or expired authentication token"
+    "detail": "invalid token"
   },
   "timestamp": "2024-01-15T10:30:00.000Z",
   "requestId": "req_1705312200000_abc123"
@@ -45,44 +61,13 @@ When validation succeeds, the organization is automatically marked as integrated
   "error": {
     "type": "https://parchment.health/errors/authentication-required",
     "title": "Unauthorized", 
-    "detail": "Organization secret is required"
+    "detail": "Missing x-organization-secret"
   },
   "timestamp": "2024-01-15T10:30:00.000Z",
   "requestId": "req_1705312200000_def456"
 }
 ```
 
-### Insufficient Permissions (401 Unauthorized)
-
-```json
-{
-  "success": false,
-  "statusCode": 401,
-  "error": {
-    "type": "https://parchment.health/errors/insufficient-scope",
-    "title": "Insufficient permissions",
-    "detail": "Token does not have required CREATE_PATIENT scope"
-  },
-  "timestamp": "2024-01-15T10:30:00.000Z",
-  "requestId": "req_1705312200000_ghi789"
-}
-```
-
-### Deprecated Header Warning (400 Bad Request)
-
-```json
-{
-  "success": false,
-  "statusCode": 400,
-  "error": {
-    "type": "https://parchment.health/errors/deprecated-header",
-    "title": "Deprecated header used",
-    "detail": "Please use x-organization-secret instead of x-partner-secret"
-  },
-  "timestamp": "2024-01-15T10:30:00.000Z",
-  "requestId": "req_1705312200000_jkl012"
-}
-```
 
 ## Validation Process
 
@@ -145,10 +130,10 @@ async function validateIntegration(organizationId, token, organizationSecret) {
     
     const result = await response.json();
     
-    if (response.ok && result.statusCode === 200) {
+    if (response.ok && result.success && result.statusCode === 200) {
       console.log('Integration validated successfully');
       console.log('Organization is now marked as integrated');
-      return { validated: true, message: result.message };
+      return { validated: result.data.validated, message: result.message };
     } else {
       console.error('Validation failed:', result.error?.detail);
       

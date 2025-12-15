@@ -269,7 +269,10 @@
                     "accessToken": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImtleTEifQ...",
                     "expiresIn": 3600,
                     "tokenType": "Bearer",
-                    "scope": ["create:patient", "read:patient_prescription"]
+                    "scope": [
+                      "create:patient",
+                      "read:patient_prescription"
+                    ]
                   },
                   "timestamp": "2024-01-15T10:30:00.000Z",
                   "requestId": "req_1705312200000_pqr678",
@@ -290,17 +293,21 @@
                 },
                 "example": {
                   "success": false,
-                  "statusCode": 400,
+                  "statusCode": 422,
                   "error": {
-                    "type": "https://parchment.health/errors/invalid-request",
-                    "title": "Bad request",
-                    "detail": "Invalid grant type or scope provided."
+                    "type": "https://parchment.health/errors/validation-error",
+                    "title": "Validation failed",
+                    "detail": "There were some problems with your input.",
+                    "validation": [
+                      {
+                        "field": "scope",
+                        "message": "Invalid enum value. Expected 'create:patient' | 'read:patient' | 'update:patient' | 'delete:patient' | 'read:patient_prescription' | 'create:user' | 'read:user' | 'read:users' | 'update:user' | 'delete:user', received 'remove:patient'",
+                        "code": "VALIDATION_ERROR"
+                      }
+                    ]
                   },
-                  "timestamp": "2024-01-15T10:30:00.000Z",
-                  "requestId": "req_1705312200000_stu901",
-                  "meta": {
-                    "apiVersion": "1.0"
-                  }
+                  "timestamp": "2025-08-19T10:11:57.268Z",
+                  "requestId": "1-68a44ded-5c4fdd75455250d518c3bab2"
                 }
               }
             }
@@ -362,30 +369,14 @@
             "content": {
               "application/json": {
                 "example": {
+                  "success": true,
                   "statusCode": 200,
-                  "message": "Successfully validated token",
-                  "data": null
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - deprecated header used",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "example": {
-                  "success": false,
-                  "statusCode": 400,
-                  "error": {
-                    "type": "https://parchment.health/errors/deprecated-header",
-                    "title": "Deprecated header used",
-                    "detail": "Please use x-organization-secret instead of x-partner-secret"
+                  "data": {
+                    "validated": true
                   },
+                  "message": "Successfully validated token",
                   "timestamp": "2024-01-15T10:30:00.000Z",
-                  "requestId": "req_1705312200000_abc123"
+                  "requestId": "req_1705312200000_xyz123"
                 }
               }
             }
@@ -406,7 +397,7 @@
                       "error": {
                         "type": "https://parchment.health/errors/authentication-required",
                         "title": "Unauthorized",
-                        "detail": "Invalid or expired authentication token"
+                        "detail": "invalid token"
                       },
                       "timestamp": "2024-01-15T10:30:00.000Z",
                       "requestId": "req_1705312200000_def456"
@@ -420,24 +411,10 @@
                       "error": {
                         "type": "https://parchment.health/errors/authentication-required",
                         "title": "Unauthorized",
-                        "detail": "Organization secret is required"
+                        "detail": "Missing x-organization-secret"
                       },
                       "timestamp": "2024-01-15T10:30:00.000Z",
                       "requestId": "req_1705312200000_ghi789"
-                    }
-                  },
-                  "insufficient_scope": {
-                    "summary": "Insufficient permissions",
-                    "value": {
-                      "success": false,
-                      "statusCode": 401,
-                      "error": {
-                        "type": "https://parchment.health/errors/insufficient-scope",
-                        "title": "Insufficient permissions",
-                        "detail": "Token does not have required CREATE_PATIENT scope"
-                      },
-                      "timestamp": "2024-01-15T10:30:00.000Z",
-                      "requestId": "req_1705312200000_jkl012"
                     }
                   }
                 }
@@ -547,6 +524,8 @@
                       "given_name": "John",
                       "family_name": "Smith",
                       "date_of_birth": "1990-01-15T00:00:00.000Z",
+                      "sex": "M",
+                      "patient_id": "1234567890",
                       "partner_patient_id": "PARTNER#12345"
                     },
                     "prescriber": {
@@ -555,6 +534,7 @@
                     },
                     "prescriptions": [
                       {
+                        "prescription_type": "ELECTRONIC",
                         "url": "https://egw-etp-int-qrcode-web-au-se.azurewebsites.net/scripts/2F3WFX8J4WQH8T72X9",
                         "scid": "2F3WFX8J4WQH8T72X9",
                         "status": "Active",
@@ -584,9 +564,13 @@
                         "my_sl_consent": true,
                         "send_to_pharmacy": "",
                         "unlisted_item_repat_authority": false,
-                        "prescriber_script_number": "19192"
+                        "prescriber_script_number": "19192",
+                        "custom_drug_details": {
+                          "custom_product_id": "1234567890"
+                        }
                       },
                       {
+                        "prescription_type": "ELECTRONIC",
                         "url": "https://egw-etp-int-qrcode-web-au-se.azurewebsites.net/scripts/2F3WFX8B8K66686MVA",
                         "scid": "2F3WFX8B8K66686MVA",
                         "status": "Ceased",
@@ -616,7 +600,8 @@
                         "my_sl_consent": true,
                         "send_to_pharmacy": "",
                         "unlisted_item_repat_authority": false,
-                        "prescriber_script_number": "18631"
+                        "prescriber_script_number": "18631",
+                        "custom_drug_details": {}
                       }
                     ]
                   },
@@ -723,6 +708,652 @@
           }
         }
       }
+    },
+    "/v1/organizations/{organization_id}/users": {
+      "post": {
+        "description": "Creates a new user in Parchment",
+        "parameters": [
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "User data to add to Parchment",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewUser"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                },
+                "example": {
+                  "success": true,
+                  "statusCode": 201,
+                  "message": "User created successfully",
+                  "data": {
+                    "external_user_id": "PARTNER#USER_12345",
+                    "parchment_user_id": "usr_abc123def456",
+                    "url": "https://app.parchment.health/dashboard/users/usr_abc123def456"
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_abc123"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "User creation accepted - conflicts found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                },
+                "example": {
+                  "success": true,
+                  "statusCode": 202,
+                  "message": "User creation accepted - conflicts found",
+                  "data": {
+                    "external_user_id": "PARTNER#USER_12345",
+                    "parchment_user_id": "usr_existing789",
+                    "url": "https://app.parchment.health/dashboard/users/usr_existing789"
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_def456"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid request format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - Partner user ID already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "description": "Retrieves all users in an organization from Parchment",
+        "parameters": [
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Maximum number of users to return (1-100)",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "lastKey",
+            "in": "query",
+            "required": false,
+            "description": "Pagination key for retrieving the next set of results",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Users retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsersListResponse"
+                },
+                "example": {
+                  "success": true,
+                  "statusCode": 200,
+                  "message": "Users retrieved successfully",
+                  "data": {
+                    "users": [
+                      {
+                        "user_id": "usr_abc123def456",
+                        "external_user_id": "PARTNER#USER_12345",
+                        "full_name": "John Doe",
+                        "access_roles": [
+                          "provider",
+                          "admin"
+                        ]
+                      }
+                    ],
+                    "pagination": {
+                      "total": 1,
+                      "limit": 20,
+                      "lastKey": null
+                    }
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_abc123"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid request format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/organizations/{organization_id}/users/{user_id}": {
+      "get": {
+        "description": "Retrieves a specific user from Parchment",
+        "parameters": [
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDetailsResponse"
+                },
+                "example": {
+                  "success": true,
+                  "statusCode": 200,
+                  "message": "User retrieved successfully",
+                  "data": {
+                    "user_id": "usr_abc123def456",
+                    "external_user_id": "PARTNER#USER_12345",
+                    "full_name": "John Doe",
+                    "access_roles": [
+                      "provider",
+                      "admin"
+                    ],
+                    "provider_details": {
+                      "given_name": "John",
+                      "family_name": "Doe",
+                      "prescriber_type": "M",
+                      "prescriber_number": "1234567",
+                      "ahpra_number": "MED0001234567"
+                    }
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_abc123"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid request format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Updates a user in Parchment",
+        "parameters": [
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "User data to update in Parchment",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUser"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateUserResponse"
+                },
+                "example": {
+                  "success": true,
+                  "statusCode": 200,
+                  "message": "User updated successfully",
+                  "data": {
+                    "user_id": "usr_abc123def456"
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_abc123"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid request format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - Update conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity - Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests - Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/organizations/{organization_id}/users/{user_id}/roles": {
+      "put": {
+        "description": "Updates the roles of a user in Parchment",
+        "parameters": [
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "User roles data to update in Parchment",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserRoles"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "User roles updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRolesResponse"
+                },
+                "example": {
+                  "success": true,
+                  "statusCode": 200,
+                  "message": "User roles updated successfully",
+                  "data": {
+                    "user_id": "usr_abc123def456",
+                    "access_roles": [
+                      "admin",
+                      "provider"
+                    ]
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_abc123"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid request format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -820,7 +1451,11 @@
           "error": {
             "type": "object",
             "description": "RFC 7807 compliant error details",
-            "required": ["type", "title", "detail"],
+            "required": [
+              "type",
+              "title",
+              "detail"
+            ],
             "properties": {
               "type": {
                 "type": "string",
@@ -919,11 +1554,11 @@
           },
           "given_name": {
             "type": "string",
-            "description": "Patient's given name",
+            "description": "Patient's given name"
           },
           "family_name": {
             "type": "string",
-            "description": "Patient's family name",
+            "description": "Patient's family name"
           },
           "date_of_birth": {
             "type": "string",
@@ -936,11 +1571,11 @@
           "email": {
             "type": "string",
             "format": "email",
-            "description": "Patient's email address (optional)",
+            "description": "Patient's email address (optional)"
           },
           "phone": {
             "type": "string",
-            "description": "Patient's Australian phone number (optional). Must be a valid Australian number with digits only. Supports mobile (04xxxxxxxx) and landline (0[2378]xxxxxxxx) formats. International format with +61 or 61 prefix is also accepted.",
+            "description": "Patient's Australian phone number (optional). Must be a valid Australian number with digits only. Supports mobile (04xxxxxxxx) and landline (0[2378]xxxxxxxx) formats. International format with +61 or 61 prefix is also accepted."
           },
           "australian_street_address": {
             "$ref": "#/components/schemas/australian_street_address"
@@ -974,7 +1609,7 @@
           },
           "partner_patient_id": {
             "type": "string",
-            "description": "Partner's unique identifier for the patient",
+            "description": "Partner's unique identifier for the patient"
           },
           "partner_id": {
             "type": "string",
@@ -994,33 +1629,42 @@
         "properties": {
           "street_number": {
             "type": "string",
-            "description": "Street number",
+            "description": "Street number"
           },
           "street_name": {
             "type": "string",
-            "description": "Street name",
+            "description": "Street name"
           },
           "suburb": {
             "type": "string",
-            "description": "Suburb",
+            "description": "Suburb"
           },
           "state": {
             "$ref": "#/components/schemas/AU_STATE"
           },
           "postcode": {
             "type": "string",
-            "description": "Australian postcode (4 digits)",
+            "description": "Australian postcode (4 digits)"
           }
         }
       },
       "Sex": {
         "type": "string",
-        "enum": ["M", "F", "N", "I"],
+        "enum": [
+          "M",
+          "F",
+          "N",
+          "I"
+        ],
         "description": "Patient's sex"
       },
       "DVA_COLOR": {
         "type": "string",
-        "enum": ["gold", "white", "orange"],
+        "enum": [
+          "gold",
+          "white",
+          "orange"
+        ],
         "description": "DVA card color"
       },
       "IndigenousType": {
@@ -1036,13 +1680,26 @@
       },
       "AU_STATE": {
         "type": "string",
-        "enum": ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"],
+        "enum": [
+          "NSW",
+          "VIC",
+          "QLD",
+          "WA",
+          "SA",
+          "TAS",
+          "ACT",
+          "NT"
+        ],
         "description": "Australian state or territory"
       },
       "PatientData": {
         "type": "object",
         "description": "Patient creation response data",
-        "required": ["external_patient_id", "parchment_patient_id", "url"],
+        "required": [
+          "external_patient_id",
+          "parchment_patient_id",
+          "url"
+        ],
         "properties": {
           "external_patient_id": {
             "type": "string",
@@ -1083,16 +1740,260 @@
           }
         ]
       },
+      "NewUser": {
+        "type": "object",
+        "description": "User information to be created",
+        "required": [
+          "family_name",
+          "given_name",
+          "email",
+          "partner_user_id"
+        ],
+        "properties": {
+          "given_name": {
+            "type": "string",
+            "description": "User's given name",
+            "example": "Darlene"
+          },
+          "family_name": {
+            "type": "string",
+            "description": "User's family name",
+            "example": "Cameron"
+          },
+          "date_of_birth": {
+            "type": "string",
+            "format": "date",
+            "description": "User's date of birth in YYYY-MM-DD format (required if role includes 'provider')",
+            "example": "1969-10-02"
+          },
+          "sex": {
+            "type": "string",
+            "description": "User's sex (required if role includes 'provider')",
+            "enum": [
+              "M",
+              "F",
+              "I",
+              "O"
+            ],
+            "example": "F"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User's email address",
+            "example": "darlene.cameron@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "description": "User's Australian phone number. Must be a valid Australian number with digits only. Supports mobile (04xxxxxxxx) and landline (0[2378]xxxxxxxx) formats. International format with +61 or 61 prefix is also accepted.",
+            "example": "0412345678"
+          },
+          "access_roles": {
+            "type": "array",
+            "description": "List of access roles for the user",
+            "items": {
+              "type": "string",
+              "enum": [
+                "admin",
+                "provider"
+              ]
+            },
+            "example": [
+              "admin",
+              "provider"
+            ]
+          },
+          "hpii_number": {
+            "type": "string",
+            "description": "Healthcare Provider Individual Identifier (required if role includes 'provider')",
+            "example": "8003614900029560"
+          },
+          "prescriber_type": {
+            "type": "string",
+            "description": "Prescriber type (required if role includes 'provider')",
+            "enum": [
+              "M",
+              "N",
+              "D",
+              "P",
+              "T"
+            ],
+            "example": "M"
+          },
+          "prescriber_number": {
+            "type": "string",
+            "description": "Prescriber number (required if role includes 'provider' and prescriber_type is not 'T')",
+            "example": "1234567"
+          },
+          "qualifications": {
+            "type": "string",
+            "description": "Professional qualifications (required if role includes 'provider')",
+            "example": "LLB"
+          },
+          "title": {
+            "type": "string",
+            "description": "Professional title",
+            "example": "Dr"
+          },
+          "provider_number": {
+            "type": "string",
+            "description": "Medicare provider number",
+            "example": "123456789"
+          },
+          "ahpra_number": {
+            "type": "string",
+            "description": "AHPRA registration number",
+            "example": "1234567896321"
+          },
+          "hospital_provider_number": {
+            "type": "string",
+            "description": "Hospital provider number",
+            "example": "H123456"
+          },
+          "partner_user_id": {
+            "type": "string",
+            "description": "Partner's unique identifier for the user",
+            "example": "CLINIKO#USER_12345"
+          }
+        }
+      },
+      "UserData": {
+        "type": "object",
+        "description": "User creation response data",
+        "required": [
+          "external_user_id",
+          "parchment_user_id",
+          "url"
+        ],
+        "properties": {
+          "external_user_id": {
+            "type": "string",
+            "description": "Partner's unique identifier for the user",
+            "example": "PARTNER#USER_12345"
+          },
+          "parchment_user_id": {
+            "type": "string",
+            "description": "Parchment's unique identifier for the user",
+            "example": "usr_abc123def456"
+          },
+          "url": {
+            "type": "string",
+            "description": "Direct link to user in Parchment portal",
+            "example": "https://app.parchment.health/dashboard/users/usr_abc123def456"
+          }
+        }
+      },
+      "UserResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ExternalApiResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "statusCode": {
+                "example": 201
+              },
+              "message": {
+                "example": "User created successfully"
+              },
+              "data": {
+                "$ref": "#/components/schemas/UserData"
+              }
+            }
+          }
+        ]
+      },
+      "UpdateUserRoles": {
+        "type": "object",
+        "description": "User roles update request",
+        "required": [
+          "access_roles"
+        ],
+        "properties": {
+          "access_roles": {
+            "type": "array",
+            "description": "Array of roles to assign to the user",
+            "items": {
+              "type": "string",
+              "enum": [
+                "admin",
+                "provider",
+                "receptionist",
+                "rx_reader",
+                "rx_queue_manager"
+              ],
+              "description": "Valid user roles. Note: owner, support, and member roles cannot be assigned via API."
+            },
+            "example": [
+              "admin",
+              "provider"
+            ]
+          }
+        }
+      },
+      "UserRolesData": {
+        "type": "object",
+        "description": "User roles update response data",
+        "required": [
+          "user_id",
+          "access_roles"
+        ],
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "description": "Parchment's unique identifier for the user",
+            "example": "usr_abc123def456"
+          },
+          "access_roles": {
+            "type": "array",
+            "description": "Updated array of roles assigned to user",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "admin",
+              "provider"
+            ]
+          }
+        }
+      },
+      "UserRolesResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ExternalApiResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "statusCode": {
+                "example": 200
+              },
+              "message": {
+                "example": "User roles updated successfully"
+              },
+              "data": {
+                "$ref": "#/components/schemas/UserRolesData"
+              }
+            }
+          }
+        ]
+      },
       "TokenRequest": {
         "type": "object",
-        "required": ["grantType", "scope"],
+        "required": [
+          "grantType",
+          "scope"
+        ],
         "properties": {
           "grantType": {
             "type": "string",
             "description": "Type of grant for OAuth2 authentication",
             "example": "client_credentials",
             "default": "client_credentials",
-            "enum": ["client_credentials"]
+            "enum": [
+              "client_credentials"
+            ]
           },
           "scope": {
             "type": "array",
@@ -1106,18 +2007,27 @@
                 "read:patient_prescription",
                 "create:user",
                 "read:user",
+                "read:users",
                 "update:user",
                 "delete:user"
               ]
             },
-            "example": ["create:patient", "read:patient_prescription"]
+            "example": [
+              "create:patient",
+              "read:patient_prescription"
+            ]
           }
         }
       },
       "TokenData": {
         "type": "object",
         "description": "Authentication token data",
-        "required": ["accessToken", "expiresIn", "tokenType", "scope"],
+        "required": [
+          "accessToken",
+          "expiresIn",
+          "tokenType",
+          "scope"
+        ],
         "properties": {
           "accessToken": {
             "type": "string",
@@ -1140,7 +2050,10 @@
             "items": {
               "type": "string"
             },
-            "example": ["create:patient", "read:patient_prescription"]
+            "example": [
+              "create:patient",
+              "read:patient_prescription"
+            ]
           }
         }
       },
@@ -1168,62 +2081,160 @@
       "Prescription": {
         "type": "object",
         "properties": {
-          "url": { "type": "string", "format": "uri" },
-          "scid": { "type": "string" },
+          "prescription_type": {
+            "type": "string",
+            "enum": [
+              "ELECTRONIC",
+              "PAPER"
+            ],
+            "description": "Type of prescription"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "scid": {
+            "type": "string"
+          },
           "status": {
             "type": "string",
-            "enum": ["Active", "Ceased", "Cancelled"],
+            "enum": [
+              "Active",
+              "Ceased",
+              "Cancelled"
+            ],
             "description": "Current status of the prescription"
           },
-          "created_date": { "type": "string", "format": "date-time" },
-          "item_name": { "type": "string" },
-          "quantity": { "type": "string" },
-          "number_of_repeats_authorised": { "type": "string" },
-          "repeat_intervals": { "type": "string" },
-          "pbs_code": { "type": "string" },
-          "item_strength": { "type": "string" },
-          "item_form": { "type": "string" },
-          "route_administration": { "type": "string" },
-          "pbsdva_authority_number": { "type": "string" },
-          "phone_approval_authority_number": { "type": "string" },
-          "schedule_number": { "type": "string" },
-          "private_prescription": { "type": "boolean" },
-          "emergency_supply": { "type": "boolean" },
-          "brand_substitution_not_allowed": { "type": "boolean" },
-          "reason_for_prescribing": { "type": "string" },
-          "patient_instructions": { "type": "string" },
-          "doctor_notes": { "type": "string" },
-          "pharmacy_name": { "type": "string" },
-          "regulation_24": { "type": "boolean" },
-          "controlled_substance_reference": { "type": "string" },
-          "unusual_dose_flag": { "type": "boolean" },
-          "unusual_qty_flag": { "type": "boolean" },
-          "my_sl_consent": { "type": "boolean" },
-          "send_to_pharmacy": { "type": "string" },
-          "unlisted_item_repat_authority": { "type": "boolean" },
-          "prescriber_script_number": { "type": "string" }
+          "created_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "item_name": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "number_of_repeats_authorised": {
+            "type": "string"
+          },
+          "repeat_intervals": {
+            "type": "string"
+          },
+          "pbs_code": {
+            "type": "string"
+          },
+          "item_strength": {
+            "type": "string"
+          },
+          "item_form": {
+            "type": "string"
+          },
+          "route_administration": {
+            "type": "string"
+          },
+          "pbsdva_authority_number": {
+            "type": "string"
+          },
+          "phone_approval_authority_number": {
+            "type": "string"
+          },
+          "schedule_number": {
+            "type": "string"
+          },
+          "private_prescription": {
+            "type": "boolean"
+          },
+          "emergency_supply": {
+            "type": "boolean"
+          },
+          "brand_substitution_not_allowed": {
+            "type": "boolean"
+          },
+          "reason_for_prescribing": {
+            "type": "string"
+          },
+          "patient_instructions": {
+            "type": "string"
+          },
+          "doctor_notes": {
+            "type": "string"
+          },
+          "pharmacy_name": {
+            "type": "string"
+          },
+          "regulation_24": {
+            "type": "boolean"
+          },
+          "controlled_substance_reference": {
+            "type": "string"
+          },
+          "unusual_dose_flag": {
+            "type": "boolean"
+          },
+          "unusual_qty_flag": {
+            "type": "boolean"
+          },
+          "my_sl_consent": {
+            "type": "boolean"
+          },
+          "send_to_pharmacy": {
+            "type": "string"
+          },
+          "unlisted_item_repat_authority": {
+            "type": "boolean"
+          },
+          "prescriber_script_number": {
+            "type": "string"
+          },
+          "annotations": {
+            "type": "string"
+          }
         }
       },
       "Patient": {
         "type": "object",
         "properties": {
-          "given_name": { "type": "string" },
-          "family_name": { "type": "string" },
-          "date_of_birth": { "type": "string", "format": "date-time" },
-          "partner_patient_id": { "type": "string" }
+          "given_name": {
+            "type": "string"
+          },
+          "family_name": {
+            "type": "string"
+          },
+          "date_of_birth": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sex": {
+            "type": "string"
+          },
+          "patient_id": {
+            "type": "string"
+          },
+          "partner_patient_id": {
+            "type": "string"
+          }
         }
       },
       "Prescriber": {
         "type": "object",
         "properties": {
-          "given_name": { "type": "string" },
-          "family_name": { "type": "string" }
+          "given_name": {
+            "type": "string"
+          },
+          "family_name": {
+            "type": "string"
+          }
         }
       },
       "PatientPrescriptionsData": {
         "type": "object",
         "description": "Patient prescription data",
-        "required": ["patient", "prescriber", "prescriptions"],
+        "required": [
+          "patient",
+          "prescriber",
+          "prescriptions"
+        ],
         "properties": {
           "patient": {
             "$ref": "#/components/schemas/Patient"

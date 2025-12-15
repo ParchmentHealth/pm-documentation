@@ -15,7 +15,17 @@
         "groups": [
           {
             "group": "Get Started",
-            "pages": ["introduction", "development", "docs/faq"]
+            "pages": [
+              "introduction",
+              "docs/faq"
+            ]
+          },
+          {
+            "group": "Integration Process",
+            "pages": [
+              "partner-integration-guide",
+              "post-integration-guide"
+            ]
           }
         ]
       },
@@ -24,7 +34,9 @@
         "groups": [
           {
             "group": "API Documentation",
-            "pages": ["api-reference/introduction"]
+            "pages": [
+              "api-reference/introduction"
+            ]
           },
           {
             "group": "Authentication",
@@ -35,12 +47,28 @@
             ]
           },
           {
-            "group": "Endpoint Examples",
+            "group": "Authentication Endpoints",
             "pages": [
               "api-reference/endpoint/v1/token",
-              "api-reference/endpoint/v1/validate-integration",
+              "api-reference/endpoint/v1/validate-integration"
+            ]
+          },
+          {
+            "group": "Patient Management Endpoints",
+            "pages": [
               "api-reference/endpoint/v1/create-patient",
               "api-reference/endpoint/v1/get-patient-prescriptions"
+            ]
+          },
+          {
+            "group": "User Management Endpoints",
+            "pages": [
+              "api-reference/endpoint/v1/create-user",
+              "api-reference/endpoint/v1/read-user",
+              "api-reference/endpoint/v1/read-users",
+              "api-reference/endpoint/v1/update-user",
+              "api-reference/endpoint/v1/update-user-roles",
+              "api-reference/endpoint/v1/user-workflows"
             ]
           }
         ]
@@ -53,6 +81,17 @@
             "pages": [
               "sso/sso-integration-generic",
               "sso/sso-integration-auth0"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Embedded iFrame",
+        "groups": [
+          {
+            "group": "iFrame Integration",
+            "pages": [
+              "sso/embedded-iframe"
             ]
           }
         ]

@@ -1,0 +1,259 @@
+---
+openapi: "PUT /v1/organizations/{organization_id}/users/{user_id}"
+---
+
+## Integration Notes
+
+1. **No role updates**: `access_roles`, `email` attributes will be ignored.
+2. **Partial Updates**: Only include fields you want to update. Omitted fields will not be modified.
+3. **Provider Updates**: Use the `provider_details` object for provider-specific fields to ensure proper validation.
+4. **Validation Dependencies**: Be aware of field dependencies, especially for provider details.
+5. **User Existence**: The API will return 404 if the user doesn't exist in the organization.
+6. **Request ID**: Always log the `requestId` for debugging support requests.
+
+
+
+## Request
+
+### Update Basic User Information
+
+```json
+{
+  "full_name": "Darlene Scott"
+}
+```
+
+### Update Provider Details
+
+```json
+{
+  "provider_details": {
+    "given_name": "Darlene",
+    "family_name": "Scott",
+    "prescriber_type": "M",
+    "prescriber_number": "1234567",
+    "qualifications": "MBBS, FRACGP",
+    "ahpra_number": "MED0001234567",
+    "provider_number": "123456789"
+  }
+}
+```
+
+### Update Both User and Provider Information
+
+```json
+{
+    "full_name": "Darlene Scott",
+    "provider_details": {
+      "given_name": "Darlene",
+      "family_name": "Cameron",
+      "date_of_birth": "1969-10-02",
+      "sex": "F",
+      "title": "Dr",
+      "prescriber_type": "M",
+      "prescriber_number": "1234567",
+      "qualifications": "MBBS, FRACGP",
+      "ahpra_number": "MED0001234567",
+      "hospital_provider_number": "H123456"
+  }
+}
+```
+
+
+### User Fields
+
+| Field           | Type   | Required | Description                               |
+| --------------- | ------ | -------- | ----------------------------------------- |
+| `full_name`     | string | No       | User's given name                         |
+
+
+### Provider Details
+
+When updating provider-specific information, use the `provider_details` object:
+
+| Field                      | Type   | Required When                              | Description                     |
+| -------------------------- | ------ | ------------------------------------------ | ------------------------------- |
+| `given_name`               | string | No                                         | Prescriber's given name         |
+| `family_name`              | string | No                                         | Prescriber's family name                        |
+| `date_of_birth`            | string | No                                         | Date of birth in YYYY-MM-DD format       |
+| `sex`                      | string | No                                         | Sex (M/F/I/N)                           |
+| `hpii_number`              | string | No                                         | Healthcare Provider Identifier  |
+| `phone`                    | string | No                                         | Provider phone number           |
+| `title`                    | string | No                                         | Professional title              |
+| `prescriber_number`        | string | When prescriber_type is not 'T' (podiatrist) | 7-character prescriber number |
+| `provider_number`          | string | No                                         | 9-character provider number     |
+| `prescriber_type`          | string | No                                         | Prescriber type (M/N/D/P/T)     |
+| `ahpra_number`             | string | No                                         | AHPRA registration number       |
+| `qualifications`           | string | When prescriber_type is provided          | Professional qualifications      |
+| `hospital_provider_number` | string | No                                         | Hospital provider number        |
+| `erx_entity_id`            | string | No                                         | ERX Entity ID provided by ERX   |
+
+### Validation Rules
+
+1. **Prescriber Number**: Must be exactly 7 characters when provided
+2. **Provider Number**: Must be exactly 9 characters containing only alphanumeric characters
+3. **Provider Details Dependencies**: 
+   - If `prescriber_type` is provided, `qualifications` must also be provided
+   - If `prescriber_type` is not 'T' (podiatrist), `prescriber_number` is required
+4. **Date Format**: Date of birth must be in YYYY-MM-DD format
+5. **Sex Values**: Must be one of: M (Male), F (Female), I (Indeterminate), N (Not-stated)
+
+### Prescriber Types
+
+Valid values for `prescriber_type`:
+
+- `M` (Medical Practitioner)
+- `E` (Eye/Optometrist)
+- `U` (Nurse)
+- `F` (Midwife)
+- `D` (Dentist)
+- `V` (Veterinarian)
+- `T` (Podiatrist)
+- `C` (Pharmacist)
+
+
+
+
+## Response 
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "User updated successfully",
+  "data": {
+    "user_id": "usr_abc123def456"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_abc123"
+}
+```
+
+### Validation Error (422 Unprocessable Entity)
+
+```json
+{
+  "success": false,
+  "statusCode": 422,
+  "error": {
+    "type": "https://parchment.health/errors/validation-error",
+    "title": "Validation failed",
+    "detail": "There were some problems with your input.",
+    "validation": [
+      {
+        "field": "date_of_birth",
+        "message": "Invalid date",
+        "code": "VALIDATION_ERROR"
+      },
+      {
+        "field": "provider_details",
+        "message": "When providing provider_details with prescriber_type, qualifications and prescriber_number (if not podiatrist) are required",
+        "code": "VALIDATION_ERROR"
+      }
+    ]
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_def456"
+}
+```
+
+### User Not Found (404 Not Found)
+
+```json
+{
+  "success": false,
+  "statusCode": 404,
+  "error": {
+    "type": "https://parchment.health/errors/not-found",
+    "title": "Not found",
+    "detail": "User not found"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_ghi789"
+}
+```
+
+### Unauthorized (401)
+
+```json
+{
+  "success": false,
+  "statusCode": 401,
+  "error": {
+    "type": "https://parchment.health/errors/authentication-required",
+    "title": "Unauthorized",
+    "detail": "Valid authentication token is required"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_jkl012"
+}
+```
+
+### Insufficient Permissions (403 Forbidden)
+
+```json
+{
+  "success": false,
+  "statusCode": 403,
+  "error": {
+    "type": "https://parchment.health/errors/insufficient-scope",
+    "title": "Insufficient permissions",
+    "detail": "This operation requires the 'update:user' scope"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_mno345"
+}
+```
+
+### Rate Limited (429 Too Many Requests)
+
+```json
+{
+  "success": false,
+  "statusCode": 429,
+  "error": {
+    "type": "https://parchment.health/errors/rate-limit",
+    "title": "Rate limit exceeded",
+    "detail": "Too many requests. Please try again later."
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_pqr678"
+}
+```
+
+## Response Fields
+
+### Success Response Data
+
+| Field     | Type   | Description                        |
+| --------- | ------ | ---------------------------------- |
+| `user_id` | string | Parchment's unique user identifier |
+
+### Common Response Fields
+
+All responses include these standard fields:
+
+| Field        | Type    | Description                             |
+| ------------ | ------- | --------------------------------------- |
+| `success`    | boolean | Indicates if the request was successful |
+| `statusCode` | number  | HTTP status code                        |
+| `timestamp`  | string  | ISO 8601 timestamp of the response      |
+| `requestId`  | string  | Unique identifier for debugging         |
+
+## Status Codes
+
+| Code  | Status                | Description                                      |
+| ----- | --------------------- | ------------------------------------------------ |
+| `200` | OK                    | User successfully updated                        |
+| `400` | Bad Request           | Invalid request format or invalid parameters     |
+| `401` | Unauthorized          | Authentication required or token invalid         |
+| `403` | Forbidden             | Insufficient permissions (missing update:user scope) |
+| `404` | Not Found             | User not found                                  |
+| `409` | Conflict              | Update conflict (e.g., duplicate values)        |
+| `422` | Unprocessable Entity  | Request validation failed                       |
+| `429` | Too Many Requests     | Rate limit exceeded                             |
+| `500` | Internal Server Error | Unexpected server error                         |
+
+
