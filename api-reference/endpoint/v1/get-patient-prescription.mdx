@@ -1,0 +1,78 @@
+---
+openapi: "GET /v1/organizations/{organization_id}/users/{user_id}/patients/{patient_id}/prescriptions/{scid}"
+---
+
+## Description
+
+Retrieves a single prescription by its SCID (Script ID) for a specific patient.
+
+## Path Parameters
+
+- `organization_id` (required, string): The unique identifier of the organization.
+- `user_id` (required, string): The unique identifier of the user making the request.
+- `patient_id` (required, string): The unique identifier of the patient.
+- `scid` (required, string): The unique Script ID of the prescription.
+
+## Response
+
+Returns the prescription details along with patient and prescriber information:
+
+```json
+{
+  "data": {
+    "patient": {
+      "given_name": "John",
+      "family_name": "Doe",
+      "date_of_birth": "1990-01-15",
+      "sex": "M",
+      "patient_id": "patient-uuid",
+      "partner_patient_id": "external-patient-id"
+    },
+    "prescription": {
+      "url": "https://...",
+      "scid": "ABC123",
+      "status": "ACTIVE",
+      "created_date": "2025-01-15T10:30:00Z",
+      "prescriber": {
+        "title": "Dr",
+        "given_name": "Jane",
+        "family_name": "Smith"
+      },
+      "item_name": "Amoxicillin 500mg capsules",
+      "quantity": "20",
+      "number_of_repeats_authorised": "2",
+      "pbs_code": "1234A",
+      "item_strength": "500mg",
+      "item_form": "capsule",
+      "route_administration": "oral"
+    }
+  },
+  "message": "Prescriptions retrieved successfully",
+  "code": "SUCCESS"
+}
+```
+
+## Error Responses
+
+### 404 Not Found
+
+Returned when the prescription with the specified SCID does not exist for the patient:
+
+```json
+{
+  "error": {
+    "type": "PRESCRIPTION_NOT_FOUND",
+    "title": "Resource not found",
+    "detail": "Prescription with scid 'ABC123' not found for patient 'patient-uuid'"
+  },
+  "code": "RESOURCE_NOT_FOUND"
+}
+```
+
+### 401 Unauthorized
+
+Returned when authentication fails or the token is invalid.
+
+### 400 Bad Request
+
+Returned when required parameters are missing or invalid.
