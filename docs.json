@@ -92,7 +92,18 @@
             "group": "iFrame Integration",
             "pages": [
               "sso/embedded-iframe"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "Webhooks",
+        "groups": [
+          {
+            "group": "Webhook Integration",
+            "pages": [
+              "webhooks/webhook-integration",
+              "webhooks/webhook-events"
             ]
           }
         ]
