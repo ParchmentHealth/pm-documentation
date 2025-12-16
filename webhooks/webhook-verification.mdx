@@ -1,0 +1,565 @@
+---
+title: Webhook Signature Verification
+---
+
+Learn how to verify webhook signatures to ensure requests are authentic and from Parchment.
+
+---
+
+## Why Verify Signatures?
+
+Webhook signature verification ensures that:
+
+- Webhooks are sent by Parchment, not a malicious actor
+- The payload hasn't been tampered with
+- The webhook isn't a replay attack (using timestamps)
+
+<Warning>
+  **Never process webhooks without verifying the signature.** This could allow attackers to send fake events to your system.
+</Warning>
+
+---
+
+## How It Works
+
+Parchment signs every webhook using **HMAC SHA-256**:
+
+1. Creates a signed payload: `timestamp.json_body`
+2. Computes HMAC SHA-256 signature using your webhook secret
+3. Sends the signature in the `X-Webhook-Signature` header
+4. Your application verifies the signature matches
+
+---
+
+## Signature Header Format
+
+The `X-Webhook-Signature` header contains:
+
+```
+t=1702465200,v1=5a2c7f3e8b9d4a1c6e5f8b2d9a4c7e1f3a8b5d2c9e6f1a4b7c3e8d5f2a9c6e3f
+```
+
+Where:
+- `t` = Unix timestamp (seconds) when the webhook was sent
+- `v1` = HMAC SHA-256 signature (hex-encoded)
+
+---
+
+## Step-by-Step Verification
+
+### Step 1: Extract the Signature Header
+
+Get the `X-Webhook-Signature` header from the request.
+
+### Step 2: Parse Timestamp and Signature
+
+Split the header on commas and extract the timestamp (`t`) and signature (`v1`).
+
+### Step 3: Check Timestamp Tolerance
+
+Verify the timestamp is within 5 minutes of the current time to prevent replay attacks.
+
+### Step 4: Compute Expected Signature
+
+Create the signed payload: `timestamp.raw_json_body`
+
+Compute HMAC SHA-256 using your webhook secret.
+
+### Step 5: Compare Signatures
+
+Use **timing-safe comparison** to compare the signatures.
+
+---
+
+## Implementation Examples
+
+### Node.js / TypeScript
+
+<CodeGroup>
+
+```typescript Express.js
+import express from 'express';
+import crypto from 'crypto';
+
+const app = express();
+
+// IMPORTANT: Use raw body parser for webhook routes
+app.post('/webhook',
+  express.raw({ type: 'application/json' }),
+  (req, res) => {
+    const signature = req.headers['x-webhook-signature'] as string;
+    const payload = req.body.toString('utf8');
+    const secret = process.env.WEBHOOK_SECRET!;
+
+    // Verify signature
+    const result = verifyWebhook(payload, signature, secret);
+
+    if (!result.valid) {
+      console.error('Webhook verification failed:', result.error);
+      return res.status(400).json({ error: 'Invalid signature' });
+    }
+
+    // Parse and process the event
+    const event = JSON.parse(payload);
+    console.log('Received event:', event.event.type);
+
+    // Process the event...
+
+    res.status(200).json({ received: true });
+  }
+);
+
+function verifyWebhook(
+  payload: string,
+  signatureHeader: string,
+  secret: string,
+  toleranceSeconds: number = 300
+): { valid: boolean; error?: string } {
+  // Parse signature header
+  const parts = signatureHeader.split(',');
+  let timestamp: number | null = null;
+  let signature: string | null = null;
+
+  for (const part of parts) {
+    const [key, value] = part.split('=');
+    if (key === 't') {
+      timestamp = parseInt(value, 10);
+    } else if (key === 'v1') {
+      signature = value;
+    }
+  }
+
+  if (!timestamp || !signature || isNaN(timestamp)) {
+    return { valid: false, error: 'Invalid signature header format' };
+  }
+
+  // Check timestamp tolerance
+  const currentTime = Math.floor(Date.now() / 1000);
+  const timeDiff = Math.abs(currentTime - timestamp);
+
+  if (timeDiff > toleranceSeconds) {
+    return {
+      valid: false,
+      error: `Timestamp outside tolerance (${timeDiff}s > ${toleranceSeconds}s)`
+    };
+  }
+
+  // Compute expected signature
+  const signedPayload = `${timestamp}.${payload}`;
+  const expectedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(signedPayload)
+    .digest('hex');
+
+  // Timing-safe comparison
+  if (!timingSafeEqual(signature, expectedSignature)) {
+    return { valid: false, error: 'Signature mismatch' };
+  }
+
+  return { valid: true };
+}
+
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return result === 0;
+}
+
+app.listen(3000, () => {
+  console.log('Webhook server running on port 3000');
+});
+```
+
+```typescript Next.js (App Router)
+// app/api/webhook/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
+
+export async function POST(request: NextRequest) {
+  try {
+    // Get signature header
+    const signature = request.headers.get('x-webhook-signature');
+    if (!signature) {
+      return NextResponse.json(
+        { error: 'Missing signature' },
+        { status: 400 }
+      );
+    }
+
+    // Get raw body
+    const body = await request.text();
+    const secret = process.env.WEBHOOK_SECRET!;
+
+    // Verify signature
+    const result = verifyWebhook(body, signature, secret);
+
+    if (!result.valid) {
+      console.error('Webhook verification failed:', result.error);
+      return NextResponse.json(
+        { error: 'Invalid signature' },
+        { status: 400 }
+      );
+    }
+
+    // Parse and process event
+    const event = JSON.parse(body);
+    console.log('Received webhook:', event.event.type);
+
+    // Process the event asynchronously
+    processWebhookAsync(event);
+
+    return NextResponse.json({ received: true });
+  } catch (error) {
+    console.error('Webhook error:', error);
+    return NextResponse.json(
+      { error: 'Internal error' },
+      { status: 500 }
+    );
+  }
+}
+
+function verifyWebhook(
+  payload: string,
+  signatureHeader: string,
+  secret: string,
+  toleranceSeconds: number = 300
+): { valid: boolean; error?: string } {
+  // Parse signature header
+  const parts = signatureHeader.split(',');
+  let timestamp: number | null = null;
+  let signature: string | null = null;
+
+  for (const part of parts) {
+    const [key, value] = part.split('=');
+    if (key === 't') {
+      timestamp = parseInt(value, 10);
+    } else if (key === 'v1') {
+      signature = value;
+    }
+  }
+
+  if (!timestamp || !signature || isNaN(timestamp)) {
+    return { valid: false, error: 'Invalid signature header' };
+  }
+
+  // Check timestamp
+  const currentTime = Math.floor(Date.now() / 1000);
+  if (Math.abs(currentTime - timestamp) > toleranceSeconds) {
+    return { valid: false, error: 'Timestamp expired' };
+  }
+
+  // Compute expected signature
+  const signedPayload = `${timestamp}.${payload}`;
+  const expectedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(signedPayload)
+    .digest('hex');
+
+  // Timing-safe comparison
+  const isValid = crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expectedSignature)
+  );
+
+  if (!isValid) {
+    return { valid: false, error: 'Signature mismatch' };
+  }
+
+  return { valid: true };
+}
+
+async function processWebhookAsync(event: any) {
+  // Process webhook asynchronously
+  // Add to queue, database, etc.
+}
+```
+
+</CodeGroup>
+
+---
+
+### Python
+
+<CodeGroup>
+
+```python Flask
+from flask import Flask, request, jsonify
+import hmac
+import hashlib
+import time
+import os
+
+app = Flask(__name__)
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    signature = request.headers.get('X-Webhook-Signature')
+    payload = request.get_data(as_text=True)
+    secret = os.environ['WEBHOOK_SECRET']
+
+    # Verify signature
+    result = verify_webhook(payload, signature, secret)
+
+    if not result['valid']:
+        print(f"Webhook verification failed: {result['error']}")
+        return jsonify({'error': 'Invalid signature'}), 400
+
+    # Parse and process event
+    event = request.get_json()
+    print(f"Received webhook: {event['event']['type']}")
+
+    # Process the event...
+
+    return jsonify({'received': True}), 200
+
+def verify_webhook(payload, signature_header, secret, tolerance_seconds=300):
+    """Verify webhook signature."""
+    if not signature_header:
+        return {'valid': False, 'error': 'Missing signature header'}
+
+    # Parse signature header
+    parts = signature_header.split(',')
+    timestamp = None
+    signature = None
+
+    for part in parts:
+        key, value = part.split('=', 1)
+        if key == 't':
+            timestamp = int(value)
+        elif key == 'v1':
+            signature = value
+
+    if not timestamp or not signature:
+        return {'valid': False, 'error': 'Invalid signature format'}
+
+    # Check timestamp tolerance
+    current_time = int(time.time())
+    time_diff = abs(current_time - timestamp)
+
+    if time_diff > tolerance_seconds:
+        return {
+            'valid': False,
+            'error': f'Timestamp expired ({time_diff}s > {tolerance_seconds}s)'
+        }
+
+    # Compute expected signature
+    signed_payload = f"{timestamp}.{payload}"
+    expected_signature = hmac.new(
+        secret.encode('utf-8'),
+        signed_payload.encode('utf-8'),
+        hashlib.sha256
+    ).hexdigest()
+
+    # Timing-safe comparison
+    if not hmac.compare_digest(signature, expected_signature):
+        return {'valid': False, 'error': 'Signature mismatch'}
+
+    return {'valid': True}
+
+if __name__ == '__main__':
+    app.run(port=3000)
+```
+
+```python FastAPI
+from fastapi import FastAPI, Request, HTTPException
+import hmac
+import hashlib
+import time
+import os
+
+app = FastAPI()
+
+@app.post("/webhook")
+async def webhook(request: Request):
+    # Get signature header
+    signature = request.headers.get("x-webhook-signature")
+    if not signature:
+        raise HTTPException(status_code=400, detail="Missing signature")
+
+    # Get raw body
+    body = await request.body()
+    payload = body.decode('utf-8')
+    secret = os.environ["WEBHOOK_SECRET"]
+
+    # Verify signature
+    result = verify_webhook(payload, signature, secret)
+
+    if not result["valid"]:
+        print(f"Webhook verification failed: {result['error']}")
+        raise HTTPException(status_code=400, detail="Invalid signature")
+
+    # Parse and process event
+    event = await request.json()
+    print(f"Received webhook: {event['event']['type']}")
+
+    # Process the event...
+
+    return {"received": True}
+
+def verify_webhook(payload: str, signature_header: str, secret: str, tolerance_seconds: int = 300):
+    """Verify webhook signature."""
+    # Parse signature header
+    parts = signature_header.split(',')
+    timestamp = None
+    signature = None
+
+    for part in parts:
+        key, value = part.split('=', 1)
+        if key == 't':
+            timestamp = int(value)
+        elif key == 'v1':
+            signature = value
+
+    if not timestamp or not signature:
+        return {'valid': False, 'error': 'Invalid signature format'}
+
+    # Check timestamp
+    current_time = int(time.time())
+    if abs(current_time - timestamp) > tolerance_seconds:
+        return {'valid': False, 'error': 'Timestamp expired'}
+
+    # Compute expected signature
+    signed_payload = f"{timestamp}.{payload}"
+    expected_signature = hmac.new(
+        secret.encode('utf-8'),
+        signed_payload.encode('utf-8'),
+        hashlib.sha256
+    ).hexdigest()
+
+    # Compare signatures
+    if not hmac.compare_digest(signature, expected_signature):
+        return {'valid': False, 'error': 'Signature mismatch'}
+
+    return {'valid': True}
+```
+
+</CodeGroup>
+
+---
+
+## Testing Your Verification
+
+### Generate a Test Signature
+
+Use this script to generate a test signature:
+
+```bash
+# Node.js
+node -e "
+const crypto = require('crypto');
+const payload = '{\"event\":{\"id\":\"evt_test\",\"type\":\"prescription.created\"}}';
+const timestamp = Math.floor(Date.now() / 1000);
+const secret = 'whsec_test_secret';
+const signedPayload = timestamp + '.' + payload;
+const signature = crypto.createHmac('sha256', secret).update(signedPayload).digest('hex');
+console.log('X-Webhook-Signature: t=' + timestamp + ',v1=' + signature);
+console.log('Payload:', payload);
+"
+```
+
+### Test with cURL
+
+```bash
+curl -X POST https://your-endpoint.com/webhook \
+  -H "Content-Type: application/json" \
+  -H "X-Webhook-Signature: t=1702465200,v1=abc123..." \
+  -d '{"event":{"id":"evt_test","type":"prescription.created"}}'
+```
+
+---
+
+## Common Issues
+
+### "Timestamp outside tolerance window"
+
+**Cause:** The webhook timestamp is more than 5 minutes old.
+
+**Solutions:**
+- Ensure your server clock is synchronized (use NTP)
+- Check for network delays
+- Verify your server isn't taking too long to process requests
+
+### "Signature mismatch"
+
+**Cause:** The computed signature doesn't match the provided signature.
+
+**Solutions:**
+- Ensure you're using the correct webhook secret
+- Verify you're using the **raw request body** (not parsed JSON)
+- Check you're not modifying the body before verification
+- Ensure proper UTF-8 encoding
+
+### "Invalid signature header format"
+
+**Cause:** The signature header is malformed.
+
+**Solutions:**
+- Verify you're reading the `X-Webhook-Signature` header correctly
+- Check for any middleware that might be modifying headers
+
+---
+
+## Security Best Practices
+
+<Check>
+  **DO** verify signatures before processing
+</Check>
+
+<Check>
+  **DO** use timing-safe comparison functions
+</Check>
+
+<Check>
+  **DO** check timestamp tolerance (prevent replay attacks)
+</Check>
+
+<Check>
+  **DO** store webhook secrets in environment variables
+</Check>
+
+<Check>
+  **DO** log verification failures for security monitoring
+</Check>
+
+<Warning>
+  **DON'T** skip signature verification
+</Warning>
+
+<Warning>
+  **DON'T** use simple string comparison (vulnerable to timing attacks)
+</Warning>
+
+<Warning>
+  **DON'T** commit webhook secrets to version control
+</Warning>
+
+<Warning>
+  **DON'T** modify the request body before verification
+</Warning>
+
+---
+
+## Troubleshooting Checklist
+
+When debugging webhook verification:
+
+- [ ] Using HTTPS endpoint?
+- [ ] Reading `X-Webhook-Signature` header correctly?
+- [ ] Using raw request body (not parsed JSON)?
+- [ ] Using correct webhook secret?
+- [ ] Server clock synchronized?
+- [ ] Timing-safe comparison implemented?
+- [ ] Checking timestamp tolerance?
+- [ ] Logging verification failures?
+
+---
+
+## Next Steps
+
+- [Review webhook event types and payloads](/webhooks/webhook-events)
+- [Learn about best practices](/webhooks/webhook-integration#best-practices)
+- Contact support at [hello@parchment.health](mailto:hello@parchment.health)

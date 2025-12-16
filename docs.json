@@ -92,6 +92,7 @@
             "group": "iFrame Integration",
             "pages": [
               "sso/embedded-iframe"
+        "tab": "Webhooks",
             ]
           }
         ]

@@ -1,0 +1,617 @@
+---
+title: Webhook Events Reference
+---
+
+Complete reference of all webhook events sent by Parchment, including payload structures and examples.
+
+---
+
+## Event Structure
+
+All webhooks follow this standard structure:
+
+```json
+{
+  "event": {
+    "id": "evt_1234567890abcdef",
+    "type": "prescription.created",
+    "created": "2025-12-13T10:30:00.000Z",
+    "api_version": "2025-12-04",
+    "livemode": true,
+    "delivery_attempts": 1,
+    "request_id": "req_abc123xyz"
+  },
+  "context": {
+    "organization_id": "org_123456",
+    "partner_id": "cliniko",
+    "user_id": "user_789012",
+    "patient_id": "pat_345678",
+    "partner_patient_id": "ext_patient_901234",
+    "metadata": {}
+  },
+  "data": {
+    // Event-specific data
+  }
+}
+```
+
+### Event Object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Unique event identifier (format: `evt_xxx`) |
+| `type` | string | Event type (e.g., `prescription.created`) |
+| `created` | string | ISO 8601 timestamp when event was created |
+| `api_version` | string | API version used for this event |
+| `livemode` | boolean | `true` for production, `false` for test events |
+| `delivery_attempts` | number | Number of delivery attempts (optional) |
+| `request_id` | string | Original request ID that triggered this event (optional) |
+
+### Context Object
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `organization_id` | string | Parchment organization ID |
+| `partner_id` | string | Your partner ID (optional) |
+| `user_id` | string | ID of the user who triggered the event (optional) |
+| `patient_id` | string | Parchment patient ID (optional) |
+| `partner_patient_id` | string | Your internal patient ID (optional) |
+| `metadata` | object | Additional contextual information (optional) |
+
+---
+
+## Prescription Events
+
+### prescription.created
+
+Sent when a new prescription is created in Parchment.
+
+<CodeGroup>
+
+```json Example Payload
+{
+  "event": {
+    "id": "evt_7f8e9d0c1b2a3456",
+    "type": "prescription.created",
+    "created": "2025-12-13T14:30:00.000Z",
+    "api_version": "2025-12-04",
+    "livemode": true
+  },
+  "context": {
+    "organization_id": "org_123456",
+    "partner_id": "cliniko",
+    "user_id": "user_789012",
+    "patient_id": "pat_345678",
+    "partner_patient_id": "cliniko_patient_901234"
+  },
+  "data": {
+    "scid": "SC20251213-001234",
+    "prescription": {
+      "prescription_type": "STANDARD",
+      "url": "https://portal.parchment.health/prescription/SC20251213-001234",
+      "scid": "SC20251213-001234",
+      "status": "active",
+      "created_date": "2025-12-13T14:30:00.000Z",
+      "item_name": "Amoxicillin 500mg Capsules",
+      "quantity": "21",
+      "number_of_repeats_authorised": "2",
+      "repeat_intervals": "0",
+      "pbs_code": "1234A",
+      "item_strength": "500mg",
+      "item_form": "Capsule",
+      "route_administration": "Oral",
+      "pbsdva_authority_number": "AUTH123456",
+      "schedule_number": "S4",
+      "private_prescription": false,
+      "emergency_supply": false,
+      "brand_substitution_not_allowed": false,
+      "reason_for_prescribing": "Upper respiratory tract infection",
+      "patient_instructions": "Take 1 capsule three times daily with food",
+      "doctor_notes": "Review in 7 days if symptoms persist",
+      "regulation_24": false,
+      "unusual_dose_flag": false,
+      "unusual_qty_flag": false,
+      "my_sl_consent": true,
+      "unlisted_item_repat_authority": false,
+      "prescriber_script_number": "RX-2025-001234",
+      "prescriber": {
+        "title": "Dr",
+        "given_name": "Jane",
+        "family_name": "Smith"
+      }
+    },
+    "patient": {
+      "patient_id": "pat_345678",
+      "given_name": "John",
+      "family_name": "Doe",
+      "date_of_birth": "1980-05-15",
+      "sex": "M",
+      "partner_patient_id": "cliniko_patient_901234"
+    }
+  }
+}
+```
+
+```typescript TypeScript Type
+interface PrescriptionCreatedEvent {
+  event: {
+    id: string;
+    type: 'prescription.created';
+    created: string;
+    api_version: string;
+    livemode: boolean;
+    delivery_attempts?: number;
+    request_id?: string;
+  };
+  context: {
+    organization_id: string;
+    partner_id?: string;
+    user_id?: string;
+    patient_id?: string;
+    partner_patient_id?: string;
+    metadata?: Record<string, any>;
+  };
+  data: {
+    scid: string;
+    prescription: Prescription;
+    patient: Patient;
+  };
+}
+```
+
+</CodeGroup>
+
+**When to expect:**
+- After a prescription is successfully created via the Parchment portal or API
+- Sent immediately after prescription creation is complete
+
+**Common use cases:**
+- Update your system with the new prescription
+- Sync prescription details to your platform
+- Trigger follow-up workflows (e.g., patient notifications)
+
+---
+
+### prescription.updated
+
+Sent when an existing prescription is modified.
+
+<CodeGroup>
+
+```json Example Payload
+{
+  "event": {
+    "id": "evt_2c3d4e5f6a7b8901",
+    "type": "prescription.updated",
+    "created": "2025-12-13T16:45:00.000Z",
+    "api_version": "2025-12-04",
+    "livemode": true
+  },
+  "context": {
+    "organization_id": "org_123456",
+    "partner_id": "cliniko",
+    "user_id": "user_789012",
+    "patient_id": "pat_345678",
+    "partner_patient_id": "cliniko_patient_901234"
+  },
+  "data": {
+    "scid": "SC20251213-001234",
+    "prescription": {
+      // Full updated prescription object
+      "prescription_type": "STANDARD",
+      "scid": "SC20251213-001234",
+      "status": "active",
+      "created_date": "2025-12-13T14:30:00.000Z",
+      "item_name": "Amoxicillin 500mg Capsules",
+      "quantity": "28",  // ← Updated
+      "number_of_repeats_authorised": "2",
+      "patient_instructions": "Take 1 capsule twice daily with food",  // ← Updated
+      // ... other fields
+    },
+    "patient": {
+      // Patient details
+    }
+  },
+  "previous_data": {
+    // Only fields that changed
+    "quantity": "21",
+    "patient_instructions": "Take 1 capsule three times daily with food"
+  }
+}
+```
+
+</CodeGroup>
+
+**When to expect:**
+- When prescription details are modified
+- When prescription status changes (but not to cancelled/dispensed/expired)
+
+**Common use cases:**
+- Update prescription details in your system
+- Track prescription modifications
+- Audit changes
+
+**Note:** The `previous_data` field contains only the fields that changed, showing their previous values.
+
+---
+
+### prescription.cancelled
+
+Sent when a prescription is cancelled.
+
+<CodeGroup>
+
+```json Example Payload
+{
+  "event": {
+    "id": "evt_9a0b1c2d3e4f5678",
+    "type": "prescription.cancelled",
+    "created": "2025-12-14T09:15:00.000Z",
+    "api_version": "2025-12-04",
+    "livemode": true
+  },
+  "context": {
+    "organization_id": "org_123456",
+    "partner_id": "cliniko",
+    "user_id": "user_789012",
+    "patient_id": "pat_345678",
+    "partner_patient_id": "cliniko_patient_901234"
+  },
+  "data": {
+    "scid": "SC20251213-001234",
+    "prescription": {
+      "prescription_type": "STANDARD",
+      "scid": "SC20251213-001234",
+      "status": "cancelled",  // ← Status is now cancelled
+      "created_date": "2025-12-13T14:30:00.000Z",
+      "item_name": "Amoxicillin 500mg Capsules",
+      // ... other fields
+    },
+    "patient": {
+      // Patient details
+    }
+  }
+}
+```
+
+</CodeGroup>
+
+**When to expect:**
+- When a prescriber cancels a prescription
+- When a prescription is voided
+- When an error requires prescription cancellation
+
+**Common use cases:**
+- Mark prescription as cancelled in your system
+- Stop any automated processes related to this prescription
+- Update patient records
+- Trigger notifications to relevant parties
+
+---
+
+### prescription.dispensed
+
+Sent when a prescription is dispensed by a pharmacy.
+
+<CodeGroup>
+
+```json Example Payload
+{
+  "event": {
+    "id": "evt_5d6e7f8a9b0c1234",
+    "type": "prescription.dispensed",
+    "created": "2025-12-15T11:20:00.000Z",
+    "api_version": "2025-12-04",
+    "livemode": true
+  },
+  "context": {
+    "organization_id": "org_123456",
+    "partner_id": "cliniko",
+    "user_id": "user_789012",
+    "patient_id": "pat_345678",
+    "partner_patient_id": "cliniko_patient_901234",
+    "metadata": {
+      "dispensed_at": "2025-12-15T11:20:00.000Z"
+    }
+  },
+  "data": {
+    "scid": "SC20251213-001234",
+    "prescription": {
+      "prescription_type": "STANDARD",
+      "scid": "SC20251213-001234",
+      "status": "dispensed",  // ← Status is now dispensed
+      "created_date": "2025-12-13T14:30:00.000Z",
+      "item_name": "Amoxicillin 500mg Capsules",
+      "pharmacy_name": "City Pharmacy",  // ← Pharmacy information
+      // ... other fields
+    },
+    "patient": {
+      // Patient details
+    }
+  }
+}
+```
+
+</CodeGroup>
+
+**When to expect:**
+- When a pharmacy dispenses the prescription
+- After the prescription is collected by the patient
+
+**Common use cases:**
+- Track medication adherence
+- Update patient medication history
+- Trigger follow-up appointments
+- Analytics and reporting
+
+---
+
+### prescription.expired
+
+Sent when a prescription expires and can no longer be dispensed.
+
+<CodeGroup>
+
+```json Example Payload
+{
+  "event": {
+    "id": "evt_3e4f5a6b7c8d9012",
+    "type": "prescription.expired",
+    "created": "2026-12-13T14:30:00.000Z",
+    "api_version": "2025-12-04",
+    "livemode": true
+  },
+  "context": {
+    "organization_id": "org_123456",
+    "partner_id": "cliniko",
+    "user_id": "user_789012",
+    "patient_id": "pat_345678",
+    "partner_patient_id": "cliniko_patient_901234",
+    "metadata": {
+      "expired_at": "2026-12-13T14:30:00.000Z"
+    }
+  },
+  "data": {
+    "scid": "SC20251213-001234",
+    "prescription": {
+      "prescription_type": "STANDARD",
+      "scid": "SC20251213-001234",
+      "status": "expired",  // ← Status is now expired
+      "created_date": "2025-12-13T14:30:00.000Z",
+      "item_name": "Amoxicillin 500mg Capsules",
+      // ... other fields
+    },
+    "patient": {
+      // Patient details
+    }
+  }
+}
+```
+
+</CodeGroup>
+
+**When to expect:**
+- 12 months after prescription creation (standard expiration)
+- When prescription reaches its expiration date
+
+**Common use cases:**
+- Archive expired prescriptions
+- Trigger renewal reminders
+- Update prescription status in your system
+- Compliance reporting
+
+---
+
+## Prescription Data Structure
+
+### Prescription Object
+
+<CodeGroup>
+
+```typescript Full Type Definition
+interface Prescription {
+  prescription_type: 'STANDARD' | 'AUTHORITY' | 'EMERGENCY';
+  url?: string;
+  scid: string;
+  status: 'active' | 'cancelled' | 'dispensed' | 'expired';
+  created_date: string; // ISO 8601
+  item_name: string;
+  quantity: string;
+  number_of_repeats_authorised: string;
+  repeat_intervals: string;
+  pbs_code?: string;
+  item_strength?: string;
+  item_form?: string;
+  route_administration: string;
+  pbsdva_authority_number: string;
+  phone_approval_authority_number?: string;
+  schedule_number: string;
+  private_prescription: boolean;
+  emergency_supply: boolean;
+  brand_substitution_not_allowed: boolean;
+  reason_for_prescribing?: string;
+  patient_instructions?: string;
+  doctor_notes?: string;
+  pharmacy_name?: string;
+  regulation_24: boolean;
+  controlled_substance_reference?: string;
+  unusual_dose_flag: boolean;
+  unusual_qty_flag: boolean;
+  my_sl_consent: boolean;
+  send_to_pharmacy?: string;
+  unlisted_item_repat_authority: boolean;
+  prescriber_script_number: string;
+  annotations?: string;
+  custom_drug_details?: {
+    custom_product_id?: string;
+  };
+  prescriber: Prescriber;
+}
+
+interface Prescriber {
+  title?: string;
+  given_name: string;
+  family_name: string;
+}
+
+interface Patient {
+  patient_id: string;
+  given_name?: string;
+  family_name: string;
+  date_of_birth: string; // YYYY-MM-DD
+  sex: 'M' | 'F' | 'O' | 'U';
+  partner_patient_id?: string;
+}
+```
+
+</CodeGroup>
+
+### Key Fields Explained
+
+| Field | Description |
+|-------|-------------|
+| `scid` | Script Control Identifier - unique prescription ID |
+| `status` | Current prescription status |
+| `prescription_type` | Type of prescription (standard, authority, or emergency) |
+| `pbs_code` | PBS (Pharmaceutical Benefits Scheme) item code |
+| `schedule_number` | Drug schedule (S2, S3, S4, S8, etc.) |
+| `pbsdva_authority_number` | PBS/DVA authority approval number |
+| `private_prescription` | Whether this is a private (non-PBS) prescription |
+| `brand_substitution_not_allowed` | If true, generic substitution is not permitted |
+| `my_sl_consent` | Patient consent for My Script List |
+| `prescriber_script_number` | Prescriber's internal script reference |
+
+---
+
+## Event Filtering
+
+### By Event Type
+
+Process only specific event types:
+
+```typescript
+app.post('/webhook', (req, res) => {
+  const event = req.body;
+
+  switch (event.event.type) {
+    case 'prescription.created':
+      handlePrescriptionCreated(event);
+      break;
+
+    case 'prescription.dispensed':
+      handlePrescriptionDispensed(event);
+      break;
+
+    case 'prescription.cancelled':
+      handlePrescriptionCancelled(event);
+      break;
+
+    // Handle other events...
+  }
+
+  res.status(200).json({ received: true });
+});
+```
+
+### By Organization
+
+Filter events for specific organizations:
+
+```typescript
+app.post('/webhook', (req, res) => {
+  const event = req.body;
+
+  // Only process events for specific organization
+  if (event.context.organization_id === 'org_specific_123') {
+    processEvent(event);
+  }
+
+  res.status(200).json({ received: true });
+});
+```
+
+### By Patient
+
+Match events to patients in your system using `partner_patient_id`:
+
+```typescript
+async function handlePrescriptionCreated(event) {
+  const partnerPatientId = event.context.partner_patient_id;
+
+  // Find patient in your system
+  const patient = await findPatientByExternalId(partnerPatientId);
+
+  if (patient) {
+    // Add prescription to patient record
+    await addPrescriptionToPatient(patient.id, event.data.prescription);
+  }
+}
+```
+
+---
+
+## Idempotency
+
+Always use `event.id` to prevent duplicate processing:
+
+```typescript
+async function processWebhook(event) {
+  // Check if we've already processed this event
+  const exists = await db.webhookEvents.findOne({
+    event_id: event.event.id
+  });
+
+  if (exists) {
+    console.log('Event already processed:', event.event.id);
+    return;
+  }
+
+  // Process the event
+  await handleEvent(event);
+
+  // Save event as processed
+  await db.webhookEvents.create({
+    event_id: event.event.id,
+    event_type: event.event.type,
+    processed_at: new Date()
+  });
+}
+```
+
+---
+
+## Testing Events
+
+### Test Mode Events
+
+Events sent in test mode have:
+- `livemode: false`
+- Event IDs starting with `evt_test_`
+- Test organization IDs
+- Test patient data
+
+```json
+{
+  "event": {
+    "id": "evt_test_1234567890",
+    "type": "prescription.created",
+    "livemode": false,  // ← Test mode
+    // ...
+  }
+}
+```
+
+### Requesting Test Events
+
+Contact [hello@parchment.health](mailto:hello@parchment.health) to:
+- Send specific test events to your endpoint
+- Test all event types
+- Verify your integration
+
+---
+
+## Next Steps
+
+- [Set up webhook signature verification](/webhooks/webhook-verification)
+- [Review integration best practices](/webhooks/webhook-integration)
+- Contact support at [hello@parchment.health](mailto:hello@parchment.health)

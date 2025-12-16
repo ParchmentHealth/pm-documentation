@@ -1,0 +1,265 @@
+---
+title: Webhook Integration
+---
+
+Parchment Health uses **webhooks** to notify your application in real-time when events happen in your account. This guide will help you integrate with our webhook system to receive and process event notifications.
+
+---
+
+## Overview
+
+- **Security**: HMAC SHA-256 signatures for verification
+- **Delivery**: HTTP POST requests to your configured endpoint
+- **Retry Logic**: Automatic retries with exponential backoff
+- **Supported Events**: Prescription lifecycle events (created, updated, cancelled, dispensed, expired)
+
+---
+
+## How Webhooks Work
+
+1. An event occurs in Parchment (e.g., a prescription is created)
+2. Parchment sends an HTTPS POST request to your webhook endpoint
+3. Your endpoint validates the webhook signature
+4. Your application processes the event
+5. Your endpoint returns a 2xx status code to confirm receipt
+
+---
+
+## Configuration
+
+### 1. Provide Your Webhook Endpoint
+
+Contact Parchment support at [hello@parchment.health](mailto:hello@parchment.health) with:
+
+- Your webhook endpoint URL (must be HTTPS)
+- Your partner ID
+
+### 2. Receive Your Webhook Secret
+
+Parchment will generate a unique webhook secret for your endpoint. This secret:
+
+- Starts with `whsec_` prefix
+- Is shown **only once** - store it securely
+- Is used to verify webhook signatures
+- Should be treated like a password
+
+<Warning>
+  Store your webhook secret securely. Never commit it to version control or expose it in client-side code.
+</Warning>
+
+---
+
+## Webhook Endpoint Requirements
+
+Your webhook endpoint must:
+
+### 1. Use HTTPS
+
+All webhook URLs must use HTTPS with a valid SSL certificate.
+
+```bash
+✅ https://api.yourapp.com/webhooks/parchment
+❌ http://api.yourapp.com/webhooks/parchment
+```
+
+### 2. Return Success Quickly
+
+Respond with a `2xx` status code within 10 seconds. Process events asynchronously if needed.
+
+```javascript
+// ✅ Good - acknowledge immediately, process later
+app.post('/webhook', async (req, res) => {
+  // Verify signature first
+  if (!verifySignature(req)) {
+    return res.status(400).send('Invalid signature');
+  }
+
+  // Acknowledge receipt immediately
+  res.status(200).json({ received: true });
+
+  // Process asynchronously
+  processWebhookAsync(req.body);
+});
+```
+
+### 3. Verify Signatures
+
+Always verify the webhook signature before processing. See [Webhook Verification](/webhooks/webhook-verification).
+
+### 4. Handle Retries Idempotently
+
+Parchment may send the same event multiple times. Use the `event.id` to prevent duplicate processing.
+
+```javascript
+async function processWebhook(event) {
+  // Check if we've already processed this event
+  if (await eventExists(event.event.id)) {
+    console.log('Event already processed:', event.event.id);
+    return;
+  }
+
+  // Process the event
+  await handleEvent(event);
+
+  // Mark as processed
+  await saveProcessedEvent(event.event.id);
+}
+```
+
+---
+
+## Webhook Delivery
+
+### Headers
+
+Every webhook request includes these headers:
+
+| Header | Description | Example |
+|--------|-------------|---------|
+| `Content-Type` | Always `application/json` | `application/json` |
+| `X-Webhook-Signature` | HMAC SHA-256 signature | `t=1702465200,v1=abc123...` |
+| `User-Agent` | Parchment webhook identifier | `Parchment-Webhooks/1.0` |
+
+### Retry Behavior
+
+If your endpoint doesn't respond with a `2xx` status code:
+
+- **Retries**: Up to 3 attempts
+- **Backoff**: Exponential (1s, 2s, 4s)
+- **Non-retryable errors**: 4xx errors (except 408, 429)
+- **Timeout**: 10 seconds per attempt
+
+### Success Criteria
+
+A webhook is considered successfully delivered when your endpoint:
+
+1. Responds with a `2xx` status code (200-299)
+2. Within 10 seconds
+
+---
+
+## Testing Your Integration
+
+### 1. Set Up Your Endpoint
+
+Deploy your webhook endpoint with signature verification.
+
+### 2. Request Configuration
+
+Contact Parchment support to configure your webhook URL.
+
+### 3. Trigger Test Events
+
+You can trigger test events by:
+
+- Creating a prescription in the development environment
+- Asking Parchment support to send a test webhook
+
+### 4. Verify Receipt
+
+Check your logs to ensure:
+
+- Webhook was received
+- Signature verification passed
+- Event was processed correctly
+
+---
+
+## Best Practices
+
+### Security
+
+- ✅ Always verify webhook signatures
+- ✅ Use HTTPS with valid certificates
+- ✅ Store webhook secrets in environment variables
+- ✅ Log verification failures for monitoring
+- ❌ Never skip signature verification
+
+### Reliability
+
+- ✅ Respond with 2xx within 10 seconds
+- ✅ Process events asynchronously if needed
+- ✅ Use `event.id` for idempotent processing
+- ✅ Implement proper error handling
+- ✅ Monitor webhook endpoint health
+
+### Debugging
+
+- ✅ Log all incoming webhooks
+- ✅ Log signature verification results
+- ✅ Include `event.id` in logs for tracing
+- ✅ Monitor response times
+
+```javascript
+app.post('/webhook', async (req, res) => {
+  const eventId = req.body?.event?.id;
+
+  console.log('Webhook received:', {
+    event_id: eventId,
+    event_type: req.body?.event?.type,
+    timestamp: new Date().toISOString()
+  });
+
+  try {
+    if (!verifySignature(req)) {
+      console.error('Signature verification failed:', eventId);
+      return res.status(400).send('Invalid signature');
+    }
+
+    console.log('Signature verified:', eventId);
+    res.status(200).json({ received: true });
+
+    await processWebhookAsync(req.body);
+  } catch (error) {
+    console.error('Webhook processing error:', {
+      event_id: eventId,
+      error: error.message
+    });
+  }
+});
+```
+
+---
+
+## Monitoring
+
+Monitor these metrics for your webhook endpoint:
+
+- **Response time**: Should be < 1 second
+- **Success rate**: Should be > 99%
+- **Signature verification failures**: Should be 0
+- **Processing errors**: Track and investigate
+
+---
+
+## Event Types
+
+Parchment sends webhooks for these event types:
+
+| Event Type | Description |
+|------------|-------------|
+| `prescription.created` | A new prescription was created |
+| `prescription.updated` | A prescription was modified |
+| `prescription.cancelled` | A prescription was cancelled |
+| `prescription.dispensed` | A prescription was dispensed |
+| `prescription.expired` | A prescription expired |
+
+See [Webhook Events](/webhooks/webhook-events) for detailed payload examples.
+
+---
+
+## Support
+
+If you need help with webhook integration:
+
+- Review the [Webhook Verification Guide](/webhooks/webhook-verification)
+- Check [Webhook Events Reference](/webhooks/webhook-events)
+- Contact support at [hello@parchment.health](mailto:hello@parchment.health)
+
+---
+
+## Next Steps
+
+1. [Set up webhook signature verification](/webhooks/webhook-verification)
+2. [Review webhook event payloads](/webhooks/webhook-events)
+3. Contact support to configure your webhook endpoint
