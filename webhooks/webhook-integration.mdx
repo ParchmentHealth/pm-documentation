@@ -10,7 +10,7 @@ Parchment Health uses **webhooks** to notify your application in real-time when 
 
 - **Delivery**: HTTP POST requests to your configured endpoint
 - **Retry Logic**: Automatic retries with exponential backoff
-- **Supported Events**: Prescription lifecycle events (created)
+- **Supported Events**: Prescription lifecycle events 
 
 ---
 
@@ -95,14 +95,13 @@ Every webhook request includes these headers:
 | `Content-Type` | Always `application/json` | `application/json` |
 | `User-Agent` | Parchment webhook identifier | `Parchment-Webhooks/1.0` |
 
-### Retry Behavior
+### Delivery Behavior
 
-If your endpoint doesn't respond with a `2xx` status code:
+Webhook delivery configuration:
 
-- **Retries**: Up to 3 attempts
-- **Backoff**: Exponential (1s, 2s, 4s)
-- **Non-retryable errors**: 4xx errors (except 408, 429)
-- **Timeout**: 10 seconds per attempt
+- **Timeout**: 10 seconds per request
+- **Expected Response**: 2xx status code (200-299)
+- **Retry Policy**: Currently no automatic retries (coming soon)
 
 ### Success Criteria
 

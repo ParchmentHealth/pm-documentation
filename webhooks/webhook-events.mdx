@@ -13,13 +13,14 @@ All webhooks follow this standard structure:
 ```json
 {
   "event_type": "prescription.created",
-  "event_id": "evt_4e2ba4c9ed6b0a849c41f5bd8d526273",
-  "timestamp": "2025-12-16T19:13:09.468Z",
+  "event_id": "evt_e0a97272f60e4952f4b69f2bfb7acead",
+  "timestamp": "2025-12-19T06:15:18.786Z",
+  "partner_id": "tacklit",
+  "organization_id": "7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
   "data": {
-    "organization_id": "7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
     "patient_id": "f03b972b-53ea-452d-ae48-024817f6c3b0",
     "partner_patient_id": "1523402100149593750",
-    "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae",
+    "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae"
     // Event-specific fields
   }
 }
@@ -32,13 +33,14 @@ All webhooks follow this standard structure:
 | `event_type` | string | Event type (e.g., `prescription.created`) |
 | `event_id` | string | Unique event identifier (format: `evt_xxx`) |
 | `timestamp` | string | ISO 8601 timestamp when event was created |
-| `data` | object | Event data including context and event-specific information |
+| `partner_id` | string | Your partner identifier |
+| `organization_id` | string | Parchment organization ID (UUID) |
+| `data` | object | Event-specific data |
 
 ### Data Object (Common Fields)
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `organization_id` | string | Parchment organization ID (UUID) |
 | `patient_id` | string | Parchment patient ID (UUID) |
 | `partner_patient_id` | string | Your internal patient ID |
 | `user_id` | string | ID of the user (prescriber) who triggered the event (UUID) |
@@ -56,14 +58,15 @@ Sent when a new prescription is created in Parchment.
 ```json Example Payload
 {
   "event_type": "prescription.created",
-  "event_id": "evt_4e2ba4c9ed6b0a849c41f5bd8d526273",
-  "timestamp": "2025-12-16T19:13:09.468Z",
+  "event_id": "evt_e0a97272f60e4952f4b69f2bfb7acead",
+  "timestamp": "2025-12-19T06:15:18.786Z",
+  "partner_id": "tacklit",
+  "organization_id": "7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
   "data": {
-    "organization_id": "7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
     "patient_id": "f03b972b-53ea-452d-ae48-024817f6c3b0",
     "partner_patient_id": "1523402100149593750",
     "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae",
-    "scid": "2TM1XV0RP246R1WG45"
+    "scid": "2TM1XVXBJRWXH8NM68"
   }
 }
 ```
@@ -73,8 +76,9 @@ interface PrescriptionCreatedEvent {
   event_type: 'prescription.created';
   event_id: string;
   timestamp: string; // ISO 8601
+  partner_id: string; // Your partner identifier
+  organization_id: string; // UUID
   data: {
-    organization_id: string; // UUID
     patient_id: string; // UUID - Parchment's patient ID
     partner_patient_id: string; // Your system's patient ID
     user_id: string; // UUID - Prescriber's user ID
@@ -85,11 +89,20 @@ interface PrescriptionCreatedEvent {
 
 </CodeGroup>
 
+**Root Fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `event_type` | string | Always `prescription.created` for this event |
+| `event_id` | string | Unique event identifier (format: `evt_xxx`) |
+| `timestamp` | string | ISO 8601 timestamp when the event was created |
+| `partner_id` | string | Your partner identifier |
+| `organization_id` | string | UUID of the organization where the prescription was created |
+
 **Data Fields:**
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `organization_id` | string | UUID of the organization where the prescription was created |
 | `patient_id` | string | Parchment's internal patient ID (UUID) |
 | `partner_patient_id` | string | Your system's patient ID (as provided during patient creation) |
 | `user_id` | string | UUID of the user (prescriber) who created the prescription |
