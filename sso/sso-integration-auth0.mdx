@@ -13,13 +13,13 @@ To integrate your identity provider with Parchment using SAML:
 
 ### Assertion Consumer Service (ACS) URL
 
-| Environment | ACS URL                                               |
-| ----------- | ----------------------------------------------------- |
-| Development | `https://auth-dev.parchment.health/saml2/idpresponse` |
-| Production  | `https://auth.parchment.health/saml2/idpresponse`     |
+| Environment | ACS URL                                                   |
+| ----------- | --------------------------------------------------------- |
+| Sandbox     | `https://auth-sandbox.parchment.health/saml2/idpresponse` |
+| Production  | `https://auth.parchment.health/saml2/idpresponse`         |
 
 3. **Set Audience URI**:
-   - For development: `urn:amazon:cognito:sp:ap-southeast-2_Y1BbT5tQR`
+   - For sandbox: `urn:amazon:cognito:sp:ap-southeast-2_Y1BbT5tQR`
    - Production URI will be provided after testing is complete
 4. **Configure Attribute Mapping**:
    - Map the following attributes from your identity provider to Parchment:
@@ -29,16 +29,16 @@ To integrate your identity provider with Parchment using SAML:
      - `given_name`
      - `family_name`
 5. **Set Callback URLs**:
-   - For development:
+   - For sandbox:
      ```
-     https://auth-dev.parchment.health/saml2/idpresponse
+     https://auth-sandbox.parchment.health/saml2/idpresponse
      ```
    - For production:
      ```
      https://auth.parchment.health/saml2/idpresponse
      ```
 6. **Test the Integration**:
-   - Verify SSO login works in the development environment
+   - Verify SSO login works in the sandbox environment
    - Once confirmed, complete production deployment with Parchment support
 
 ## SAML Configuration Example (Auth0)

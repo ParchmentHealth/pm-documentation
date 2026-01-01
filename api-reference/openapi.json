@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "https://api.dev.parchmenthealth.io/external"
+      "url": "https://api.sandbox.parchmenthealth.io/external"
     },
     {
       "url": "https://api.parchmenthealth.io/external"
