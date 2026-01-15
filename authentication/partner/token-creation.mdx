@@ -5,79 +5,72 @@ description: "How to create partner authentication tokens"
 
 # Partner Token Creation
 
-This guide explains how Parchment validates partner authentication tokens and how to implement proper token creation in your applications.
+This guide explains how to generate authentication tokens for the Parchment API using the `/v1/token` endpoint.
 
-## Token Structure
+## Credentials Setup
 
-Parchment uses JWT (JSON Web Tokens) with the RS256 algorithm for partner authentication. JWT tokens consist of three parts:
+Before you can generate tokens, you need to obtain your partner credentials:
 
-1. **Header**: Contains metadata about the token type and signing algorithm
-2. **Payload**: Contains claims about the entity (partner) and additional data
-3. **Signature**: Ensures the token hasn't been altered
+1. Navigate to **Settings > Organisation > Edit > Partner Integrations** in your sandbox environment
+2. Copy the partner credentials:  `organization_id`, `organization_secret`, and `user_id`
 
-## Token Payload
+<div style={{ textAlign: 'center' }}>
+  <img
+    src="/images/demo-tile.png"
+    alt="Demo tile"
+    width="600"
+    loading="lazy"
+    style={{ borderRadius: '8px', margin: '8px auto', maxWidth: '100%', height: 'auto', display: 'block' }}
+  />
+</div>
+<div style={{ textAlign: 'center' }}>
+  <img
+    src="/images/integration-start.png"
+    alt="Integration generate new key"
+    width="600"
+    loading="lazy"
+    style={{ borderRadius: '8px', margin: '8px auto', maxWidth: '100%', height: 'auto', display: 'block' }}
+  />
+</div>
+<div style={{ textAlign: 'center' }}>
+  <img
+    src="/images/integration-creds-generated.png"
+    alt="Credentials generated successfully"
+    width="600"
+    loading="lazy"
+    style={{ borderRadius: '8px', margin: '8px auto', maxWidth: '100%', height: 'auto', display: 'block' }}
+  />
+</div>
 
-A typical token payload contains:
+## Token Request
+
+To generate an access token, make a POST request to `/v1/token` with the required headers and request body.
+
+### Required Headers
+
+| Header                 | Description                                      |
+| ---------------------- | ------------------------------------------------ |
+| `x-partner-id`         | Partner ID provided by Parchment                 |
+| `x-partner-secret`     | Partner secret provided by Parchment             |
+| `x-organization-id`    | Organization ID provided by Parchment            |
+| `x-organization-secret`| Organization secret provided by Parchment        |
+| `x-user-id`            | User ID provided by Parchment                    |
+
+### Request Body
 
 ```json
 {
-  "organization_id": "ORG456",
-  "partner_id": "PARTNER123",
-  "user_id": "USER789",
-  "scope": ["read:patients", "write:prescriptions"],
-  "iat": 1682506249,
-  "exp": 1682509849
+  "grantType": "client_credentials",
+  "scope": ["create:patient", "read:patient_prescription"]
 }
 ```
 
-| Field             | Description                                      |
-| ----------------- | ------------------------------------------------ |
-| `organization_id` | Unique identifier for the organization           |
-| `partner_id`      | Unique identifier for the partner                |
-| `user_id`         | Identifier for the end-user (if applicable)      |
-| `scope`           | Array of permission scopes granted to this token |
-| `iat`             | Issued At - timestamp when the token was created |
-| `exp`             | Expiration - timestamp when the token expires    |
+| Field       | Type     | Required | Description                                      |
+| ----------- | -------- | -------- | ------------------------------------------------ |
+| `grantType` | string   | Yes      | Must be `client_credentials`                     |
+| `scope`     | string[] | Yes      | Array of permission scopes to request            |
 
-## Validation Process
+### Available Scopes
 
-When validating a partner token, our API performs the following checks:
+See [Authentication Scopes](/authentication/partner/scopes) for a complete list of available scopes.
 
-1. **Organization ID Check**: Verifies the organization ID in the request path/params matches the one in the token
-2. **Signature Verification**: Validates the token signature using the appropriate public key
-3. **Expiration Check**: Ensures the token has not expired
-4. **Scope Check**: Confirms the token includes the required scope for the requested operation
-5. **Organization Secret Check**: Validates the provided organization secret matches our records
-
-## Required Headers
-
-For successful authentication, API requests must include these headers:
-
-```
-x-organization-secret: your_organization_secret
-Authorization: Bearer eyJhbGciOiJSUzI1...
-```
-
-## JWKS Endpoint
-
-Parchment provides a JWKS (JSON Web Key Set) endpoint that serves the public keys needed to verify token signatures. This follows standard OAuth 2.0 practices for key rotation and management.
-
-## Error Responses
-
-When token validation fails, you'll receive an error response with HTTP status code 401 or 403 and a message explaining the reason:
-
-| Status | Error                   | Description                                            |
-| ------ | ----------------------- | ------------------------------------------------------ |
-| 401    | `invalid_token`         | The token is malformed or has an invalid signature     |
-| 401    | `expired_token`         | The token has expired                                  |
-| 403    | `insufficient_scope`    | The token does not have the required scope             |
-| 403    | `organization_mismatch` | Organization ID in the request doesn't match the token |
-| 401    | `invalid_secret`        | The organization secret is invalid                     |
-
-## Best Practices
-
-- Always verify tokens on the server-side, never in client-side code
-- Implement proper error handling for authentication failures
-- Use a token management library that handles JWT validation correctly
-- Don't store tokens in local storage or cookies accessible by JavaScript
-- Implement token refresh logic to handle expiration gracefully

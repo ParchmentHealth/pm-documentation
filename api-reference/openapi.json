@@ -218,7 +218,7 @@
             "name": "x-organization-id",
             "in": "header",
             "required": true,
-            "description": "Organization ID for authentication - provided by Parchment",
+            "description": "Organization ID for authentication - provided by User from Parchment Portal",
             "schema": {
               "type": "string"
             }
@@ -227,7 +227,7 @@
             "name": "x-organization-secret",
             "in": "header",
             "required": true,
-            "description": "Organization secret for authentication - provided by Parchment",
+            "description": "Organization secret for authentication - provided by User from Parchment Portal",
             "schema": {
               "type": "string"
             }
@@ -236,7 +236,7 @@
             "name": "x-user-id",
             "in": "header",
             "required": true,
-            "description": "User ID for authentication - provided by Parchment",
+            "description": "User ID for authentication - provided by User from Parchment Portal",
             "schema": {
               "type": "string"
             }
