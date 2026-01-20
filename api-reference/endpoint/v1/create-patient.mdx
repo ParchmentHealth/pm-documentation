@@ -158,63 +158,6 @@ All responses include these standard fields:
 | `422` | Unprocessable Entity  | Request validation failed                               |
 | `500` | Internal Server Error | Unexpected server error                                 |
 
-## Error Handling
-
-### Recommended Approach
-
-```javascript
-async function createPatient(patientData) {
-  try {
-    const response = await fetch(
-      "/v1/organizations/org123/users/user456/patients",
-      {
-        method: "POST",
-        headers: {
-          Authorization: "Bearer your_jwt_token",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(patientData),
-      }
-    );
-
-    const result = await response.json();
-
-    if (result.success) {
-      // Handle success
-      console.log("Patient created:", result.data.parchment_patient_id);
-      return result.data;
-    } else {
-      // Handle error
-      console.error("Error:", result.error.detail);
-
-      // Handle specific error types
-      switch (result.statusCode) {
-        case 422:
-          // Show validation errors
-          result.error.validation.forEach((err) => {
-            console.error(`${err.field}: ${err.message}`);
-          });
-          break;
-        case 409:
-          // Handle partner patient ID conflict
-          console.error("Patient ID already exists");
-          break;
-        case 401:
-          // Handle authentication error
-          console.error("Please log in again");
-          break;
-        default:
-          console.error("Unexpected error occurred");
-      }
-
-      // Always log requestId for debugging
-      console.log("Request ID:", result.requestId);
-    }
-  } catch (error) {
-    console.error("Network error:", error);
-  }
-}
-```
 
 ## Field Validation Requirements
 

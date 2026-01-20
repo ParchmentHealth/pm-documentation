@@ -1,0 +1,331 @@
+---
+openapi: "PUT /v1/organizations/{organization_id}/users/{user_id}/patients/{patient_id}"
+---
+
+## Integration Notes
+
+1. **Partial Updates**: Only include fields you want to update. Omitted fields will not be modified.
+2. **Demographic Updates**: Changes to `family_name`, `given_name`, `date_of_birth`, or `sex` will trigger demographic verification.
+3. **Patient Existence**: The API will return an error if the patient doesn't exist in the organization.
+4. **Request ID**: Always log the `requestId` for debugging support requests.
+5. **DVA Validation**: If providing `dva_card_color`, you must also provide `dva_file_number`.
+
+## Request
+
+### Update Basic Patient Information
+
+```json
+{
+  "phone": "0412345678",
+  "email": "patient@example.com"
+}
+```
+
+### Update Demographics
+
+```json
+{
+  "given_name": "Jane",
+  "family_name": "Smith",
+  "date_of_birth": "1985-03-15",
+  "sex": "F"
+}
+```
+
+### Update Medicare Details
+
+```json
+{
+  "medicare_card_number": "1234567890",
+  "medicare_irn": "1",
+  "medicare_valid_to": "2025-12-31"
+}
+```
+
+### Update DVA Details
+
+```json
+{
+  "dva_file_number": "QSS12345",
+  "dva_card_color": "G"
+}
+```
+
+### Update Address
+
+```json
+{
+  "australian_address": {
+    "street_number": "123",
+    "street_name": "Main Street",
+    "suburb": "Melbourne",
+    "state": "VIC",
+    "postcode": "3000"
+  }
+}
+```
+
+### Full Update Example
+
+```json
+{
+  "title": "Mrs",
+  "given_name": "Jane",
+  "family_name": "Smith",
+  "date_of_birth": "1985-03-15",
+  "sex": "F",
+  "phone": "0412345678",
+  "email": "jane.smith@example.com",
+  "medicare_card_number": "1234567890",
+  "medicare_irn": "1",
+  "medicare_valid_to": "2025-12-31",
+  "ctg_eligible": true,
+  "indigenous_type": "Neither",
+  "australian_address": {
+    "street_number": "123",
+    "street_name": "Main Street",
+    "suburb": "Melbourne",
+    "state": "VIC",
+    "postcode": "3000"
+  }
+}
+```
+
+### Request Fields
+
+#### Demographic Fields
+
+| Field           | Type   | Required | Description                          |
+| --------------- | ------ | -------- | ------------------------------------ |
+| `family_name`   | string | No       | Patient's family/last name           |
+| `given_name`    | string | No       | Patient's given/first name           |
+| `date_of_birth` | string | No       | Date of birth in YYYY-MM-DD format   |
+| `sex`           | string | No       | Sex (M/F/I/N)                        |
+
+#### Basic Fields
+
+| Field                      | Type    | Required | Description                                |
+| -------------------------- | ------- | -------- | ------------------------------------------ |
+| `title`                    | string  | No       | Patient's title (Mr, Mrs, Ms, etc.)        |
+| `phone`                    | string  | No       | Australian phone number                    |
+| `email`                    | string  | No       | Email address                              |
+| `ctg_eligible`             | boolean | No       | Closing the Gap eligibility                |
+| `indigenous_type`          | string  | No       | Indigenous status                          |
+| `concession_pension_number`| string  | No       | Concession/pension card number             |
+| `entitlement_number`       | string  | No       | Entitlement number                         |
+| `racf_id`                  | string  | No       | Residential Aged Care Facility ID          |
+| `is_inpatient`             | boolean | No       | Whether patient is an inpatient            |
+
+#### Medicare Fields
+
+| Field                  | Type   | Required | Description                              |
+| ---------------------- | ------ | -------- | ---------------------------------------- |
+| `medicare_card_number` | string | No       | Medicare card number (can be null)       |
+| `medicare_irn`         | string | No       | Medicare IRN (numeric only, can be null) |
+| `medicare_valid_to`    | string | No       | Medicare expiry in YYYY-MM-DD (can be null) |
+
+#### DVA Fields
+
+| Field             | Type   | Required                    | Description                    |
+| ----------------- | ------ | --------------------------- | ------------------------------ |
+| `dva_file_number` | string | When dva_card_color provided | DVA file number (can be null)  |
+| `dva_card_color`  | string | No                          | DVA card color: W/O/G (can be null) |
+
+#### Address Fields
+
+| Field               | Type   | Required | Description              |
+| ------------------- | ------ | -------- | ------------------------ |
+| `australian_address`| object | No       | Australian address object |
+
+**Australian Address Object:**
+
+| Field           | Type   | Required | Description                     |
+| --------------- | ------ | -------- | ------------------------------- |
+| `street_number` | string | Yes      | Street number (max 5 chars)     |
+| `street_name`   | string | Yes      | Street name (max 100 chars)     |
+| `suburb`        | string | Yes      | Suburb name (max 100 chars)     |
+| `state`         | string | Yes      | Australian state code           |
+| `postcode`      | string | Yes      | 4-digit Australian postcode     |
+
+### Enum Values
+
+**Sex:**
+- `M` - Male
+- `F` - Female
+- `I` - Indeterminate
+- `N` - Not stated
+
+**Indigenous Type:**
+- `Aboriginal`
+- `Torres Strait Islander`
+- `Both`
+- `Neither`
+- `Prefer not to say`
+
+**DVA Card Color:**
+- `W` - White
+- `O` - Orange
+- `G` - Gold
+
+**Australian States:**
+- `VIC`, `NSW`, `QLD`, `WA`, `SA`, `TAS`, `ACT`, `NT`
+
+## Response
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Patient updated successfully",
+  "data": {
+    "patient_id": "pat_abc123def456",
+    "family_name": "Smith",
+    "given_name": "Jane",
+    "date_of_birth": "1985-03-15",
+    "sex": "F",
+    "phone": "0412345678",
+    "email": "jane.smith@example.com",
+    "medicare_card_number": "1234567890",
+    "medicare_irn": "1",
+    "medicare_valid_to": "2025-12-31"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_abc123"
+}
+```
+
+### Validation Error (422 Unprocessable Entity)
+
+```json
+{
+  "success": false,
+  "statusCode": 422,
+  "error": {
+    "type": "https://parchment.health/errors/validation-error",
+    "title": "Validation failed",
+    "detail": "There were some problems with your input.",
+    "validation": [
+      {
+        "field": "phone",
+        "message": "Phone number must be a valid Australian number (e.g., 0412345678, +61412345678)",
+        "code": "VALIDATION_ERROR"
+      },
+      {
+        "field": "dva_file_number",
+        "message": "DVA card color is provided but DVA file number is missing",
+        "code": "VALIDATION_ERROR"
+      }
+    ]
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_def456"
+}
+```
+
+### Unauthorized (401)
+
+```json
+{
+  "success": false,
+  "statusCode": 401,
+  "error": {
+    "type": "https://parchment.health/errors/authentication-required",
+    "title": "Unauthorized",
+    "detail": "Valid authentication token is required"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_ghi789"
+}
+```
+
+### Insufficient Permissions (403 Forbidden)
+
+```json
+{
+  "success": false,
+  "statusCode": 403,
+  "error": {
+    "type": "https://parchment.health/errors/insufficient-scope",
+    "title": "Insufficient permissions",
+    "detail": "This operation requires the 'update:patient' scope"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_jkl012"
+}
+```
+
+### Internal Server Error (500)
+
+```json
+{
+  "success": false,
+  "statusCode": 500,
+  "error": {
+    "type": "https://parchment.health/errors/internal-error",
+    "title": "Internal server error",
+    "detail": "Failed to update patient"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_mno345"
+}
+```
+
+## Response Fields
+
+### Success Response Data
+
+The response returns the updated patient object with all current field values.
+
+### Common Response Fields
+
+All responses include these standard fields:
+
+| Field        | Type    | Description                             |
+| ------------ | ------- | --------------------------------------- |
+| `success`    | boolean | Indicates if the request was successful |
+| `statusCode` | number  | HTTP status code                        |
+| `timestamp`  | string  | ISO 8601 timestamp of the response      |
+| `requestId`  | string  | Unique identifier for debugging         |
+
+## Status Codes
+
+| Code  | Status                | Description                                         |
+| ----- | --------------------- | --------------------------------------------------- |
+| `200` | OK                    | Patient successfully updated                        |
+| `400` | Bad Request           | Invalid request format or missing required fields   |
+| `401` | Unauthorized          | Authentication required or token invalid            |
+| `403` | Forbidden             | Insufficient permissions (missing update:patient scope) |
+| `422` | Unprocessable Entity  | Request validation failed                           |
+| `500` | Internal Server Error | Unexpected server error                             |
+
+## Field Validation Requirements
+
+### Phone Number Format
+
+The `phone` field accepts Australian phone numbers in the following formats:
+
+**Valid Examples:**
+- `0412345678` - Mobile number (domestic format)
+- `0312345678` - Landline (domestic format)
+- `61412345678` - International mobile (without + prefix)
+- `+61312345678` - International landline (with + prefix)
+
+**Invalid Examples:**
+- `0123456789` - Starts with 1 (invalid area code)
+- `04123456789` - Too many digits
+- `04-1234-5678` - Contains formatting characters
+
+### String Length Requirements
+
+- **Street Number**: 1-5 characters
+- **Street Name**: 1-100 characters
+- **Suburb**: 1-100 characters
+- **Postcode**: Exactly 4 digits (e.g., "3000", "2000")
+
+### Medicare IRN
+
+- Must contain only numeric digits
+- Leading/trailing whitespace is automatically trimmed
+

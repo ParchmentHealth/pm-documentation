@@ -190,6 +190,187 @@
         }
       }
     },
+    "/v1/organizations/{organization_id}/users/{user_id}/patients/{patient_id}": {
+      "put": {
+        "description": "Updates an existing patient in Parchment",
+        "parameters": [
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "patient_id",
+            "in": "path",
+            "required": true,
+            "description": "Patient ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Patient data to update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePatient"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Patient updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientUpdateResponse"
+                },
+                "example": {
+                  "success": true,
+                  "statusCode": 200,
+                  "message": "Patient updated successfully",
+                  "data": {
+                    "patient_id": "pat_abc123def456",
+                    "family_name": "Smith",
+                    "given_name": "Jane",
+                    "date_of_birth": "1985-03-15",
+                    "sex": "F",
+                    "phone": "0412345678",
+                    "email": "jane.smith@example.com"
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_abc123"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 401,
+                  "error": {
+                    "type": "https://parchment.health/errors/authentication-required",
+                    "title": "Unauthorized",
+                    "detail": "Valid authentication token is required"
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_def456"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 403,
+                  "error": {
+                    "type": "https://parchment.health/errors/insufficient-scope",
+                    "title": "Insufficient permissions",
+                    "detail": "This operation requires the 'update:patient' scope"
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_ghi789"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 422,
+                  "error": {
+                    "type": "https://parchment.health/errors/validation-error",
+                    "title": "Validation failed",
+                    "detail": "There were some problems with your input.",
+                    "validation": [
+                      {
+                        "field": "phone",
+                        "message": "Phone number must be a valid Australian number (e.g., 0412345678, +61412345678)",
+                        "code": "VALIDATION_ERROR"
+                      },
+                      {
+                        "field": "dva_file_number",
+                        "message": "DVA card color is provided but DVA file number is missing",
+                        "code": "VALIDATION_ERROR"
+                      }
+                    ]
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_jkl012"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 500,
+                  "error": {
+                    "type": "https://parchment.health/errors/internal-error",
+                    "title": "Internal server error",
+                    "detail": "Failed to update patient"
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_mno345"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/token": {
       "post": {
         "security": [],
@@ -2263,6 +2444,152 @@
               },
               "data": {
                 "$ref": "#/components/schemas/PatientPrescriptionsData"
+              }
+            }
+          }
+        ]
+      },
+      "UpdatePatient": {
+        "type": "object",
+        "description": "Patient update request - all fields are optional",
+        "properties": {
+          "family_name": {
+            "type": "string",
+            "description": "Patient's family/last name"
+          },
+          "given_name": {
+            "type": "string",
+            "description": "Patient's given/first name"
+          },
+          "date_of_birth": {
+            "type": "string",
+            "format": "date",
+            "description": "Date of birth in YYYY-MM-DD format",
+            "example": "1985-03-15"
+          },
+          "sex": {
+            "type": "string",
+            "enum": ["M", "F", "I", "N"],
+            "description": "Sex: M (Male), F (Female), I (Indeterminate), N (Not stated)"
+          },
+          "title": {
+            "type": "string",
+            "description": "Patient's title (Mr, Mrs, Ms, etc.)"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Australian phone number",
+            "example": "0412345678"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address"
+          },
+          "ctg_eligible": {
+            "type": "boolean",
+            "description": "Closing the Gap eligibility"
+          },
+          "indigenous_type": {
+            "type": "string",
+            "enum": ["Aboriginal", "Torres Strait Islander", "Both", "Neither", "Prefer not to say"],
+            "description": "Indigenous status"
+          },
+          "concession_pension_number": {
+            "type": "string",
+            "description": "Concession/pension card number"
+          },
+          "entitlement_number": {
+            "type": "string",
+            "description": "Entitlement number"
+          },
+          "racf_id": {
+            "type": "string",
+            "description": "Residential Aged Care Facility ID"
+          },
+          "is_inpatient": {
+            "type": "boolean",
+            "description": "Whether patient is an inpatient"
+          },
+          "medicare_card_number": {
+            "type": "string",
+            "nullable": true,
+            "description": "Medicare card number"
+          },
+          "medicare_irn": {
+            "type": "string",
+            "nullable": true,
+            "description": "Medicare IRN (numeric only)"
+          },
+          "medicare_valid_to": {
+            "type": "string",
+            "format": "date",
+            "nullable": true,
+            "description": "Medicare expiry date in YYYY-MM-DD format"
+          },
+          "dva_file_number": {
+            "type": "string",
+            "nullable": true,
+            "description": "DVA file number"
+          },
+          "dva_card_color": {
+            "type": "string",
+            "enum": ["W", "O", "G"],
+            "nullable": true,
+            "description": "DVA card color: W (White), O (Orange), G (Gold)"
+          },
+          "australian_address": {
+            "type": "object",
+            "description": "Australian address",
+            "properties": {
+              "street_number": {
+                "type": "string",
+                "maxLength": 5,
+                "description": "Street number"
+              },
+              "street_name": {
+                "type": "string",
+                "maxLength": 100,
+                "description": "Street name"
+              },
+              "suburb": {
+                "type": "string",
+                "maxLength": 100,
+                "description": "Suburb name"
+              },
+              "state": {
+                "type": "string",
+                "enum": ["VIC", "NSW", "QLD", "WA", "SA", "TAS", "ACT", "NT"],
+                "description": "Australian state code"
+              },
+              "postcode": {
+                "type": "string",
+                "minLength": 4,
+                "maxLength": 4,
+                "description": "4-digit Australian postcode"
+              }
+            },
+            "required": ["street_number", "street_name", "suburb", "state", "postcode"]
+          }
+        }
+      },
+      "PatientUpdateResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ExternalApiResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "statusCode": {
+                "example": 200
+              },
+              "message": {
+                "example": "Patient updated successfully"
+              },
+              "data": {
+                "type": "object",
+                "description": "Updated patient data"
               }
             }
           }
