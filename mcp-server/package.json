@@ -1,0 +1,43 @@
+{
+  "name": "@parchmenthealth/docs-mcp",
+  "version": "1.0.1",
+  "description": "MCP server for Parchment Health API documentation",
+  "main": "dist/index.js",
+  "bin": {
+    "parchment-docs-mcp": "./dist/index.js"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "npm run build:content && tsc && npm run copy:content",
+    "build:content": "tsx src/content/loader.ts",
+    "copy:content": "cp src/content/docs.json dist/content/",
+    "dev": "tsx src/index.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "parchment",
+    "documentation",
+    "api",
+    "healthcare",
+    "e-prescription"
+  ],
+  "author": "Parchment Health",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ]
+}

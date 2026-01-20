@@ -26,6 +26,12 @@
               "partner-integration-guide",
               "post-integration-guide"
             ]
+          },
+          {
+            "group": "Tools",
+            "pages": [
+              "docs/mcp-server"
+            ]
           }
         ]
       },

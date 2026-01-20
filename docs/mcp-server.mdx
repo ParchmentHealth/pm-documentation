@@ -1,0 +1,171 @@
+---
+title: "MCP Server"
+description: "Use AI assistants to help with your Parchment integration"
+---
+
+# Parchment Documentation MCP Server
+
+The **Model Context Protocol (MCP)** is an open standard that allows AI assistants to access external data sources and tools. Parchment provides an MCP server (`@parchmenthealth/docs-mcp`) that gives AI assistants direct access to our API documentation, making it easier to build integrations.
+
+## Why Use MCP?
+
+- **Accurate Information**: AI assistants get direct access to current documentation rather than relying on training data
+- **Code Examples**: Access to real code samples from our integration guide
+- **OpenAPI Spec**: Full API specification for accurate endpoint details
+- **Search**: Natural language search across all documentation
+
+## Installation
+
+<Tabs>
+  <Tab title="Claude Code">
+    **Option 1: Edit config file**
+
+    Add to your `~/.claude.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "parchment-docs": {
+          "command": "npx",
+          "args": ["-y", "@parchmenthealth/docs-mcp"]
+        }
+      }
+    }
+    ```
+
+    **Option 2: CLI command**
+
+    ```bash
+    claude mcp add parchment-docs -- npx -y @parchmenthealth/docs-mcp
+    ```
+
+    After adding, restart Claude Code and verify with `/mcp` command.
+  </Tab>
+  <Tab title="Cursor">
+    Add to `~/.cursor/mcp.json` (or `.cursor/mcp.json` in your project):
+
+    ```json
+    {
+      "mcpServers": {
+        "parchment-docs": {
+          "command": "npx",
+          "args": ["-y", "@parchmenthealth/docs-mcp"]
+        }
+      }
+    }
+    ```
+
+    Or add via Cursor Settings: **File > Preferences > Cursor Settings > MCP**
+
+    Restart Cursor after adding the configuration.
+  </Tab>
+  <Tab title="Other">
+    The MCP server uses stdio transport. Configure your MCP client to run:
+
+    ```bash
+    npx -y @parchmenthealth/docs-mcp
+    ```
+
+    Refer to your tool's documentation for MCP configuration.
+  </Tab>
+</Tabs>
+
+## Available Tools
+
+Once installed, your AI assistant can use these tools:
+
+### `search_docs`
+
+Search through all Parchment documentation.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `query` | string | Yes | Search terms |
+| `limit` | number | No | Max results (default: 5) |
+
+**Example prompts:**
+- "Search the Parchment docs for authentication"
+- "Find documentation about webhook events"
+- "Look up patient creation in Parchment API"
+
+### `list_resources`
+
+List all available documentation resources.
+
+**Example prompts:**
+- "What Parchment documentation is available?"
+- "List the Parchment resources"
+
+### `get_openapi_spec`
+
+Retrieve the complete OpenAPI 3.0 specification.
+
+**Example prompts:**
+- "Get the Parchment OpenAPI spec"
+- "Show me the API schema for patient creation"
+
+## Available Resources
+
+The MCP server provides access to these documentation resources:
+
+| Resource | Description |
+|----------|-------------|
+| OpenAPI Specification | Complete API schema with all endpoints |
+| Partner Integration Guide | Step-by-step integration walkthrough |
+| Authentication | Token generation and security |
+| API Scopes | Available permissions |
+| SSO Integration | Single sign-on setup guides |
+| Webhooks | Real-time event notifications |
+| FAQ | Common questions and answers |
+
+## Example Usage
+
+Here are some ways to use the MCP server with your AI assistant:
+
+### Getting Started
+
+> "I'm integrating with Parchment. Search the docs for getting started."
+
+### Authentication Help
+
+> "How do I create an authentication token for the Parchment API? Search their docs."
+
+### Code Examples
+
+> "Show me code examples for creating a patient in Parchment. Use the integration guide."
+
+### API Details
+
+> "Get the OpenAPI spec and tell me what parameters are required for the create patient endpoint."
+
+### Webhook Setup
+
+> "Search Parchment docs for webhook integration and show me how to handle events."
+
+## Troubleshooting
+
+<Accordion title="MCP server not appearing">
+1. Ensure Node.js 18+ is installed
+2. Check your config file syntax (valid JSON)
+3. Restart your AI tool after config changes
+4. Try running `npx -y @parchmenthealth/docs-mcp` manually to check for errors
+</Accordion>
+
+<Accordion title="Search returns no results">
+- Try broader search terms
+- Use `list_resources` to see available documentation
+- Check that the query relates to Parchment API topics
+</Accordion>
+
+<Accordion title="Getting outdated information">
+Update to the latest version:
+```bash
+npx -y @parchmenthealth/docs-mcp@latest
+```
+</Accordion>
+
+## Support
+
+For issues with the MCP server:
+- Check the [GitHub repository](https://github.com/parchment-health/docs-mcp)
+- Contact support at [hello@parchment.health](mailto:hello@parchment.health)
