@@ -81,6 +81,7 @@ openapi: "PUT /v1/organizations/{organization_id}/users/{user_id}/patients/{pati
   "medicare_valid_to": "2025-12-31",
   "ctg_eligible": true,
   "indigenous_type": "Neither",
+  "ihi_number": "8003608500035100",
   "australian_address": {
     "street_number": "123",
     "street_name": "Main Street",
@@ -113,6 +114,7 @@ openapi: "PUT /v1/organizations/{organization_id}/users/{user_id}/patients/{pati
 | `indigenous_type`          | string  | No       | Indigenous status                          |
 | `concession_pension_number`| string  | No       | Concession/pension card number             |
 | `entitlement_number`       | string  | No       | Entitlement number                         |
+| `ihi_number`               | string  | No       | 16-digit Individual Healthcare Identifier  |
 | `racf_id`                  | string  | No       | Residential Aged Care Facility ID          |
 | `is_inpatient`             | boolean | No       | Whether patient is an inpatient            |
 

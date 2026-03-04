@@ -80,9 +80,9 @@ When updating provider-specific information, use the `provider_details` object:
 | `hpii_number`              | string | No                                         | Healthcare Provider Identifier  |
 | `phone`                    | string | No                                         | Provider phone number           |
 | `title`                    | string | No                                         | Professional title              |
-| `prescriber_number`        | string | When prescriber_type is not 'T' (podiatrist) | 7-character prescriber number |
-| `provider_number`          | string | No                                         | 9-character provider number     |
-| `prescriber_type`          | string | No                                         | Prescriber type (M/N/D/P/T)     |
+| `prescriber_number`        | string | When prescriber_type is not 'T' (podiatrist) | Max 10 characters |
+| `provider_number`          | string | No                                         | Max 10 characters     |
+| `prescriber_type`          | string | No                                         | Prescriber type (M/E/U/F/D/V/T/C)     |
 | `ahpra_number`             | string | No                                         | AHPRA registration number       |
 | `qualifications`           | string | When prescriber_type is provided          | Professional qualifications      |
 | `hospital_provider_number` | string | No                                         | Hospital provider number        |
@@ -90,8 +90,8 @@ When updating provider-specific information, use the `provider_details` object:
 
 ### Validation Rules
 
-1. **Prescriber Number**: Must be exactly 7 characters when provided
-2. **Provider Number**: Must be exactly 9 characters containing only alphanumeric characters
+1. **Prescriber Number**: Must be 10 characters or less
+2. **Provider Number**: Must be 10 characters or less
 3. **Provider Details Dependencies**: 
    - If `prescriber_type` is provided, `qualifications` must also be provided
    - If `prescriber_type` is not 'T' (podiatrist), `prescriber_number` is required
