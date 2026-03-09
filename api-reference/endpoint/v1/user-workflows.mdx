@@ -113,6 +113,27 @@ PUT /v1/organizations/{organizationId}/users/{userId}/roles
   Provider details are retained when downgrading roles and can be reactivated by upgrading the role back to `provider`.
 </Note>
 
+### Disabling a User
+
+To permanently disable a user's access to the platform:
+
+```bash
+PUT /v1/organizations/{organizationId}/users/{userId}/disable
+```
+
+<Warning>
+  This is a destructive action. Disabling a user will:
+  - Mark the user as disabled in the database
+  - Downgrade all roles to `member`
+  - Disable their Cognito authentication account
+
+  This action **cannot be reversed** via the API.
+</Warning>
+
+<Info>
+  No request body is required. The endpoint is idempotent — disabling an already-disabled user returns a 200 response.
+</Info>
+
 ## Best Practices
 
 <CardGroup cols={2}>
