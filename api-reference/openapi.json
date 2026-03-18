@@ -417,7 +417,7 @@
             "name": "x-user-id",
             "in": "header",
             "required": true,
-            "description": "Parchment user_id. **Always** use user_id of the user making the request. In other words, do not just use the user_id of the user who origially setup the integration with Parchment",
+            "description": "Use the user_id of the user making the request to ensure actions are correctly attributed. Do not use the user_id of the user who originally set up the integration.",
             "schema": {
               "type": "string"
             }
