@@ -5,5 +5,7 @@ openapi: "POST /v1/token"
 ## Notes
 
 - Tokens are valid for 6 hours from the time of issuance
+- Always use user_id of the user making the request
 - You can only request scopes that have been approved for your organization
 - The token must be included in the `Authorization` header as a Bearer token for all authenticated API requests
+

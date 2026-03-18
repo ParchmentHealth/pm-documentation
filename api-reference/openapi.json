@@ -417,7 +417,7 @@
             "name": "x-user-id",
             "in": "header",
             "required": true,
-            "description": "User ID for authentication - provided by User from Parchment Portal",
+            "description": "Parchment user_id. **Always** use user_id of the user making the request. In other words, do not just use the user_id of the user who origially setup the integration with Parchment",
             "schema": {
               "type": "string"
             }
@@ -2469,7 +2469,12 @@
           },
           "sex": {
             "type": "string",
-            "enum": ["M", "F", "I", "N"],
+            "enum": [
+              "M",
+              "F",
+              "I",
+              "N"
+            ],
             "description": "Sex: M (Male), F (Female), I (Indeterminate), N (Not stated)"
           },
           "title": {
@@ -2492,7 +2497,13 @@
           },
           "indigenous_type": {
             "type": "string",
-            "enum": ["Aboriginal", "Torres Strait Islander", "Both", "Neither", "Prefer not to say"],
+            "enum": [
+              "Aboriginal",
+              "Torres Strait Islander",
+              "Both",
+              "Neither",
+              "Prefer not to say"
+            ],
             "description": "Indigenous status"
           },
           "concession_pension_number": {
@@ -2534,7 +2545,11 @@
           },
           "dva_card_color": {
             "type": "string",
-            "enum": ["W", "O", "G"],
+            "enum": [
+              "W",
+              "O",
+              "G"
+            ],
             "nullable": true,
             "description": "DVA card color: W (White), O (Orange), G (Gold)"
           },
@@ -2559,7 +2574,16 @@
               },
               "state": {
                 "type": "string",
-                "enum": ["VIC", "NSW", "QLD", "WA", "SA", "TAS", "ACT", "NT"],
+                "enum": [
+                  "VIC",
+                  "NSW",
+                  "QLD",
+                  "WA",
+                  "SA",
+                  "TAS",
+                  "ACT",
+                  "NT"
+                ],
                 "description": "Australian state code"
               },
               "postcode": {
@@ -2569,7 +2593,13 @@
                 "description": "4-digit Australian postcode"
               }
             },
-            "required": ["street_number", "street_name", "suburb", "state", "postcode"]
+            "required": [
+              "street_number",
+              "street_name",
+              "suburb",
+              "state",
+              "postcode"
+            ]
           }
         }
       },
