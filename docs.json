@@ -76,6 +76,7 @@
               "api-reference/endpoint/v1/update-user",
               "api-reference/endpoint/v1/update-user-roles",
               "api-reference/endpoint/v1/disable-user",
+              "api-reference/endpoint/v1/enable-user",
               "api-reference/endpoint/v1/user-workflows"
             ]
           }
