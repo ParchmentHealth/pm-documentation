@@ -2559,7 +2559,7 @@
             "properties": {
               "street_number": {
                 "type": "string",
-                "maxLength": 5,
+                "maxLength": 12,
                 "description": "Street number"
               },
               "street_name": {

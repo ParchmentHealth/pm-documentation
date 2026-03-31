@@ -143,7 +143,7 @@ openapi: "PUT /v1/organizations/{organization_id}/users/{user_id}/patients/{pati
 
 | Field           | Type   | Required | Description                     |
 | --------------- | ------ | -------- | ------------------------------- |
-| `street_number` | string | Yes      | Street number (max 5 chars)     |
+| `street_number` | string | Yes      | Street number (max 12 chars)    |
 | `street_name`   | string | Yes      | Street name (max 100 chars)     |
 | `suburb`        | string | Yes      | Suburb name (max 100 chars)     |
 | `state`         | string | Yes      | Australian state code           |
@@ -321,7 +321,7 @@ The `phone` field accepts Australian phone numbers in the following formats:
 
 ### String Length Requirements
 
-- **Street Number**: 1-5 characters
+- **Street Number**: 1-12 characters
 - **Street Name**: 1-100 characters
 - **Suburb**: 1-100 characters
 - **Postcode**: Exactly 4 digits (e.g., "3000", "2000")
