@@ -141,27 +141,12 @@ app.post('/webhook', (req, res) => {
       handlePrescriptionCreated(event);
       break;
 
-    case 'prescription.dispensed':
-      handlePrescriptionDispensed(event);
-      break;
-
-    case 'prescription.cancelled':
-      handlePrescriptionCancelled(event);
-      break;
-
     // Handle other events...
   }
 
   res.status(200).json({ received: true });
 });
 ```
-
-
----
-
-## Idempotency
-
-Always use `event_id` to prevent duplicate processing:
 
 
 ---

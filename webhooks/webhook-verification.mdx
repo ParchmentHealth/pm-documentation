@@ -73,8 +73,6 @@ Use **timing-safe comparison** to compare the signatures.
 
 ## Implementation Examples
 
-### Node.js / TypeScript
-
 <CodeGroup>
 
 ```typescript Express.js
@@ -83,16 +81,23 @@ import crypto from 'crypto';
 
 const app = express();
 
+// Retrieve from your secrets manager (e.g. AWS Secrets Manager, HashiCorp Vault)
+let WEBHOOK_SECRET: string;
+
+async function start() {
+  WEBHOOK_SECRET = await getSecret('parchment-webhook-secret');
+  app.listen(3000);
+}
+
 // IMPORTANT: Use raw body parser for webhook routes
 app.post('/webhook',
   express.raw({ type: 'application/json' }),
   (req, res) => {
     const signature = req.headers['x-webhook-signature'] as string;
     const payload = req.body.toString('utf8');
-    const secret = process.env.WEBHOOK_SECRET!;
 
     // Verify signature
-    const result = verifyWebhook(payload, signature, secret);
+    const result = verifyWebhook(payload, signature, WEBHOOK_SECRET);
 
     if (!result.valid) {
       console.error('Webhook verification failed:', result.error);
@@ -101,7 +106,7 @@ app.post('/webhook',
 
     // Parse and process the event
     const event = JSON.parse(payload);
-    console.log('Received event:', event.event.type);
+    console.log('Received event:', event.event_type);
 
     // Process the event...
 
@@ -115,63 +120,41 @@ function verifyWebhook(
   secret: string,
   toleranceSeconds: number = 300
 ): { valid: boolean; error?: string } {
-  // Parse signature header
   const parts = signatureHeader.split(',');
   let timestamp: number | null = null;
   let signature: string | null = null;
 
   for (const part of parts) {
     const [key, value] = part.split('=');
-    if (key === 't') {
-      timestamp = parseInt(value, 10);
-    } else if (key === 'v1') {
-      signature = value;
-    }
+    if (key === 't') timestamp = parseInt(value, 10);
+    else if (key === 'v1') signature = value;
   }
 
   if (!timestamp || !signature || isNaN(timestamp)) {
     return { valid: false, error: 'Invalid signature header format' };
   }
 
-  // Check timestamp tolerance
-  const currentTime = Math.floor(Date.now() / 1000);
-  const timeDiff = Math.abs(currentTime - timestamp);
-
-  if (timeDiff > toleranceSeconds) {
-    return {
-      valid: false,
-      error: `Timestamp outside tolerance (${timeDiff}s > ${toleranceSeconds}s)`
-    };
+  // Check timestamp tolerance (prevents replay attacks)
+  if (Math.abs(Math.floor(Date.now() / 1000) - timestamp) > toleranceSeconds) {
+    return { valid: false, error: 'Timestamp expired' };
   }
 
   // Compute expected signature
-  const signedPayload = `${timestamp}.${payload}`;
-  const expectedSignature = crypto
+  const expected = crypto
     .createHmac('sha256', secret)
-    .update(signedPayload)
+    .update(`${timestamp}.${payload}`)
     .digest('hex');
 
   // Timing-safe comparison
-  if (!timingSafeEqual(signature, expectedSignature)) {
-    return { valid: false, error: 'Signature mismatch' };
-  }
+  const isValid = crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expected)
+  );
 
-  return { valid: true };
+  return isValid ? { valid: true } : { valid: false, error: 'Signature mismatch' };
 }
 
-function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-
-  let result = 0;
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
-  return result === 0;
-}
-
-app.listen(3000, () => {
-  console.log('Webhook server running on port 3000');
-});
+start();
 ```
 
 ```typescript Next.js (App Router)
@@ -179,35 +162,26 @@ app.listen(3000, () => {
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 
+// Retrieve from your secrets manager (e.g. AWS Secrets Manager, HashiCorp Vault)
+const WEBHOOK_SECRET = await getSecret('parchment-webhook-secret');
+
 export async function POST(request: NextRequest) {
   try {
-    // Get signature header
     const signature = request.headers.get('x-webhook-signature');
     if (!signature) {
-      return NextResponse.json(
-        { error: 'Missing signature' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing signature' }, { status: 400 });
     }
 
-    // Get raw body
     const body = await request.text();
-    const secret = process.env.WEBHOOK_SECRET!;
 
-    // Verify signature
-    const result = verifyWebhook(body, signature, secret);
-
+    const result = verifyWebhook(body, signature, WEBHOOK_SECRET);
     if (!result.valid) {
       console.error('Webhook verification failed:', result.error);
-      return NextResponse.json(
-        { error: 'Invalid signature' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
-    // Parse and process event
     const event = JSON.parse(body);
-    console.log('Received webhook:', event.event.type);
+    console.log('Received webhook:', event.event_type);
 
     // Process the event asynchronously
     processWebhookAsync(event);
@@ -215,10 +189,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error('Webhook error:', error);
-    return NextResponse.json(
-      { error: 'Internal error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
   }
 }
 
@@ -228,89 +199,66 @@ function verifyWebhook(
   secret: string,
   toleranceSeconds: number = 300
 ): { valid: boolean; error?: string } {
-  // Parse signature header
   const parts = signatureHeader.split(',');
   let timestamp: number | null = null;
   let signature: string | null = null;
 
   for (const part of parts) {
     const [key, value] = part.split('=');
-    if (key === 't') {
-      timestamp = parseInt(value, 10);
-    } else if (key === 'v1') {
-      signature = value;
-    }
+    if (key === 't') timestamp = parseInt(value, 10);
+    else if (key === 'v1') signature = value;
   }
 
   if (!timestamp || !signature || isNaN(timestamp)) {
     return { valid: false, error: 'Invalid signature header' };
   }
 
-  // Check timestamp
-  const currentTime = Math.floor(Date.now() / 1000);
-  if (Math.abs(currentTime - timestamp) > toleranceSeconds) {
+  if (Math.abs(Math.floor(Date.now() / 1000) - timestamp) > toleranceSeconds) {
     return { valid: false, error: 'Timestamp expired' };
   }
 
-  // Compute expected signature
-  const signedPayload = `${timestamp}.${payload}`;
-  const expectedSignature = crypto
+  const expected = crypto
     .createHmac('sha256', secret)
-    .update(signedPayload)
+    .update(`${timestamp}.${payload}`)
     .digest('hex');
 
-  // Timing-safe comparison
   const isValid = crypto.timingSafeEqual(
     Buffer.from(signature),
-    Buffer.from(expectedSignature)
+    Buffer.from(expected)
   );
 
-  if (!isValid) {
-    return { valid: false, error: 'Signature mismatch' };
-  }
-
-  return { valid: true };
+  return isValid ? { valid: true } : { valid: false, error: 'Signature mismatch' };
 }
 
 async function processWebhookAsync(event: any) {
-  // Process webhook asynchronously
   // Add to queue, database, etc.
 }
 ```
-
-</CodeGroup>
-
----
-
-### Python
-
-<CodeGroup>
 
 ```python Flask
 from flask import Flask, request, jsonify
 import hmac
 import hashlib
 import time
-import os
 
 app = Flask(__name__)
+
+# Retrieve from your secrets manager (e.g. AWS Secrets Manager, HashiCorp Vault)
+WEBHOOK_SECRET = get_secret('parchment-webhook-secret')
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
     signature = request.headers.get('X-Webhook-Signature')
     payload = request.get_data(as_text=True)
-    secret = os.environ['WEBHOOK_SECRET']
 
-    # Verify signature
-    result = verify_webhook(payload, signature, secret)
+    result = verify_webhook(payload, signature, WEBHOOK_SECRET)
 
     if not result['valid']:
         print(f"Webhook verification failed: {result['error']}")
         return jsonify({'error': 'Invalid signature'}), 400
 
-    # Parse and process event
     event = request.get_json()
-    print(f"Received webhook: {event['event']['type']}")
+    print(f"Received webhook: {event['event_type']}")
 
     # Process the event...
 
@@ -321,7 +269,6 @@ def verify_webhook(payload, signature_header, secret, tolerance_seconds=300):
     if not signature_header:
         return {'valid': False, 'error': 'Missing signature header'}
 
-    # Parse signature header
     parts = signature_header.split(',')
     timestamp = None
     signature = None
@@ -336,17 +283,10 @@ def verify_webhook(payload, signature_header, secret, tolerance_seconds=300):
     if not timestamp or not signature:
         return {'valid': False, 'error': 'Invalid signature format'}
 
-    # Check timestamp tolerance
     current_time = int(time.time())
-    time_diff = abs(current_time - timestamp)
+    if abs(current_time - timestamp) > tolerance_seconds:
+        return {'valid': False, 'error': 'Timestamp expired'}
 
-    if time_diff > tolerance_seconds:
-        return {
-            'valid': False,
-            'error': f'Timestamp expired ({time_diff}s > {tolerance_seconds}s)'
-        }
-
-    # Compute expected signature
     signed_payload = f"{timestamp}.{payload}"
     expected_signature = hmac.new(
         secret.encode('utf-8'),
@@ -354,7 +294,6 @@ def verify_webhook(payload, signature_header, secret, tolerance_seconds=300):
         hashlib.sha256
     ).hexdigest()
 
-    # Timing-safe comparison
     if not hmac.compare_digest(signature, expected_signature):
         return {'valid': False, 'error': 'Signature mismatch'}
 
@@ -369,32 +308,29 @@ from fastapi import FastAPI, Request, HTTPException
 import hmac
 import hashlib
 import time
-import os
 
 app = FastAPI()
 
+# Retrieve from your secrets manager (e.g. AWS Secrets Manager, HashiCorp Vault)
+WEBHOOK_SECRET = get_secret('parchment-webhook-secret')
+
 @app.post("/webhook")
 async def webhook(request: Request):
-    # Get signature header
     signature = request.headers.get("x-webhook-signature")
     if not signature:
         raise HTTPException(status_code=400, detail="Missing signature")
 
-    # Get raw body
     body = await request.body()
     payload = body.decode('utf-8')
-    secret = os.environ["WEBHOOK_SECRET"]
 
-    # Verify signature
-    result = verify_webhook(payload, signature, secret)
+    result = verify_webhook(payload, signature, WEBHOOK_SECRET)
 
     if not result["valid"]:
         print(f"Webhook verification failed: {result['error']}")
         raise HTTPException(status_code=400, detail="Invalid signature")
 
-    # Parse and process event
     event = await request.json()
-    print(f"Received webhook: {event['event']['type']}")
+    print(f"Received webhook: {event['event_type']}")
 
     # Process the event...
 
@@ -402,7 +338,6 @@ async def webhook(request: Request):
 
 def verify_webhook(payload: str, signature_header: str, secret: str, tolerance_seconds: int = 300):
     """Verify webhook signature."""
-    # Parse signature header
     parts = signature_header.split(',')
     timestamp = None
     signature = None
@@ -417,12 +352,10 @@ def verify_webhook(payload: str, signature_header: str, secret: str, tolerance_s
     if not timestamp or not signature:
         return {'valid': False, 'error': 'Invalid signature format'}
 
-    # Check timestamp
     current_time = int(time.time())
     if abs(current_time - timestamp) > tolerance_seconds:
         return {'valid': False, 'error': 'Timestamp expired'}
 
-    # Compute expected signature
     signed_payload = f"{timestamp}.{payload}"
     expected_signature = hmac.new(
         secret.encode('utf-8'),
@@ -430,7 +363,6 @@ def verify_webhook(payload: str, signature_header: str, secret: str, tolerance_s
         hashlib.sha256
     ).hexdigest()
 
-    # Compare signatures
     if not hmac.compare_digest(signature, expected_signature):
         return {'valid': False, 'error': 'Signature mismatch'}
 
@@ -451,9 +383,9 @@ Use this script to generate a test signature:
 # Node.js
 node -e "
 const crypto = require('crypto');
-const payload = '{\"event\":{\"id\":\"evt_test\",\"type\":\"prescription.created\"}}';
+const payload = '{\"event_type\":\"prescription.created\",\"event_id\":\"evt_test123\",\"timestamp\":\"2026-01-01T00:00:00.000Z\",\"partner_id\":\"demo\",\"organization_id\":\"org-123\",\"data\":{\"patient_id\":\"p-1\",\"partner_patient_id\":\"pp-1\",\"user_id\":\"u-1\",\"scid\":\"SC123\"}}';
 const timestamp = Math.floor(Date.now() / 1000);
-const secret = 'whsec_test_secret';
+const secret = 'whsec_your_test_secret';
 const signedPayload = timestamp + '.' + payload;
 const signature = crypto.createHmac('sha256', secret).update(signedPayload).digest('hex');
 console.log('X-Webhook-Signature: t=' + timestamp + ',v1=' + signature);
@@ -466,8 +398,8 @@ console.log('Payload:', payload);
 ```bash
 curl -X POST https://your-endpoint.com/webhook \
   -H "Content-Type: application/json" \
-  -H "X-Webhook-Signature: t=1702465200,v1=abc123..." \
-  -d '{"event":{"id":"evt_test","type":"prescription.created"}}'
+  -H "X-Webhook-Signature: t=<timestamp>,v1=<signature>" \
+  -d '{"event_type":"prescription.created","event_id":"evt_test123","timestamp":"2026-01-01T00:00:00.000Z","partner_id":"demo","organization_id":"org-123","data":{"patient_id":"p-1","partner_patient_id":"pp-1","user_id":"u-1","scid":"SC123"}}'
 ```
 
 ---
@@ -518,7 +450,7 @@ curl -X POST https://your-endpoint.com/webhook \
 </Check>
 
 <Check>
-  **DO** store webhook secrets in environment variables
+  **DO** store webhook secrets in a secrets manager (e.g. AWS Secrets Manager, HashiCorp Vault)
 </Check>
 
 <Check>
@@ -561,5 +493,4 @@ When debugging webhook verification:
 ## Next Steps
 
 - [Review webhook event types and payloads](/webhooks/webhook-events)
-- [Learn about best practices](/webhooks/webhook-integration#best-practices)
 - Contact support at [hello@parchment.health](mailto:hello@parchment.health)

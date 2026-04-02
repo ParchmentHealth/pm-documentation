@@ -23,14 +23,154 @@ Parchment Health uses **webhooks** to notify your application in real-time when 
 
 ---
 
-## Configuration
+## How to Activate Webhooks
 
-### Provide Your Webhook Endpoint
+<Steps>
+
+<Step title="Provide your webhook endpoint">
 
 Contact Parchment support at [hello@parchment.health](mailto:hello@parchment.health) with:
 
-- Your webhook endpoint URL (must be HTTPS)
-- Your partner ID
+- Your **webhook endpoint URL** (must be HTTPS)
+- Your **partner ID**
+
+```bash
+# Example
+Partner ID: yourpartner
+Webhook URL: https://api.yourapp.com/webhooks/parchment
+```
+
+</Step>
+
+<Step title="Receive your webhook secret">
+
+Parchment registers your endpoint and provides a confirmation with your **webhook secret**. This secret is shown **only once** — store it securely.
+
+```json
+{
+  "partner_id": "demo",
+  "webhook_url": "https://api.yourapp.com/webhooks/parchment",
+  "webhook_secret": "whsec_a1b2c3d4e5f6...",
+  "message": "Webhook registered successfully. Store this secret securely - it will not be shown again."
+}
+```
+
+<Warning>
+  Save the `webhook_secret` immediately. It cannot be retrieved again. If lost, contact Parchment support to rotate it.
+</Warning>
+
+</Step>
+
+<Step title="Implement your webhook handler">
+
+Build an endpoint that verifies the signature and routes events by type. Here's a complete Node.js example:
+
+```typescript
+import express from 'express';
+import crypto from 'crypto';
+
+const app = express();
+
+// Retrieve from your secrets manager (e.g. AWS Secrets Manager, HashiCorp Vault)
+let WEBHOOK_SECRET: string;
+
+async function start() {
+  WEBHOOK_SECRET = await getSecret('parchment-webhook-secret');
+  app.listen(3000);
+}
+
+app.post('/webhooks/parchment',
+  express.raw({ type: 'application/json' }),
+  (req, res) => {
+    const signature = req.headers['x-webhook-signature'] as string;
+    const payload = req.body.toString('utf8');
+
+    // Step 1: Verify the signature
+    const result = verifyWebhook(payload, signature, WEBHOOK_SECRET);
+    if (!result.valid) {
+      console.error('Signature verification failed:', result.error);
+      return res.status(400).json({ error: 'Invalid signature' });
+    }
+
+    // Step 2: Parse and route by event type
+    const event = JSON.parse(payload);
+
+    switch (event.event_type) {
+      case 'prescription.created':
+        handlePrescriptionCreated(event);
+        break;
+      default:
+        console.log('Unhandled event type:', event.event_type);
+    }
+
+    // Step 3: Acknowledge receipt
+    res.status(200).json({ received: true });
+  }
+);
+
+function verifyWebhook(
+  payload: string,
+  signatureHeader: string,
+  secret: string,
+  toleranceSeconds = 300
+): { valid: boolean; error?: string } {
+  const parts = signatureHeader.split(',');
+  let timestamp: number | null = null;
+  let signature: string | null = null;
+
+  for (const part of parts) {
+    const [key, value] = part.split('=');
+    if (key === 't') timestamp = parseInt(value, 10);
+    else if (key === 'v1') signature = value;
+  }
+
+  if (!timestamp || !signature || isNaN(timestamp)) {
+    return { valid: false, error: 'Invalid signature header format' };
+  }
+
+  // Check timestamp tolerance (prevents replay attacks)
+  if (Math.abs(Math.floor(Date.now() / 1000) - timestamp) > toleranceSeconds) {
+    return { valid: false, error: 'Timestamp expired' };
+  }
+
+  // Compute expected signature
+  const expected = crypto
+    .createHmac('sha256', secret)
+    .update(`${timestamp}.${payload}`)
+    .digest('hex');
+
+  // Timing-safe comparison
+  const isValid = crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expected)
+  );
+
+  return isValid ? { valid: true } : { valid: false, error: 'Signature mismatch' };
+}
+
+function handlePrescriptionCreated(event: any) {
+  console.log('New prescription:', event.data.scid);
+  // Fetch full details via API using the SCID
+}
+
+start();
+```
+
+See [Webhook Signature Verification](/webhooks/webhook-verification) for Python examples and more details.
+
+</Step>
+
+<Step title="Test your integration">
+
+Once deployed, verify that:
+
+- Your endpoint returns a `2xx` status code
+- Signature verification passes
+- Events are routed correctly
+
+</Step>
+
+</Steps>
 
 ---
 
@@ -38,77 +178,9 @@ Contact Parchment support at [hello@parchment.health](mailto:hello@parchment.hea
 
 Your webhook endpoint must:
 
-### 1. Use HTTPS
-
-All webhook URLs must use HTTPS with a valid SSL certificate.
-
-```bash
-✅ https://api.yourapp.com/webhooks/parchment
-❌ http://api.yourapp.com/webhooks/parchment
-```
-
-### 2. Return Success Quickly
-
-Respond with a `2xx` status code within 10 seconds. Process events asynchronously if needed.
-
-```javascript
-// ✅ Good - acknowledge immediately, process later
-app.post('/webhook', async (req, res) => {
-  // Acknowledge receipt immediately
-  res.status(200).json({ received: true });
-
-  // Process asynchronously
-  processWebhookAsync(req.body);
-});
-```
-
-### 3. Handle Retries Idempotently
-
-Parchment may send the same event multiple times. Use the `event_id` to prevent duplicate processing.
-
-```javascript
-async function processWebhook(event) {
-  // Check if we've already processed this event
-  if (await eventExists(event.event_id)) {
-    console.log('Event already processed:', event.event_id);
-    return;
-  }
-
-  // Process the event
-  await handleEvent(event);
-
-  // Mark as processed
-  await saveProcessedEvent(event.event_id);
-}
-```
-
----
-
-## Webhook Delivery
-
-### Headers
-
-Every webhook request includes these headers:
-
-| Header | Description | Example |
-|--------|-------------|---------|
-| `Content-Type` | Always `application/json` | `application/json` |
-| `User-Agent` | Parchment webhook identifier | `Parchment-Webhooks/1.0` |
-
-### Delivery Behavior
-
-Webhook delivery configuration:
-
-- **Timeout**: 10 seconds per request
-- **Expected Response**: 2xx status code (200-299)
-- **Retry Policy**: Currently no automatic retries (coming soon)
-
-### Success Criteria
-
-A webhook is considered successfully delivered when your endpoint:
-
-1. Responds with a `2xx` status code (200-299)
-2. Within 10 seconds
+- **Use HTTPS** with a valid SSL certificate
+- **Return a `2xx` response within 10 seconds** — process events asynchronously if needed
+- **Handle retries idempotently** — use the `event_id` to prevent duplicate processing
 
 ---
 
@@ -121,9 +193,8 @@ Parchment sends webhooks for these event types:
 |------------|-------------|-------- |
 | `prescription.created` | A new prescription was created | Live |
 | `prescription.updated` | A prescription was modified | Coming Soon |
-| `prescription.cancelled` | A prescription was cancelled | Coming Soon |
-| `prescription.dispensed` | A prescription was dispensed | Coming Soon |
-| `prescription.expired` | A prescription expired | Coming Soon |
+| `prescription.ceased` | A prescription was ceased | Coming Soon |
+| `prescription.reissued` | A prescription was reissued | Coming Soon |
 
 See [Webhook Events](/webhooks/webhook-events) for detailed payload examples.
 

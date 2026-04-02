@@ -112,6 +112,7 @@
             "group": "Webhook Integration",
             "pages": [
               "webhooks/webhook-integration",
+              "webhooks/webhook-verification",
               "webhooks/webhook-events"
             ]
           }
