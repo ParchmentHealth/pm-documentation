@@ -1,639 +1,681 @@
 {
-	"info": {
-		"_postman_id": "6cb097e4-96ca-4c35-93b7-59e80b86d7f9",
-		"name": "Parchment External APIs",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "15250687",
-		"_collection_link": "https://solar-comet-693833.postman.co/workspace/Parchment~520846e6-1adf-4320-81d4-0793e2c85192/collection/15250687-6cb097e4-96ca-4c35-93b7-59e80b86d7f9?action=share&source=collection_link&creator=15250687"
-	},
-	"item": [
-		{
-			"name": "external-service",
-			"item": [
-				{
-					"name": "Generate Token",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Save token to collection variables when successful",
-									"if (pm.response.code === 200) {",
-									"    const responseBody = pm.response.json();",
-									"    const accessToken = responseBody.access_token;",
-									"    const expiresIn = responseBody.expires_in || 21600; // Default 6 hours",
-									"    const expiry = Math.floor(Date.now() / 1000) + expiresIn;",
-									"    ",
-									"    pm.collectionVariables.set('accessToken', accessToken);",
-									"    pm.collectionVariables.set('tokenExpiry', expiry);",
-									"    ",
-									"    console.log('Token saved to collection variables');",
-									"    console.log('Access Token:', accessToken);",
-									"    console.log('Expires at:', new Date(expiry * 1000).toISOString());",
-									"} else {",
-									"    console.log('Failed to generate token. Status:', pm.response.code);",
-									"}"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "x-organization-id",
-								"value": "{{organizationId}}",
-								"type": "text"
-							},
-							{
-								"key": "x-organization-secret",
-								"value": "{{organizationSecret}}",
-								"type": "text"
-							},
-							{
-								"key": "x-partner-secret",
-								"value": "{{partnerSecret}}",
-								"type": "text"
-							},
-							{
-								"key": "x-partner-id",
-								"value": "{{partnerId}}",
-								"type": "text"
-							},
-							{
-								"key": "x-user-id",
-								"value": "{{userId}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"grantType\": \"client_credentials\",\n    \"scope\": [\"create:patient\", \"read:patient_prescription\",\"create:user\",\"read:user\",\"read:users\", \"update:user\"]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/external/v1/token",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"external",
-								"v1",
-								"token"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "SSO",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Save token to collection variables when successful",
-									"if (pm.response.code === 200) {",
-									"    const responseBody = pm.response.json();",
-									"    const accessToken = responseBody.access_token;",
-									"    const expiresIn = responseBody.expires_in || 21600; // Default 6 hours",
-									"    const expiry = Math.floor(Date.now() / 1000) + expiresIn;",
-									"    ",
-									"    pm.collectionVariables.set('accessToken', accessToken);",
-									"    pm.collectionVariables.set('tokenExpiry', expiry);",
-									"    ",
-									"    console.log('Token saved to collection variables');",
-									"    console.log('Access Token:', accessToken);",
-									"    console.log('Expires at:', new Date(expiry * 1000).toISOString());",
-									"} else {",
-									"    console.log('Failed to generate token. Status:', pm.response.code);",
-									"}"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "x-organization-id",
-								"value": "{{organizationId}}",
-								"type": "text"
-							},
-							{
-								"key": "x-organization-secret",
-								"value": "{{organizationSecret}}",
-								"type": "text"
-							},
-							{
-								"key": "x-partner-secret",
-								"value": "{{partnerSecret}}",
-								"type": "text"
-							},
-							{
-								"key": "x-partner-id",
-								"value": "{{partnerId}}",
-								"type": "text"
-							},
-							{
-								"key": "x-user-id",
-								"value": "{{userId}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"redirect_path\": \"/embed/patients/f03b972b-53ea-452d-ae48-024817f6c3b0/prescriptions\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/external/v1/sso",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"external",
-								"v1",
-								"sso"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create Patient",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{accessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "x-organization-secret",
-								"value": "{{organizationSecret}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"given_name\": \"Henk\",\n    \"family_name\": \"SKILLING\",\n    \"medicare_card_number\": \"2950356401\", \n    \"medicare_irn\": \"1\",\n    \"dva_file_number\": \"DVA123456\",\n    \"date_of_birth\": \"1941-09-24\",\n    \"sex\": \"F\",\n    \"ihi_number\": \"8003608666690987\",\n    \"no_given_name\": false,\n    \"email\": \"john.smith@example.com\",\n    \"phone\": \"0412345678\",\n    \"partner_patient_id\": \"1234567890-1234567890\",\n    \"partner_id\": \"{{partnerId}}\",\n    \"australian_street_address\": {\n      \"street_number\": \"42\",\n      \"street_name\": \"Wallaby Way\",\n      \"suburb\": \"Sydney\",\n      \"state\": \"NSW\",\n      \"postcode\": \"2000\"\n    }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/{{userId}}/patients",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"external",
-								"v1",
-								"organizations",
-								"{{organizationId}}",
-								"users",
-								"{{userId}}",
-								"patients"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Read Patient Prescriptions",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{accessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "x-organization-secret",
-								"value": "{{organizationSecret}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/{{userId}}/patients/{{patientId}}/prescriptions",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"external",
-								"v1",
-								"organizations",
-								"{{organizationId}}",
-								"users",
-								"{{userId}}",
-								"patients",
-								"{{patientId}}",
-								"prescriptions"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Validate Integration",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{accessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [
-							{
-								"key": "x-organization-secret",
-								"value": "{{organizationSecret}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/validate",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"external",
-								"v1",
-								"organizations",
-								"{{organizationId}}",
-								"validate"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create User",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "x-organization-secret",
-								"value": "{{organizationSecret}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"given_name\":\"Stanley\",\n    \"family_name\": \"Griffith\",\n    \"date_of_birth\": \"1967-06-25\",\n    \"sex\": \"M\",\n    \"email\": \"thedsouzahome+api30@gmail.com\",\n    \"phone\": \"0412345678\",\n    \"access_roles\": [\"provider\", \"admin\"],\n    \"hpii_number\": \"8003616566696624\",\n    \"prescriber_type\":\"T\",\n    \"prescriber_number\": \"1234567\",\n    \"qualifications\": \"LLB\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"external",
-								"v1",
-								"organizations",
-								"{{organizationId}}",
-								"users",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update User",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "x-organization-secret",
-								"value": "{{organizationSecret}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"full_name\": \"Frank Reynolds\",\n    \"prescriber_details\": {\n        \"given_name\": \"Frank\",\n        \"family_name\": \"Reynolds\",\n        \"date_of_birth\": \"1967-06-25\",\n        \"sex\": \"M\",\n        \"phone\": \"0412345678\",\n        \"hpii_number\": \"8003616566696624\",\n        \"prescriber_type\": \"T\",\n        \"prescriber_number\": \"1234567\",\n        \"qualifications\": \"MBBS\"\n    }\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/:userId",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"external",
-								"v1",
-								"organizations",
-								"{{organizationId}}",
-								"users",
-								":userId"
-							],
-							"variable": [
-								{
-									"key": "userId",
-									"value": ""
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update User Roles",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "x-organization-secret",
-								"value": "{{organizationSecret}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"access_roles\": [\"admin\", \"provider\", \"rx_reader\"]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/:userId/roles",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"external",
-								"v1",
-								"organizations",
-								"{{organizationId}}",
-								"users",
-								":userId",
-								"roles"
-							],
-							"variable": [
-								{
-									"key": "userId",
-									"value": "8e1c9bab-6614-4723-8981-87c8fa026dae"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Read Users",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "x-organization-secret",
-								"value": "{{organizationSecret}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"external",
-								"v1",
-								"organizations",
-								"{{organizationId}}",
-								"users",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Read User",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "x-organization-secret",
-								"value": "{{organizationSecret}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/:userId",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"external",
-								"v1",
-								"organizations",
-								"{{organizationId}}",
-								"users",
-								":userId"
-							],
-							"variable": [
-								{
-									"key": "userId",
-									"value": "8e1c9bab-6614-4723-8981-87c8fa026dae"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		}
-	],
-	"auth": {
-		"type": "bearer",
-		"bearer": [
-			{
-				"key": "token",
-				"value": "{{accessToken}}",
-				"type": "string"
-			}
-		]
-	},
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					"// Auto-generate token if needed (not for the Generate Token request itself)",
-					"if (pm.info.requestName !== 'Generate Token') {",
-					"    const currentTime = Math.floor(Date.now() / 1000);",
-					"    const tokenExpiry = pm.collectionVariables.get('tokenExpiry') || 0;",
-					"    const accessToken = pm.collectionVariables.get('accessToken');",
-					"    ",
-					"    // Check if token is missing or expired (with 5 minute buffer)",
-					"    if (!accessToken || currentTime >= (tokenExpiry - 300)) {",
-					"        console.log('Token missing or expired, generating new token...');",
-					"        ",
-					"        // Check if required variables are set",
-					"        const orgId = pm.collectionVariables.get('organizationId');",
-					"        const orgSecret = pm.collectionVariables.get('organizationSecret');",
-					"        const partnerId = pm.collectionVariables.get('partnerId');",
-					"        const partnerSecret = pm.collectionVariables.get('partnerSecret');",
-					"        const userId = pm.collectionVariables.get('userId');",
-					"        ",
-					"        if (!orgId || !orgSecret || !partnerId || !partnerSecret || !userId) {",
-					"            console.log('Missing required credentials. Please set collection variables:');",
-					"            console.log('- organizationId');",
-					"            console.log('- organizationSecret'); ",
-					"            console.log('- partnerId');",
-					"            console.log('- partnerSecret');",
-					"            console.log('- userId');",
-					"            return;",
-					"        }",
-					"        ",
-					"        // Generate token",
-					"        const tokenRequest = {",
-					"            url: pm.environment.get('baseUrl') + '/external/v1/token',",
-					"            method: 'POST',",
-					"            header: {",
-					"                'Content-Type': 'application/json',",
-					"                'x-organization-id': orgId,",
-					"                'x-organization-secret': orgSecret,",
-					"                'x-partner-id': partnerId,",
-					"                'x-partner-secret': partnerSecret,",
-					"                'x-user-id': userId",
-					"            },",
-					"            body: {",
-					"                mode: 'raw',",
-					"                raw: JSON.stringify({",
-					"                    'grantType': 'client_credentials',",
-					"                    'scope': ['create:patient', 'read:patient_prescription']",
-					"                })",
-					"            }",
-					"        };",
-					"        ",
-					"        pm.sendRequest(tokenRequest, (err, response) => {",
-					"            if (err) {",
-					"                console.log('Error generating token:', err);",
-					"                return;",
-					"            }",
-					"            ",
-					"            if (response.code === 200) {",
-					"                const responseBody = response.json();",
-					"                const newToken = responseBody.access_token;",
-					"                const expiresIn = responseBody.expires_in || 21600; // Default 6 hours",
-					"                const newExpiry = Math.floor(Date.now() / 1000) + expiresIn;",
-					"                ",
-					"                pm.collectionVariables.set('accessToken', newToken);",
-					"                pm.collectionVariables.set('tokenExpiry', newExpiry);",
-					"                ",
-					"                console.log('Token generated successfully');",
-					"            } else {",
-					"                console.log('Failed to generate token. Status:', response.code);",
-					"                console.log('Response:', response.text());",
-					"            }",
-					"        });",
-					"    }",
-					"}"
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		}
-	],
-	"variable": [
-		{
-			"key": "organizationId",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "organizationSecret",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "partnerId",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "partnerSecret",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "userId",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "accessToken",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "tokenExpiry",
-			"value": "0",
-			"type": "string"
-		},
-		{
-			"key": "patientId",
-			"value": "",
-			"type": "default"
-		}
-	]
+  "info": {
+    "_postman_id": "6cb097e4-96ca-4c35-93b7-59e80b86d7f9",
+    "name": "Parchment External APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "15250687",
+    "_collection_link": "https://go.postman.co/collection/15250687-6cb097e4-96ca-4c35-93b7-59e80b86d7f9?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "external-service",
+      "item": [
+        {
+          "name": "Generate Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Save token to collection variables when successful",
+                  "if (pm.response.code === 200) {",
+                  "    const responseBody = pm.response.json();",
+                  "    const accessToken = responseBody.access_token;",
+                  "    const expiresIn = responseBody.expires_in || 21600; // Default 6 hours",
+                  "    const expiry = Math.floor(Date.now() / 1000) + expiresIn;",
+                  "    ",
+                  "    pm.collectionVariables.set('accessToken', accessToken);",
+                  "    pm.collectionVariables.set('tokenExpiry', expiry);",
+                  "    ",
+                  "    console.log('Token saved to collection variables');",
+                  "    console.log('Access Token:', accessToken);",
+                  "    console.log('Expires at:', new Date(expiry * 1000).toISOString());",
+                  "} else {",
+                  "    console.log('Failed to generate token. Status:', pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-secret",
+                "value": "{{organizationSecret}}",
+                "type": "text"
+              },
+              {
+                "key": "x-partner-secret",
+                "value": "{{partnerSecret}}",
+                "type": "text"
+              },
+              {
+                "key": "x-partner-id",
+                "value": "{{partnerId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-user-id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"grantType\": \"client_credentials\",\n    \"scope\": [\"create:patient\", \"read:patient_prescription\",\"create:user\",\"read:user\",\"read:users\", \"update:user\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/token",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "external",
+                "v1",
+                "token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SSO",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Save token to collection variables when successful",
+                  "if (pm.response.code === 200) {",
+                  "    const responseBody = pm.response.json();",
+                  "    const accessToken = responseBody.access_token;",
+                  "    const expiresIn = responseBody.expires_in || 21600; // Default 6 hours",
+                  "    const expiry = Math.floor(Date.now() / 1000) + expiresIn;",
+                  "    ",
+                  "    pm.collectionVariables.set('accessToken', accessToken);",
+                  "    pm.collectionVariables.set('tokenExpiry', expiry);",
+                  "    ",
+                  "    console.log('Token saved to collection variables');",
+                  "    console.log('Access Token:', accessToken);",
+                  "    console.log('Expires at:', new Date(expiry * 1000).toISOString());",
+                  "} else {",
+                  "    console.log('Failed to generate token. Status:', pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-organization-secret",
+                "value": "{{organizationSecret}}",
+                "type": "text"
+              },
+              {
+                "key": "x-partner-secret",
+                "value": "{{partnerSecret}}",
+                "type": "text"
+              },
+              {
+                "key": "x-partner-id",
+                "value": "{{partnerId}}",
+                "type": "text"
+              },
+              {
+                "key": "x-user-id",
+                "value": "{{userId}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"redirect_path\": \"/dashboard/patients/\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/sso",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "external",
+                "v1",
+                "sso"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Patient",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-organization-secret",
+                "value": "{{organizationSecret}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"given_name\": \"Henk\",\n    \"family_name\": \"SKILLING\",\n    \"medicare_card_number\": \"2950356401\", \n    \"medicare_irn\": \"1\",\n    \"dva_file_number\": \"DVA123456\",\n    \"date_of_birth\": \"1941-09-24\",\n    \"sex\": \"F\",\n    \"ihi_number\": \"8003608666690987\",\n    \"no_given_name\": false,\n    \"email\": \"john.smith@example.com\",\n    \"phone\": \"0412345678\",\n    \"partner_patient_id\": \"1234567890-1234567890\",\n    \"partner_id\": \"{{partnerId}}\",\n    \"australian_street_address\": {\n      \"street_number\": \"42\",\n      \"street_name\": \"Wallaby Way\",\n      \"suburb\": \"Sydney\",\n      \"state\": \"NSW\",\n      \"postcode\": \"2000\"\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/{{userId}}/patients",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "external",
+                "v1",
+                "organizations",
+                "{{organizationId}}",
+                "users",
+                "{{userId}}",
+                "patients"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Read Patient Prescriptions",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-organization-secret",
+                "value": "{{organizationSecret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/{{userId}}/patients/{{patientId}}/prescriptions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "external",
+                "v1",
+                "organizations",
+                "{{organizationId}}",
+                "users",
+                "{{userId}}",
+                "patients",
+                "{{patientId}}",
+                "prescriptions"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Read Patient Prescription",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-organization-secret",
+                "value": "{{organizationSecret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/{{userId}}/patients/{{patientId}}/prescriptions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "external",
+                "v1",
+                "organizations",
+                "{{organizationId}}",
+                "users",
+                "{{userId}}",
+                "patients",
+                "{{patientId}}",
+                "prescriptions"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Validate Integration",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-organization-secret",
+                "value": "{{organizationSecret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/validate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "external",
+                "v1",
+                "organizations",
+                "{{organizationId}}",
+                "validate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-organization-secret",
+                "value": "{{organizationSecret}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"given_name\":\"Stanley\",\n    \"family_name\": \"Griffith\",\n    \"date_of_birth\": \"1967-06-25\",\n    \"sex\": \"M\",\n    \"email\": \"thedsouzahome+api30@gmail.com\",\n    \"phone\": \"0412345678\",\n    \"access_roles\": [\"provider\", \"admin\"],\n    \"hpii_number\": \"8003616566696624\",\n    \"prescriber_type\":\"T\",\n    \"prescriber_number\": \"1234567\",\n    \"qualifications\": \"LLB\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "external",
+                "v1",
+                "organizations",
+                "{{organizationId}}",
+                "users",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "x-organization-secret",
+                "value": "{{organizationSecret}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"full_name\": \"Frank Reynolds\",\n    \"prescriber_details\": {\n        \"given_name\": \"Frank\",\n        \"family_name\": \"Reynolds\",\n        \"date_of_birth\": \"1967-06-25\",\n        \"sex\": \"M\",\n        \"phone\": \"0412345678\",\n        \"hpii_number\": \"8003616566696624\",\n        \"prescriber_type\": \"T\",\n        \"prescriber_number\": \"1234567\",\n        \"qualifications\": \"MBBS\"\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/:userId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "external",
+                "v1",
+                "organizations",
+                "{{organizationId}}",
+                "users",
+                ":userId"
+              ],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Roles",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "x-organization-secret",
+                "value": "{{organizationSecret}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"access_roles\": [\"admin\", \"provider\", \"rx_reader\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/:userId/roles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "external",
+                "v1",
+                "organizations",
+                "{{organizationId}}",
+                "users",
+                ":userId",
+                "roles"
+              ],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "8e1c9bab-6614-4723-8981-87c8fa026dae"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Read Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-organization-secret",
+                "value": "{{organizationSecret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "external",
+                "v1",
+                "organizations",
+                "{{organizationId}}",
+                "users",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Read User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-organization-secret",
+                "value": "{{organizationSecret}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/:userId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "external",
+                "v1",
+                "organizations",
+                "{{organizationId}}",
+                "users",
+                ":userId"
+              ],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "8e1c9bab-6614-4723-8981-87c8fa026dae"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-generate token if needed (not for the Generate Token request itself)",
+          "if (pm.info.requestName !== 'Generate Token') {",
+          "    const currentTime = Math.floor(Date.now() / 1000);",
+          "    const tokenExpiry = pm.collectionVariables.get('tokenExpiry') || 0;",
+          "    const accessToken = pm.collectionVariables.get('accessToken');",
+          "    ",
+          "    // Check if token is missing or expired (with 5 minute buffer)",
+          "    if (!accessToken || currentTime >= (tokenExpiry - 300)) {",
+          "        console.log('Token missing or expired, generating new token...');",
+          "        ",
+          "        // Check if required variables are set",
+          "        const orgId = pm.collectionVariables.get('organizationId');",
+          "        const orgSecret = pm.collectionVariables.get('organizationSecret');",
+          "        const partnerId = pm.collectionVariables.get('partnerId');",
+          "        const partnerSecret = pm.collectionVariables.get('partnerSecret');",
+          "        const userId = pm.collectionVariables.get('userId');",
+          "        ",
+          "        if (!orgId || !orgSecret || !partnerId || !partnerSecret || !userId) {",
+          "            console.log('Missing required credentials. Please set collection variables:');",
+          "            console.log('- organizationId');",
+          "            console.log('- organizationSecret'); ",
+          "            console.log('- partnerId');",
+          "            console.log('- partnerSecret');",
+          "            console.log('- userId');",
+          "            return;",
+          "        }",
+          "        ",
+          "        // Generate token",
+          "        const tokenRequest = {",
+          "            url: pm.environment.get('baseUrl') + '/external/v1/token',",
+          "            method: 'POST',",
+          "            header: {",
+          "                'Content-Type': 'application/json',",
+          "                'x-organization-id': orgId,",
+          "                'x-organization-secret': orgSecret,",
+          "                'x-partner-id': partnerId,",
+          "                'x-partner-secret': partnerSecret,",
+          "                'x-user-id': userId",
+          "            },",
+          "            body: {",
+          "                mode: 'raw',",
+          "                raw: JSON.stringify({",
+          "                    'grantType': 'client_credentials',",
+          "                    'scope': ['create:patient', 'read:patient_prescription']",
+          "                })",
+          "            }",
+          "        };",
+          "        ",
+          "        pm.sendRequest(tokenRequest, (err, response) => {",
+          "            if (err) {",
+          "                console.log('Error generating token:', err);",
+          "                return;",
+          "            }",
+          "            ",
+          "            if (response.code === 200) {",
+          "                const responseBody = response.json();",
+          "                const newToken = responseBody.access_token;",
+          "                const expiresIn = responseBody.expires_in || 21600; // Default 6 hours",
+          "                const newExpiry = Math.floor(Date.now() / 1000) + expiresIn;",
+          "                ",
+          "                pm.collectionVariables.set('accessToken', newToken);",
+          "                pm.collectionVariables.set('tokenExpiry', newExpiry);",
+          "                ",
+          "                console.log('Token generated successfully');",
+          "            } else {",
+          "                console.log('Failed to generate token. Status:', response.code);",
+          "                console.log('Response:', response.text());",
+          "            }",
+          "        });",
+          "    }",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "organizationId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "organizationSecret",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "partnerId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "partnerSecret",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "tokenExpiry",
+      "value": "0",
+      "type": "string"
+    },
+    {
+      "key": "patientId",
+      "value": "",
+      "type": "default"
+    }
+  ]
 }
