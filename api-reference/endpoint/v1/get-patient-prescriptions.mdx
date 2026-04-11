@@ -9,6 +9,21 @@ openapi: "GET /v1/organizations/{organization_id}/users/{user_id}/patients/{pati
 - `limit` (optional, integer): Maximum number of prescriptions to return per page (default: 20, max: 50).
 - `lastKey` (optional, string): Opaque cursor for fetching the next page. Use the `pagination.lastKey` value from the previous response.
 
+### Error Status
+
+When a prescription has encountered an error during processing, the `status` field will be `"Error"` and an `error` object will be included with a description:
+
+```json
+{
+  "status": "Error",
+  "error": {
+    "description": "Description of the error that occurred"
+  }
+}
+```
+
+When there is no error, the `error` field will be `null`.
+
 ### Response
 
 If pagination is used, the response will include a `pagination` object:

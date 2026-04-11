@@ -43,6 +43,14 @@ When generating an SSO token for iframe embedding, use the `/embed/` prefix in y
 **Important:** The `/embed/` prefix in the redirect_path tells Parchment to render the page in iframe-optimized mode, removing navigation elements and adjusting the layout for embedded display.
 </Note>
 
+### Available Embed Paths
+
+| Path | Description |
+|------|-------------|
+| `/embed/patients/{patient_id}/prescriptions` | Prescription form for a specific patient. Main entry point for creating new prescriptions. |
+| `/embed/patients/{patient_id}/prescriptions/{prescription_id}` | View or manage an existing prescription for a patient. |
+| `/embed/prescriptions/approval` | Approval dashboard for reviewing, approving, amending, or rejecting queued prescriptions. |
+
 **Response:**
 ```json
 {
@@ -69,5 +77,9 @@ Use the returned `redirect_url` as the iframe source:
   title="Parchment Portal"
 />
 ```
+
+### Result
+
+<img src="/images/iframe-embed.png" alt="Parchment embedded iframe example" />
 
 

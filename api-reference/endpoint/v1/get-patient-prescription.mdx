@@ -44,13 +44,31 @@ Returns the prescription details along with patient and prescriber information:
       "pbs_code": "1234A",
       "item_strength": "500mg",
       "item_form": "capsule",
-      "route_administration": "oral"
+      "route_administration": "oral",
+      "error": null
     }
   },
   "message": "Prescriptions retrieved successfully",
   "code": "SUCCESS"
 }
 ```
+
+### Error Status
+
+When a prescription has encountered an error during processing, the `status` field will be `"Error"` and an `error` object will be included with a description:
+
+```json
+{
+  "prescription": {
+    "status": "Error",
+    "error": {
+      "description": "Description of the error that occurred"
+    }
+  }
+}
+```
+
+When there is no error, the `error` field will be `null`.
 
 ## Error Responses
 
