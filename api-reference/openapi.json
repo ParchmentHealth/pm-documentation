@@ -711,7 +711,8 @@
                     },
                     "prescriber": {
                       "given_name": "Dr. Emily",
-                      "family_name": "Johnson"
+                      "family_name": "Johnson",
+                      "user_id": "1234567890"
                     },
                     "prescriptions": [
                       {
@@ -2370,6 +2371,9 @@
           },
           "annotations": {
             "type": "string"
+          },
+          "prescriber": {
+            "$ref": "#/components/schemas/Prescriber"
           }
         }
       },
@@ -2399,12 +2403,21 @@
       },
       "Prescriber": {
         "type": "object",
+        "required": [
+          "given_name",
+          "family_name",
+          "user_id"
+        ],
         "properties": {
           "given_name": {
             "type": "string"
           },
           "family_name": {
             "type": "string"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Parchment user identifier of the prescriber. Use this to map the prescriber to a user/provider in your system."
           }
         }
       },
@@ -2421,7 +2434,13 @@
             "$ref": "#/components/schemas/Patient"
           },
           "prescriber": {
-            "$ref": "#/components/schemas/Prescriber"
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Prescriber"
+              }
+            ],
+            "deprecated": true,
+            "description": "Deprecated. Use `prescriptions[].prescriber` instead. This field is kept for backwards compatibility and will be removed in a future release."
           },
           "prescriptions": {
             "type": "array",

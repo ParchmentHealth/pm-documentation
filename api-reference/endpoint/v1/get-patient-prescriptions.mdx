@@ -43,6 +43,10 @@ If pagination is used, the response will include a `pagination` object:
 }
 ```
 
+<Warning>
+  The top-level `prescriber` field is **deprecated**. Use `prescriptions[].prescriber` instead — each prescription carries its own prescriber, including the Parchment `user_id`. The top-level field is kept for backwards compatibility and will be removed in a future release.
+</Warning>
+
 - `count`: Number of prescriptions returned in this page.
 - `hasNext`: Whether more prescriptions are available on subsequent pages.
 - `limit`: Maximum number of prescriptions per page (as requested).

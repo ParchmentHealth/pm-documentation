@@ -9,7 +9,8 @@ Parchment Health uses **webhooks** to notify your application in real-time when 
 ## Overview
 
 - **Delivery**: HTTP POST requests to your configured endpoint
-- **Retry Logic**: Automatic retries with exponential backoff
+- **Retry Logic**: Up to 3 attempts with exponential backoff (see [Retry Behavior](#retry-behavior))
+- **Request Timeout**: 10 seconds per attempt
 - **Supported Events**: Prescription lifecycle events 
 
 ---
@@ -181,6 +182,72 @@ Your webhook endpoint must:
 - **Use HTTPS** with a valid SSL certificate
 - **Return a `2xx` response within 10 seconds** — process events asynchronously if needed
 - **Handle retries idempotently** — use the `event_id` to prevent duplicate processing
+
+---
+
+## Request Headers
+
+Every webhook request includes the following headers:
+
+| Header | Value | Description |
+|--------|-------|-------------|
+| `Content-Type` | `application/json` | Payload is always JSON |
+| `X-Webhook-Signature` | `t=<timestamp>,v1=<hmac-sha256>` | Signature used to verify authenticity — see [Webhook Signature Verification](/webhooks/webhook-verification) |
+| `User-Agent` | `Parchment-Webhooks/1.0` | Identifies requests originating from Parchment |
+
+---
+
+## Retry Behavior
+
+Parchment automatically retries failed webhook deliveries using **exponential backoff**.
+
+### Retry Schedule
+
+Each event is attempted up to **3 times**. A request is considered failed if it does not return a `2xx` status code within the 10-second timeout, or if a network error occurs.
+
+| Attempt | Delay Before Attempt | Cumulative Time |
+|---------|----------------------|-----------------|
+| 1 | Immediate | 0s |
+| 2 | 1 second after attempt 1 fails | ~1s |
+| 3 | 2 seconds after attempt 2 fails | ~3s |
+
+After the 3rd attempt fails, the event is **not retried further** and is logged as permanently failed on Parchment's side.
+
+### Retryable vs. Non-Retryable Responses
+
+Parchment distinguishes between transient and permanent failures to avoid pointless retries:
+
+**Retryable** (will retry up to the limit):
+- Network errors (connection refused, DNS failure, TLS errors)
+- Request timeouts (no response within 10 seconds)
+- `408 Request Timeout`
+- `429 Too Many Requests`
+- Any `5xx` server error
+
+**Non-retryable** (fails immediately after the first attempt):
+- Any other `4xx` client error (e.g. `400`, `401`, `403`, `404`)
+
+<Note>
+  A `4xx` response (other than `408` / `429`) signals a problem with your endpoint configuration — bad signature handling, wrong auth, missing route — that retrying won't fix. Fix the endpoint and contact Parchment support if you need the event re-sent.
+</Note>
+
+### When Retries Stop
+
+Parchment stops retrying a webhook event as soon as **any one** of the following occurs:
+
+1. **Successful delivery** — your endpoint returns a `2xx` status code.
+2. **Non-retryable response** — your endpoint returns a `4xx` other than `408` or `429`. The event fails immediately with no further attempts.
+3. **Retry budget exhausted** — all 3 attempts have failed with retryable errors.
+
+Once retries stop, the event is **not re-sent automatically**. Failures are logged on Parchment's side; contact [hello@parchment.health](mailto:hello@parchment.health) if you need a failed event replayed.
+
+### Idempotency
+
+Because retries can occasionally result in duplicate deliveries (e.g. if your endpoint returned a non-2xx status but still processed the event), your handler **must be idempotent**. Use the top-level `event.id` field from the payload as an idempotency key and skip any event ID you have already processed.
+
+### Rate Limiting
+
+If your endpoint needs to throttle Parchment, return `429 Too Many Requests`. Parchment will back off and retry according to the schedule above.
 
 ---
 
