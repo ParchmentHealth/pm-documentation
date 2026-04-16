@@ -749,6 +749,12 @@
                         "prescriber_script_number": "19192",
                         "custom_drug_details": {
                           "custom_product_id": "1234567890"
+                        },
+                        "prescriber": {
+                          "title": "Dr",
+                          "given_name": "Emily",
+                          "family_name": "Johnson",
+                          "user_id": "1234567890"
                         }
                       },
                       {
@@ -783,7 +789,13 @@
                         "send_to_pharmacy": "",
                         "unlisted_item_repat_authority": false,
                         "prescriber_script_number": "18631",
-                        "custom_drug_details": {}
+                        "custom_drug_details": {},
+                        "prescriber": {
+                          "title": "Dr",
+                          "given_name": "Emily",
+                          "family_name": "Johnson",
+                          "user_id": "1234567890"
+                        }
                       }
                     ]
                   },
