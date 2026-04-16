@@ -64,7 +64,8 @@
             "pages": [
               "api-reference/endpoint/v1/create-patient",
               "api-reference/endpoint/v1/update-patient",
-              "api-reference/endpoint/v1/get-patient-prescriptions"
+              "api-reference/endpoint/v1/get-patient-prescriptions",
+              "api-reference/endpoint/v1/get-patient-prescription"
             ]
           },
           {

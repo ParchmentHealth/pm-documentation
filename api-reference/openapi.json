@@ -712,7 +712,7 @@
                     "prescriber": {
                       "given_name": "Dr. Emily",
                       "family_name": "Johnson",
-                      "user_id": "1234567890"
+                      "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae"
                     },
                     "prescriptions": [
                       {
@@ -754,7 +754,7 @@
                           "title": "Dr",
                           "given_name": "Emily",
                           "family_name": "Johnson",
-                          "user_id": "1234567890"
+                          "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae"
                         }
                       },
                       {
@@ -794,7 +794,7 @@
                           "title": "Dr",
                           "given_name": "Emily",
                           "family_name": "Johnson",
-                          "user_id": "1234567890"
+                          "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae"
                         }
                       }
                     ]
