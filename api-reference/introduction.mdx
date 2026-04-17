@@ -7,19 +7,30 @@ description: "Parchment e-prescriptions API endpoints"
 
 The Parchment Health API is a RESTful API that allows you to manage your Patient information in Parchment. Our API follows industry standards including RFC 7807 for error responses and provides consistent, predictable response formats across all endpoints.
 
-## Key Features
+## Getting Started
 
-- **Standardized Responses**: All endpoints follow a consistent response structure
-- **RFC 7807 Compliance**: Error responses follow Problem Details standard
-- **Request Tracing**: Every response includes a unique `requestId` for debugging
-- **Type Safety**: Full TypeScript support with comprehensive interfaces
-- **Detailed Validation**: Field-level validation errors with actionable messages
+Once you've received your sandbox credentials from Parchment, follow these steps to start using the API.
 
-## API Sequence
-
-Below is the basic sequence of events when a user signs up to Parchment.
-
-![Alt text](/images/api-sequence.png)
+<Steps>
+  <Step title="Sign up to the Parchment sandbox" icon="user-plus">
+    Create your partner account in the [Parchment sandbox environment](https://portal.sandbox.parchment.health).
+  </Step>
+  <Step title="Generate API credentials" icon="code">
+    Generate your API client credentials from the Parchment sandbox portal.
+  </Step>
+  <Step title="Connect each organization" icon="plug">
+    Call the `/validate` endpoint for **each organization** you need to connect so that the org is linked to your integration. See [Partner Token Creation](/authentication/partner/token-creation) for details.
+  </Step>
+  <Step title="Implement the relevant APIs" icon="laptop-code">
+    Implement the Parchment APIs that are relevant to your business workflows (patients, users, prescriptions, SSO, iFrame etc.).
+  </Step>
+  <Step title="Test your implementation" icon="vial">
+    Validate end-to-end behaviour against the sandbox environment to ensure your integration works as expected.
+  </Step>
+  <Step title="Request the conformance form" icon="file-signature">
+    Request the conformance form from Parchment once your sandbox implementation is complete.
+  </Step>
+</Steps>
 
 ## Response Structure
 
