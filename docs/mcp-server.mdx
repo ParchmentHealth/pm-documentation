@@ -18,7 +18,28 @@ The **Model Context Protocol (MCP)** is an open standard that allows AI assistan
 
 <Tabs>
   <Tab title="Claude Code">
-    **Option 1: Edit config file**
+    **Option 1: Remote MCP (recommended)**
+
+    Connect directly to our hosted MCP server:
+
+    ```bash
+    claude mcp add --transport http parchment-docs https://docs.parchmenthealth.io/mcp
+    ```
+
+    Or add to your `~/.claude.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "parchment-docs": {
+          "type": "http",
+          "url": "https://docs.parchmenthealth.io/mcp"
+        }
+      }
+    }
+    ```
+
+    **Option 2: Local (npx)**
 
     Add to your `~/.claude.json`:
 
@@ -33,7 +54,7 @@ The **Model Context Protocol (MCP)** is an open standard that allows AI assistan
     }
     ```
 
-    **Option 2: CLI command**
+    Or via CLI:
 
     ```bash
     claude mcp add parchment-docs -- npx -y @parchmenthealth/docs-mcp
@@ -42,7 +63,21 @@ The **Model Context Protocol (MCP)** is an open standard that allows AI assistan
     After adding, restart Claude Code and verify with `/mcp` command.
   </Tab>
   <Tab title="Cursor">
+    **Option 1: Remote MCP (recommended)**
+
     Add to `~/.cursor/mcp.json` (or `.cursor/mcp.json` in your project):
+
+    ```json
+    {
+      "mcpServers": {
+        "parchment-docs": {
+          "url": "https://docs.parchmenthealth.io/mcp"
+        }
+      }
+    }
+    ```
+
+    **Option 2: Local (npx)**
 
     ```json
     {
@@ -60,7 +95,17 @@ The **Model Context Protocol (MCP)** is an open standard that allows AI assistan
     Restart Cursor after adding the configuration.
   </Tab>
   <Tab title="Other">
-    The MCP server uses stdio transport. Configure your MCP client to run:
+    **Option 1: Remote MCP (recommended)**
+
+    Connect to the hosted endpoint over HTTP:
+
+    ```
+    https://docs.parchmenthealth.io/mcp
+    ```
+
+    **Option 2: Local (stdio)**
+
+    The MCP server also supports stdio transport. Configure your MCP client to run:
 
     ```bash
     npx -y @parchmenthealth/docs-mcp
