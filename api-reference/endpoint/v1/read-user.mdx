@@ -16,6 +16,13 @@ openapi: "GET /v1/organizations/{organization_id}/users/{user_id}"
     "email": "darlene.cameron@example.com",
     "full_name": "Dr Darlene Cameron",
     "access_roles": ["admin", "provider"],
+    "details": {
+      "given_name": "Darlene",
+      "family_name": "Cameron",
+      "title": "Dr",
+      "date_of_birth": "1969-10-02T00:00:00.000Z",
+      "sex": "F"
+    },
     "provider_details": {
       "title": "Dr",
       "hpii_number": "8003614900029560",
@@ -56,7 +63,14 @@ openapi: "GET /v1/organizations/{organization_id}/users/{user_id}"
     "user_id": "usr_def456ghi789",
     "email": "john.admin@example.com",
     "full_name": "John Smith",
-    "access_roles": ["admin"]
+    "access_roles": ["admin"],
+    "details": {
+      "given_name": "John",
+      "family_name": "Smith",
+      "title": null,
+      "date_of_birth": null,
+      "sex": null
+    }
   },
   "timestamp": "2024-01-25T09:15:00.000Z",
   "requestId": "req_1706171700000_xyz789"
@@ -137,9 +151,18 @@ openapi: "GET /v1/organizations/{organization_id}/users/{user_id}"
 | `email`            | string   | User's email address                            |
 | `full_name`        | string   | User's full display name                        |
 | `access_roles`     | array    | Array of user roles (admin, provider, etc.)    |
-| `title`            | string   | Professional title (optional)                  |
-| `erx_entity_id`    | string   | Electronic prescription entity ID (optional)   |
-| `provider_details` | object   | Provider-specific details (only if user has "provider" role) |
+| `details`          | object   | Core user demographics (always present — see below) |
+| `provider_details` | object   | Provider-specific details (only if user has "provider" or "rx_queue_manager" role) |
+
+### Details Object
+
+| Field           | Type             | Description                                            |
+| --------------- | ---------------- | ------------------------------------------------------ |
+| `given_name`    | string           | User's given name                                      |
+| `family_name`   | string           | User's family name                                     |
+| `title`         | string \| null   | Professional title                                     |
+| `date_of_birth` | string \| null   | ISO 8601 timestamp; `null` for non-provider users      |
+| `sex`           | string \| null   | `M`/`F`/`I`/`O`; `null` for non-provider users         |
 
 ### Provider Details Object (when access_roles includes "provider")
 
