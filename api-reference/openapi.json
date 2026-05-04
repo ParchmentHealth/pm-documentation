@@ -1738,6 +1738,10 @@
             "type": "string",
             "description": "DVA file number"
           },
+          "ihi_number": {
+            "type": "string",
+            "description": "16-digit Individual Healthcare Identifier (IHI). If omitted, Parchment will attempt to fetch it from the HI Service."
+          },
           "medicare_card_number": {
             "type": "string",
             "description": "Medicare card number"
@@ -2544,6 +2548,12 @@
           "entitlement_number": {
             "type": "string",
             "description": "Entitlement number"
+          },
+          "ihi_number": {
+            "type": "string",
+            "nullable": true,
+            "pattern": "^\\d{16}$",
+            "description": "16-digit Individual Healthcare Identifier (IHI). Must be exactly 16 numeric digits."
           },
           "racf_id": {
             "type": "string",
