@@ -183,12 +183,18 @@ The `phone` field accepts Australian phone numbers in the following formats:
 - `04-1234-5678` - Contains formatting characters
 - `+1234567890` - Non-Australian number
 
+### IHI Number
+
+The `ihi_number` field is an optional 16-digit Individual Healthcare Identifier.
+
+- If provided, it must be exactly 16 numeric digits (e.g., `"8003608500035100"`).
+- If omitted, Parchment will attempt to fetch the IHI automatically from the HI Service using the patient's demographics and Medicare/DVA details.
+
 ### String Length Requirements
 
 - **Family Name**: 1-255 characters, cannot be empty
 - **Given Name**: 1-255 characters, cannot be empty
 - **Partner Patient ID**: 1-150 characters, must be unique
-- **IHI Number**: 16-digit Individual Healthcare Identifier (optional)
 - **Street Number**: 1-12 characters
 - **Street Name**: 1-100 characters
 - **Suburb**: 1-100 characters
@@ -202,3 +208,4 @@ The `phone` field accepts Australian phone numbers in the following formats:
 4. **Partner Patient ID**: Must be unique across your organization; use the format returned in `external_patient_id`
 5. **URL Access**: The returned `url` provides direct access to the patient in the Parchment portal
 6. **Phone Validation**: Phone numbers must follow Australian format - see validation requirements above
+7. **IHI Lookup**: Omit `ihi_number` to have Parchment resolve it via the HI Service; provide it explicitly only when you already hold a verified 16-digit IHI
