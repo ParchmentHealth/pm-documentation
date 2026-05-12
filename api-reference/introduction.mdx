@@ -7,6 +7,10 @@ description: "Parchment e-prescriptions API endpoints"
 
 The Parchment Health API is a RESTful API that allows you to manage your Patient information in Parchment. Our API follows industry standards including RFC 7807 for error responses and provides consistent, predictable response formats across all endpoints.
 
+<Warning>
+**Server-to-server only.** The Parchment API does not support browser or other client-side calls. CORS is not enabled, and `x-organization-secret` (along with the bearer token derived from it) is a long-lived shared credential that must never be exposed in frontend code. All requests must originate from your backend — proxy any client-facing data through your own server.
+</Warning>
+
 ## Getting Started
 
 Once you've received your sandbox credentials from Parchment, follow these steps to start using the API.

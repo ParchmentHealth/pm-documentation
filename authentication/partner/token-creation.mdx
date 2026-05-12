@@ -14,6 +14,10 @@ Before you can generate tokens, you need to obtain your partner credentials:
 1. Navigate to **Settings > Organisation > Edit > Partner Integrations** in your sandbox environment
 2. Copy the partner credentials:  `organization_id`, `organization_secret`, and `user_id`
 
+<Warning>
+**Keep these credentials on your backend.** Do not embed `organization_secret` (or any partner secret) in browser/mobile client code, and do not call Parchment endpoints directly from a frontend. The API is server-to-server only — CORS is not enabled, and any credential exposed to the client can be read by end users and used to impersonate your organization. Proxy all calls through your server.
+</Warning>
+
 <div style={{ textAlign: 'center' }}>
   <img
     src="/images/demo-tile.png"
