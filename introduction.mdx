@@ -10,37 +10,18 @@ description: "Welcome to Parchment Health API documentation"
     <h1 className="pm-title">Developer <span>Documentation</span></h1>
     <p className="pm-sub">Secure electronic prescription APIs for Australia — your path from sandbox credentials to a live production integration.</p>
   </div>
-  <svg className="pm-pipe" viewBox="0 0 1000 170" role="img" aria-label="Integration journey: credentials, sandbox, implement, conformance, production, go live">
-    <line className="pm-rail-bg" x1="90" y1="96" x2="910" y2="96" />
-    <line className="pm-rail" x1="90" y1="96" x2="910" y2="96" />
-
-    <g className="pm-node pm-n1"><circle cx="90" cy="96" r="13" /><circle className="pm-node-in" cx="90" cy="96" r="6" /></g>
-    <circle className="pm-ring pm-r1" cx="90" cy="96" r="13" />
-    <text className="pm-lbl pm-n1" x="90" y="134" textAnchor="middle">Credentials</text>
-
-    <g className="pm-node pm-n2"><circle cx="254" cy="96" r="13" /><circle className="pm-node-in" cx="254" cy="96" r="6" /></g>
-    <circle className="pm-ring pm-r2" cx="254" cy="96" r="13" />
-    <text className="pm-lbl pm-n2" x="254" y="134" textAnchor="middle">Sandbox</text>
-
-    <g className="pm-node pm-n3"><circle cx="418" cy="96" r="13" /><circle className="pm-node-in" cx="418" cy="96" r="6" /></g>
-    <circle className="pm-ring pm-r3" cx="418" cy="96" r="13" />
-    <text className="pm-lbl pm-n3" x="418" y="134" textAnchor="middle">Implement</text>
-
-    <g className="pm-node pm-n4"><circle cx="582" cy="96" r="13" /><circle className="pm-node-in" cx="582" cy="96" r="6" /></g>
-    <circle className="pm-ring pm-r4" cx="582" cy="96" r="13" />
-    <text className="pm-lbl pm-n4" x="582" y="134" textAnchor="middle">Conformance</text>
-
-    <g className="pm-node pm-n5"><circle cx="746" cy="96" r="13" /><circle className="pm-node-in" cx="746" cy="96" r="6" /></g>
-    <circle className="pm-ring pm-r5" cx="746" cy="96" r="13" />
-    <text className="pm-lbl pm-n5" x="746" y="134" textAnchor="middle">Production</text>
-
-    <g className="pm-node pm-n6"><circle cx="910" cy="96" r="13" /><circle className="pm-node-in" cx="910" cy="96" r="6" /></g>
-    <circle className="pm-ring pm-r6" cx="910" cy="96" r="13" />
-    <text className="pm-lbl pm-n6" x="910" y="134" textAnchor="middle">Go live</text>
-
-    <circle className="pm-pulse" r="6" />
-    <circle className="pm-pulse pm-pulse-2" r="5" />
-  </svg>
+  <div className="pm-pipe" role="img" aria-label="Integration journey icons: request, credentials, implement, conformance, review, production, go live">
+    <div className="pm-stops">
+      <div className="pm-track"></div>
+      <div className="pm-stop pm-s1"><span className="pm-chip"><i className="pm-ico pm-ico-envelope"></i></span><span className="pm-cap">Request</span></div>
+      <div className="pm-stop pm-s2"><span className="pm-chip"><i className="pm-ico pm-ico-key"></i></span><span className="pm-cap">Credentials</span></div>
+      <div className="pm-stop pm-s3"><span className="pm-chip"><i className="pm-ico pm-ico-laptop"></i></span><span className="pm-cap">Implement</span></div>
+      <div className="pm-stop pm-s4"><span className="pm-chip"><i className="pm-ico pm-ico-pen"></i></span><span className="pm-cap">Conformance</span></div>
+      <div className="pm-stop pm-s5"><span className="pm-chip"><i className="pm-ico pm-ico-clip"></i></span><span className="pm-cap">Review</span></div>
+      <div className="pm-stop pm-s6"><span className="pm-chip"><i className="pm-ico pm-ico-unlock"></i></span><span className="pm-cap">Production</span></div>
+      <div className="pm-stop pm-s7"><span className="pm-chip"><i className="pm-ico pm-ico-rocket"></i></span><span className="pm-cap">Go live</span></div>
+    </div>
+  </div>
 </div>
 
 ## Welcome to Parchment Health
@@ -52,6 +33,7 @@ Parchment Health provides secure electronic prescription services through our pa
 
 Follow these steps to go from first contact to a live production integration with Parchment.
 
+<div className="pm-journey">
 <Steps>
   <Step title="Request developer credentials" icon="envelope">
     Fill out our [developer credentials request form](https://forms.fillout.com/t/u4j6F7mhi3us) to request access to the Parchment sandbox environment.
@@ -75,6 +57,7 @@ Follow these steps to go from first contact to a live production integration wit
     Prepare for go live and start onboarding users.
   </Step>
 </Steps>
+</div>
 
 ## Explore Our documentation
 
