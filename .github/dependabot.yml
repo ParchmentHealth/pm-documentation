@@ -1,0 +1,12 @@
+# Dependency update policy. 14-day cooldown delays routine version bumps so a
+# compromised release (cf. May 2026 Mini Shai-Hulud) is caught before adoption.
+# Cooldown applies to version updates only — Dependabot security updates bypass it.
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 14
+    open-pull-requests-limit: 10
