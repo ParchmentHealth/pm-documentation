@@ -3,9 +3,9 @@
   "theme": "maple",
   "name": "Parchment Health developer docs",
   "colors": {
-    "primary": "#0D9373",
-    "light": "#07C983",
-    "dark": "#0D9373"
+    "primary": "#0D9488",
+    "light": "#14B8A6",
+    "dark": "#0F766E"
   },
   "favicon": "/favicon.ico",
   "navigation": {
