@@ -3,6 +3,34 @@ title: "Introduction"
 description: "Parchment e-prescriptions API endpoints"
 ---
 
+<div className="pm-envs">
+
+<div className="pm-envs-title">API Base URLs</div>
+
+<div className="pm-envs-grid">
+
+<div className="pm-env pm-env-sandbox">
+<span className="pm-env-tag">Sandbox</span>
+
+```
+https://api.sandbox.parchmenthealth.io/external
+```
+
+</div>
+
+<div className="pm-env pm-env-prod">
+<span className="pm-env-tag">Production</span>
+
+```
+https://api.parchmenthealth.io/external
+```
+
+</div>
+
+</div>
+
+</div>
+
 ## Overview
 
 The Parchment Health API is a RESTful API that allows you to manage your Patient information in Parchment. Our API follows industry standards including RFC 7807 for error responses and provides consistent, predictable response formats across all endpoints.
@@ -23,7 +51,7 @@ Once you've received your sandbox credentials from Parchment, follow these steps
     Generate your API client credentials from the Parchment sandbox portal.
   </Step>
   <Step title="Connect each organization" icon="plug">
-    Call the `/validate` endpoint for **each organization** you need to connect so that the org is linked to your integration. See [Partner Token Creation](/authentication/partner/token-creation) for details.
+    Call the `/validate` endpoint for **each organization** you need to connect so that the organization is linked to your integration. See [Partner Token Creation](/authentication/partner/token-creation) for details.
   </Step>
   <Step title="Implement the relevant APIs" icon="laptop-code">
     Implement the Parchment APIs that are relevant to your business workflows (patients, users, prescriptions, SSO, iFrame etc.).

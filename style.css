@@ -25,6 +25,9 @@
   --pm-glow-soft:#5eead4;     /* teal-300 — softest hint  */
   --pm-dim:#2a4d49;           /* muted teal — pre-light   */
 
+  --pm-prod:#d97706;          /* amber-600 — production, cautionary */
+  --pm-prod-bright:#f59e0b;   /* amber-500 — production accent      */
+
   --pm-ink-1:#051517;         /* hero backdrop — top  */
   --pm-ink-2:#08201f;         /* hero backdrop — mid  */
   --pm-ink-3:#040f10;         /* hero backdrop — deep */
@@ -225,3 +228,52 @@
   .pm-hero .pm-s7 .pm-ico{background-color:#a855f7 !important}
   .pm-hero .pm-track{transform:scaleX(1) !important}
 }
+
+/* ============================================================
+   API Reference — prominent environment base URLs.
+   Uses the central teal palette; theme-aware (Mintlify
+   toggles html.dark). The URL is a native Mintlify code
+   block (its own copy button); we only frame/tint the card.
+   ============================================================ */
+.pm-envs{
+  margin:6px 0 32px;padding:20px 22px 22px;border-radius:16px;
+  border:1px solid rgba(13,148,136,.22);
+  background:rgba(13,148,136,.045);
+}
+.pm-envs-title{
+  font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  font-size:11.5px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--pm-primary);margin-bottom:12px;
+}
+/* stacked, full-width at every breakpoint */
+.pm-envs-grid{display:flex;flex-direction:column;gap:12px}
+
+/* fill only — no border, no nested box, no haze shadow */
+.pm-env{
+  position:relative;display:block;
+  padding:15px 18px 4px;border-radius:10px;
+  background:rgba(13,148,136,.06);
+}
+.pm-env-sandbox{background:rgba(20,184,166,.06)}
+.pm-env-prod{background:rgba(217,119,6,.07)}
+
+.pm-env-tag{
+  display:inline-block;
+  font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  padding:3px 10px;border-radius:999px;
+}
+.pm-env-sandbox .pm-env-tag{background:rgba(20,184,166,.18);color:var(--pm-primary-deep)}
+.pm-env-prod .pm-env-tag{background:rgba(217,119,6,.18);color:#b45309}
+.pm-env-prod .pm-env-tag::before{content:"\25CF  ";font-size:9px;vertical-align:middle}
+
+/* the URL is a native Mintlify code block — just space it under the pill */
+.pm-env pre{margin-top:12px;margin-bottom:12px}
+
+/* Mintlify dark mode */
+html.dark .pm-envs-title{color:var(--pm-bright)}
+html.dark .pm-envs{border-color:rgba(255,255,255,.10);background:rgba(255,255,255,.025)}
+html.dark .pm-env-sandbox{background:rgba(20,184,166,.08)}
+html.dark .pm-env-prod{background:rgba(245,158,11,.09)}
+html.dark .pm-env-sandbox .pm-env-tag{background:rgba(20,184,166,.16);color:var(--pm-glow)}
+html.dark .pm-env-prod .pm-env-tag{background:rgba(245,158,11,.16);color:var(--pm-prod-bright)}
