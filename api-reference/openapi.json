@@ -1436,6 +1436,146 @@
         }
       }
     },
+    "/v1/organizations/{organization_id}/users/{user_id}/custom-drugs": {
+      "get": {
+        "description": "Retrieves the custom drug list (organization-level and user-level) for a user from Parchment",
+        "parameters": [
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Custom drugs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ExternalCustomDrug"
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "statusCode": 200,
+                  "message": "Retrieved 2 custom drugs successfully",
+                  "code": "SUCCESS",
+                  "data": [
+                    {
+                      "custom_drug_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "item_generic_name": "Amoxicillin",
+                      "item_trade_name": "Amoxil",
+                      "brand_name": "Amoxil",
+                      "item_strength": "500mg",
+                      "item_form": "Capsule",
+                      "route_of_administration": "Oral",
+                      "quantity": "20",
+                      "max_repeats": "2",
+                      "poison_class": "S4",
+                      "custom_product_id": "EK-12345",
+                      "description": "Antibiotic",
+                      "patient_instructions": "Take one capsule twice daily",
+                      "doctor_instructions": "Review after course"
+                    }
+                  ],
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_abc123"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid request format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/organizations/{organization_id}/users/{user_id}/roles": {
       "put": {
         "description": "Updates the roles of a user in Parchment",
@@ -1552,6 +1692,55 @@
   },
   "components": {
     "schemas": {
+      "ExternalCustomDrug": {
+        "type": "object",
+        "description": "A custom drug as exposed to partners. custom_drug_id is the unique identifier used to prefill the prescription form.",
+        "properties": {
+          "custom_drug_id": {
+            "type": "string",
+            "description": "Unique identifier for the custom drug"
+          },
+          "item_generic_name": {
+            "type": "string"
+          },
+          "item_trade_name": {
+            "type": "string"
+          },
+          "brand_name": {
+            "type": "string"
+          },
+          "item_strength": {
+            "type": "string"
+          },
+          "item_form": {
+            "type": "string"
+          },
+          "route_of_administration": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "max_repeats": {
+            "type": "string"
+          },
+          "poison_class": {
+            "type": "string"
+          },
+          "custom_product_id": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "patient_instructions": {
+            "type": "string"
+          },
+          "doctor_instructions": {
+            "type": "string"
+          }
+        }
+      },
       "ExternalApiResponse": {
         "type": "object",
         "required": [
@@ -1775,7 +1964,7 @@
             "type": "string",
             "description": "Patient's Australian phone number (optional). Must be a valid Australian number with digits only. Supports mobile (04xxxxxxxx) and landline (0[2378]xxxxxxxx) formats. International format with +61 or 61 prefix is also accepted."
           },
-          "australian_street_address": {
+          "australian_address": {
             "$ref": "#/components/schemas/australian_street_address"
           },
           "medicare_valid_to": {
@@ -2206,6 +2395,7 @@
                 "create:user",
                 "read:user",
                 "read:users",
+                "read:custom_drug",
                 "update:user",
                 "delete:user"
               ]
