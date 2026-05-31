@@ -22,6 +22,11 @@ All webhooks follow this standard structure:
     "partner_patient_id": "1523402100149593750",
     "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae"
     // Event-specific fields
+  },
+  "metadata": {
+    "reserved_1": null,
+    "reserved_2": null,
+    "reserved_3": null
   }
 }
 ```
@@ -36,6 +41,7 @@ All webhooks follow this standard structure:
 | `partner_id` | string | Your partner identifier |
 | `organization_id` | string | Parchment organization ID (UUID) |
 | `data` | object | Event-specific data |
+| `metadata` | object | Reserved custom-data fields. Always present; see [Reserved Metadata Fields](#reserved-metadata-fields) |
 
 ### Data Object (Common Fields)
 
@@ -44,6 +50,23 @@ All webhooks follow this standard structure:
 | `patient_id` | string | Parchment patient ID (UUID) |
 | `partner_patient_id` | string | Your internal patient ID |
 | `user_id` | string | ID of the user (prescriber) who triggered the event (UUID) |
+
+### Reserved Metadata Fields
+
+Every webhook includes a top-level `metadata` object carrying three reserved fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `reserved_1` | string \| null | Reserved for future use |
+| `reserved_2` | string \| null | Reserved for future use |
+| `reserved_3` | string \| null | Reserved for future use |
+
+<Note>
+  These fields are **reserved for future use**. They are **always present** on every event and are
+  **currently always `null`**. Parchment may begin populating them later without changing the payload
+  structure — so build your integration to tolerate them being present, but **do not rely on any
+  specific values or semantics yet**.
+</Note>
 
 ---
 
@@ -67,6 +90,11 @@ Sent when a new prescription is created in Parchment.
     "partner_patient_id": "1523402100149593750",
     "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae",
     "scid": "2TM1XVXBJRWXH8NM68"
+  },
+  "metadata": {
+    "reserved_1": null,
+    "reserved_2": null,
+    "reserved_3": null
   }
 }
 ```
@@ -83,6 +111,11 @@ interface PrescriptionCreatedEvent {
     partner_patient_id: string; // Your system's patient ID
     user_id: string; // UUID - Prescriber's user ID
     scid: string; // Script Control Identifier
+  };
+  metadata: {
+    reserved_1: string | null; // Reserved for future use (currently null)
+    reserved_2: string | null; // Reserved for future use (currently null)
+    reserved_3: string | null; // Reserved for future use (currently null)
   };
 }
 ```
@@ -125,6 +158,249 @@ interface PrescriptionCreatedEvent {
 
 ---
 
+### prescription.ceased
+
+Sent when an active prescription is ceased (stopped) in Parchment.
+
+<CodeGroup>
+
+```json Example Payload
+{
+  "event_type": "prescription.ceased",
+  "event_id": "evt_a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6",
+  "timestamp": "2025-12-19T06:15:18.786Z",
+  "partner_id": "tacklit",
+  "organization_id": "7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
+  "data": {
+    "patient_id": "f03b972b-53ea-452d-ae48-024817f6c3b0",
+    "partner_patient_id": "1523402100149593750",
+    "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae",
+    "scid": "2TM1XVXBJRWXH8NM68"
+  },
+  "metadata": {
+    "reserved_1": null,
+    "reserved_2": null,
+    "reserved_3": null
+  }
+}
+```
+
+```typescript TypeScript Type
+interface PrescriptionCeasedEvent {
+  event_type: 'prescription.ceased';
+  event_id: string;
+  timestamp: string; // ISO 8601
+  partner_id: string; // Your partner identifier
+  organization_id: string; // UUID
+  data: {
+    patient_id: string; // UUID - Parchment's patient ID
+    partner_patient_id: string; // Your system's patient ID
+    user_id: string; // UUID - Prescriber's user ID
+    scid: string; // Script Control Identifier
+  };
+  metadata: {
+    reserved_1: string | null; // Reserved for future use (currently null)
+    reserved_2: string | null; // Reserved for future use (currently null)
+    reserved_3: string | null; // Reserved for future use (currently null)
+  };
+}
+```
+
+</CodeGroup>
+
+**Root Fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `event_type` | string | Always `prescription.ceased` for this event |
+| `event_id` | string | Unique event identifier (format: `evt_xxx`) |
+| `timestamp` | string | ISO 8601 timestamp when the event was created |
+| `partner_id` | string | Your partner identifier |
+| `organization_id` | string | UUID of the organization where the prescription was ceased |
+
+**Data Fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `patient_id` | string | Parchment's internal patient ID (UUID) |
+| `partner_patient_id` | string | Your system's patient ID (as provided during patient creation) |
+| `user_id` | string | UUID of the user (prescriber) who ceased the prescription |
+| `scid` | string | Script Control Identifier - the unique identifier for the prescription in the eRx system |
+
+**When to expect:**
+- After an active prescription is ceased via the Parchment portal or iFrame
+- Sent immediately after the cease action is complete
+
+**Common use cases:**
+- Mark the prescription as no longer active in your system
+- Stop any follow-up workflows tied to the ceased prescription
+- Use the SCID to fetch the latest prescription state via the [Get Patient Prescriptions](/api-reference/endpoint/v1/get-patient-prescriptions) API endpoint
+
+
+---
+
+### prescription.cancelled
+
+Sent when a prescription is cancelled in Parchment.
+
+<CodeGroup>
+
+```json Example Payload
+{
+  "event_type": "prescription.cancelled",
+  "event_id": "evt_b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7",
+  "timestamp": "2025-12-19T06:15:18.786Z",
+  "partner_id": "tacklit",
+  "organization_id": "7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
+  "data": {
+    "patient_id": "f03b972b-53ea-452d-ae48-024817f6c3b0",
+    "partner_patient_id": "1523402100149593750",
+    "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae",
+    "scid": "2TM1XVXBJRWXH8NM68"
+  },
+  "metadata": {
+    "reserved_1": null,
+    "reserved_2": null,
+    "reserved_3": null
+  }
+}
+```
+
+```typescript TypeScript Type
+interface PrescriptionCancelledEvent {
+  event_type: 'prescription.cancelled';
+  event_id: string;
+  timestamp: string; // ISO 8601
+  partner_id: string; // Your partner identifier
+  organization_id: string; // UUID
+  data: {
+    patient_id: string; // UUID - Parchment's patient ID
+    partner_patient_id: string; // Your system's patient ID
+    user_id: string; // UUID - Prescriber's user ID
+    scid: string; // Script Control Identifier
+  };
+  metadata: {
+    reserved_1: string | null; // Reserved for future use (currently null)
+    reserved_2: string | null; // Reserved for future use (currently null)
+    reserved_3: string | null; // Reserved for future use (currently null)
+  };
+}
+```
+
+</CodeGroup>
+
+**Root Fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `event_type` | string | Always `prescription.cancelled` for this event |
+| `event_id` | string | Unique event identifier (format: `evt_xxx`) |
+| `timestamp` | string | ISO 8601 timestamp when the event was created |
+| `partner_id` | string | Your partner identifier |
+| `organization_id` | string | UUID of the organization where the prescription was cancelled |
+
+**Data Fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `patient_id` | string | Parchment's internal patient ID (UUID) |
+| `partner_patient_id` | string | Your system's patient ID (as provided during patient creation) |
+| `user_id` | string | UUID of the user (prescriber) who cancelled the prescription |
+| `scid` | string | Script Control Identifier - the unique identifier for the prescription in the eRx system |
+
+**When to expect:**
+- After a prescription is cancelled via the Parchment portal or iFrame
+- Sent immediately after the cancel action is complete
+
+**Common use cases:**
+- Mark the prescription as cancelled in your system
+- Reverse or void any workflow tied to the cancelled prescription
+- Use the SCID to fetch the latest prescription state via the [Get Patient Prescriptions](/api-reference/endpoint/v1/get-patient-prescriptions) API endpoint
+
+
+---
+
+### prescription.reissued
+
+Sent when a prescription is reissued in Parchment (the prescription token is re-delivered; the SCID is unchanged).
+
+<CodeGroup>
+
+```json Example Payload
+{
+  "event_type": "prescription.reissued",
+  "event_id": "evt_c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8",
+  "timestamp": "2025-12-19T06:15:18.786Z",
+  "partner_id": "tacklit",
+  "organization_id": "7fa84d2b-26d7-4c71-9b5b-e591eff97e7d",
+  "data": {
+    "patient_id": "f03b972b-53ea-452d-ae48-024817f6c3b0",
+    "partner_patient_id": "1523402100149593750",
+    "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae",
+    "scid": "2TM1XVXBJRWXH8NM68"
+  },
+  "metadata": {
+    "reserved_1": null,
+    "reserved_2": null,
+    "reserved_3": null
+  }
+}
+```
+
+```typescript TypeScript Type
+interface PrescriptionReissuedEvent {
+  event_type: 'prescription.reissued';
+  event_id: string;
+  timestamp: string; // ISO 8601
+  partner_id: string; // Your partner identifier
+  organization_id: string; // UUID
+  data: {
+    patient_id: string; // UUID - Parchment's patient ID
+    partner_patient_id: string; // Your system's patient ID
+    user_id: string; // UUID - Prescriber's user ID
+    scid: string; // Script Control Identifier (unchanged by reissue)
+  };
+  metadata: {
+    reserved_1: string | null; // Reserved for future use (currently null)
+    reserved_2: string | null; // Reserved for future use (currently null)
+    reserved_3: string | null; // Reserved for future use (currently null)
+  };
+}
+```
+
+</CodeGroup>
+
+**Root Fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `event_type` | string | Always `prescription.reissued` for this event |
+| `event_id` | string | Unique event identifier (format: `evt_xxx`) |
+| `timestamp` | string | ISO 8601 timestamp when the event was created |
+| `partner_id` | string | Your partner identifier |
+| `organization_id` | string | UUID of the organization where the prescription was reissued |
+
+**Data Fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `patient_id` | string | Parchment's internal patient ID (UUID) |
+| `partner_patient_id` | string | Your system's patient ID (as provided during patient creation) |
+| `user_id` | string | UUID of the user (prescriber) who reissued the prescription |
+| `scid` | string | Script Control Identifier - unchanged by the reissue (the same prescription is re-delivered) |
+
+**When to expect:**
+- After a prescription token is reissued via the Parchment portal or iFrame
+- Sent immediately after the reissue action is complete
+
+**Common use cases:**
+- Notify the patient that the prescription token has been re-sent
+- Refresh any cached prescription token / delivery details in your system
+- Use the SCID to fetch the latest prescription state via the [Get Patient Prescriptions](/api-reference/endpoint/v1/get-patient-prescriptions) API endpoint
+
+
+---
+
 
 ## Event Filtering
 
@@ -139,6 +415,18 @@ app.post('/webhook', (req, res) => {
   switch (event.event_type) {
     case 'prescription.created':
       handlePrescriptionCreated(event);
+      break;
+
+    case 'prescription.ceased':
+      handlePrescriptionCeased(event);
+      break;
+
+    case 'prescription.cancelled':
+      handlePrescriptionCancelled(event);
+      break;
+
+    case 'prescription.reissued':
+      handlePrescriptionReissued(event);
       break;
 
     // Handle other events...
