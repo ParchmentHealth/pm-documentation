@@ -63,6 +63,47 @@ When generating an SSO token for iframe embedding, use the `/embed/` prefix in y
 }
 ```
 
+### Query Parameters
+
+The prescription form (`/embed/patients/{patient_id}/prescriptions`) accepts query parameters to **pre-fill** fields and to **pass partner data through to webhooks**. Append them to the `redirect_path` when generating the SSO token — they are preserved through the SSO redirect onto the embedded page:
+
+```json
+{
+  "redirect_path": "/embed/patients/f03b972b-53ea-452d-ae48-024817f6c3b0/prescriptions?custom_drug_id=DRUG%2342&quantity=2&reserved_1=ORDER-9087"
+}
+```
+
+<Note>
+URL-encode all values (e.g. a space becomes `%20`, `#` becomes `%23`).
+</Note>
+
+#### Pre-fill parameters
+
+| Parameter | Type | Constraints | Description |
+|-----------|------|-------------|-------------|
+| `custom_drug_id` | string | non-empty | Selects a custom drug from the organization catalog as the medication. |
+| `quantity` | integer | 1–99 | Quantity to dispense. |
+| `repeats` | integer | 0–99 | Number of repeats. |
+| `repeats_interval` | integer | 1–365 | Minimum interval (days) between repeats. |
+| `patient_instructions` | string | ≤ 250 chars | Directions for the patient. Longer values are truncated. |
+| `doctor_instructions` | string | ≤ 50 chars | Note for the dispenser. Longer values are truncated. |
+
+Invalid numeric values are ignored (a warning is shown in the form); over-length text is truncated.
+
+
+
+#### Reserved parameters
+
+Opaque pass-through values for partner use. They are shown **read-only** on the form and delivered on the resulting webhook in the top-level `metadata` object (see [Webhook Events](/webhooks/webhook-events)).
+
+| Parameter | Type | Constraints | Description |
+|-----------|------|-------------|-------------|
+| `reserved_1` | string | ≤ 30 chars | Reserved partner data. Longer values are truncated. |
+| `reserved_2` | string | ≤ 30 chars | Reserved partner data. Longer values are truncated. |
+| `reserved_3` | string | ≤ 30 chars | Reserved partner data. Longer values are truncated. |
+
+Each reserved field is independent of the pre-fill precedence above. A field only appears on the form (and is forwarded to the webhook) when it is present and non-empty; absent fields are delivered as `null`.
+
 ### 2. Embed in Your Application
 
 Use the returned `redirect_url` as the iframe source:
