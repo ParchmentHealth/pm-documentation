@@ -1,0 +1,12 @@
+---
+openapi: "DELETE /v1/organizations/{organization_id}/users/{user_id}/custom-drugs/{drug_id}"
+---
+
+Deletes a **user-level** custom drug.
+
+## Integration Notes
+
+1. **Scope Requirement**: Your API token must include the `delete:custom_drug` scope.
+2. **Target**: `drug_id` is the `custom_drug_id` returned by the list/create endpoints. Deletes the drug stored against `USER#{user_id}`.
+3. **Idempotent**: Deleting a drug that does not exist still returns `200`.
+4. **Scope of effect**: Only user-level drugs are removed here. To clear the organization catalog use the bulk delete endpoint.

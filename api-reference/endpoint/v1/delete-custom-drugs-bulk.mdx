@@ -1,0 +1,19 @@
+---
+openapi: "DELETE /v1/organizations/{organization_id}/custom-drugs"
+---
+
+<Warning>
+This permanently deletes **every** organization-level custom drug for the organization. It is irreversible.
+</Warning>
+
+## Integration Notes
+
+1. **Scope Requirement**: Your API token must include the `delete:custom_drug` scope.
+2. **Confirmation required**: You must pass `?confirm=true`. Without it the request returns `400` and nothing is deleted.
+3. **Scope of effect**: Removes all organization-level drugs (`ORGANIZATION#{organization_id}`). User-level drugs are not affected.
+
+## Example Request
+
+```
+DELETE /v1/organizations/{organization_id}/custom-drugs?confirm=true
+```

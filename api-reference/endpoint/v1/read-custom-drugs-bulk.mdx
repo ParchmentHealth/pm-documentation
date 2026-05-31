@@ -1,0 +1,12 @@
+---
+openapi: "GET /v1/organizations/{organization_id}/custom-drugs"
+---
+
+Retrieves the **organization-level** custom drug catalog (shared org drugs only).
+
+## Integration Notes
+
+1. **Scope Requirement**: Your API token must include the `read:custom_drug` scope.
+2. **Scope of data**: Returns only organization-level drugs (`ORGANIZATION#{organization_id}`). To get a specific prescriber's combined list (org + their personal drugs), use the user-level list endpoint.
+3. **Prefill**: Use each drug's `custom_drug_id` to prefill the prescription form.
+4. **Optional fields**: Fields that are not set on a drug are omitted from the response.

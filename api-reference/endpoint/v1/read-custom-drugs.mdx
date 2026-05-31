@@ -1,0 +1,151 @@
+---
+openapi: "GET /v1/organizations/{organization_id}/users/{user_id}/custom-drugs"
+---
+
+## Response Examples
+
+### Success Response (200 OK)
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Retrieved 2 custom drugs successfully",
+  "code": "SUCCESS",
+  "data": [
+    {
+      "custom_drug_id": "fc37ba32-8837-4c4b-9e5d-ef2d4f15c9ea",
+      "item_generic_name": "Semaglutide 1.34 mg/mL injection, 1 x 1.5 mL pen device",
+      "item_trade_name": "Wegovy 0.5 mg Multidose Flextouch 1.34 mg/mL injection, 1.5 mL pen device",
+      "brand_name": "Wegovy Flextouch",
+      "item_strength": "1.34 mg/mL",
+      "item_form": "Solution for injection",
+      "route_of_administration": "Subcutaneous",
+      "quantity": "1",
+      "max_repeats": "5",
+      "poison_class": "S4"
+    },
+    {
+      "custom_drug_id": "1b9358d7-6576-46dd-9770-3047fb1916c0",
+      "item_generic_name": "Custom Drug with product ID",
+      "item_strength": "100mg",
+      "item_form": "Capsule",
+      "route_of_administration": "Oral",
+      "quantity": "40",
+      "max_repeats": "1",
+      "poison_class": "S2",
+      "custom_product_id": "12345",
+      "patient_instructions": "Take one capsule twice daily",
+      "doctor_instructions": "Review after course"
+    }
+  ],
+  "timestamp": "2024-01-25T09:15:00.000Z",
+  "requestId": "req_1706171700000_abc123"
+}
+```
+
+### No Custom Drugs (200 OK)
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Retrieved 0 custom drugs successfully",
+  "code": "SUCCESS",
+  "data": [],
+  "timestamp": "2024-01-25T09:15:00.000Z",
+  "requestId": "req_1706171700000_def456"
+}
+```
+
+### Invalid Parameters (400 Bad Request)
+
+```json
+{
+  "success": false,
+  "statusCode": 400,
+  "error": {
+    "type": "https://parchment.health/errors/bad-request",
+    "title": "Bad Request",
+    "detail": "Organization ID is required"
+  },
+  "timestamp": "2024-01-25T09:15:00.000Z",
+  "requestId": "req_1706171700000_ghi789"
+}
+```
+
+### Unauthorized (401)
+
+```json
+{
+  "success": false,
+  "statusCode": 401,
+  "error": {
+    "type": "https://parchment.health/errors/authentication-required",
+    "title": "Unauthorized",
+    "detail": "Insufficient scope"
+  },
+  "timestamp": "2024-01-25T09:15:00.000Z",
+  "requestId": "req_1706171700000_jkl012"
+}
+```
+
+## Response Fields
+
+### Success Response Data
+
+The response returns an array of custom drug objects. Optional fields are omitted when not set on the drug.
+
+| Field                     | Type   | Description                                                        |
+| ------------------------- | ------ | ------------------------------------------------------------------ |
+| `custom_drug_id`          | string | Unique identifier for the custom drug (use this to prefill a form) |
+| `item_generic_name`       | string | Generic name of the drug                                           |
+| `item_trade_name`         | string | Trade name of the drug (optional)                                  |
+| `brand_name`              | string | Brand name (optional)                                              |
+| `item_strength`           | string | Strength, e.g. `500mg`                                             |
+| `item_form`               | string | Dosage form, e.g. `Capsule`                                        |
+| `route_of_administration` | string | Route, e.g. `Oral`                                                 |
+| `quantity`                | string | Default quantity                                                   |
+| `max_repeats`             | string | Maximum repeats                                                    |
+| `poison_class`            | string | Poison schedule, e.g. `S4`                                         |
+| `custom_product_id`       | string | Partner-supplied product identifier (optional)                     |
+| `description`             | string | Free-text description (optional)                                   |
+| `patient_instructions`    | string | Default patient instructions (optional)                            |
+| `doctor_instructions`     | string | Default doctor instructions (optional)                             |
+
+### Common Response Fields
+
+All responses include these standard fields:
+
+| Field        | Type    | Description                             |
+| ------------ | ------- | --------------------------------------- |
+| `success`    | boolean | Indicates if the request was successful |
+| `statusCode` | number  | HTTP status code                        |
+| `message`    | string  | Human-readable status message           |
+| `code`       | string  | Operation code (`SUCCESS` on 200)       |
+| `timestamp`  | string  | ISO 8601 timestamp of the response      |
+| `requestId`  | string  | Unique identifier for debugging         |
+
+## Path Parameters
+
+| Parameter         | Type   | Required | Description             |
+| ----------------- | ------ | -------- | ----------------------- |
+| `organization_id` | string | Yes      | Organization identifier |
+| `user_id`         | string | Yes      | User identifier         |
+
+## Status Codes
+
+| Code  | Status                | Description                                              |
+| ----- | --------------------- | -------------------------------------------------------- |
+| `200` | OK                    | Custom drugs retrieved successfully (including empty list) |
+| `400` | Bad Request           | Invalid request format or missing parameters             |
+| `401` | Unauthorized          | Authentication required, token invalid, or scope invalid |
+| `500` | Internal Server Error | Unexpected server error                                  |
+
+## Integration Notes
+
+1. **Scope Requirement**: Your API token must include the `read:custom_drug` scope.
+2. **Combined List**: Returns both organization-level and user-level custom drugs for the user.
+3. **Prefill**: Use `custom_drug_id` to prefill the prescription form via query parameters.
+4. **Optional Fields**: Fields that are not set on a drug are omitted from the response.
+5. **Store Request ID**: Always log the `requestId` for debugging support requests.

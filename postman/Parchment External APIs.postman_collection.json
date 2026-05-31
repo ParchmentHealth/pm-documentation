@@ -311,6 +311,62 @@
           "response": []
         },
         {
+          "name": "Read Patient",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [{ "key": "x-organization-secret", "value": "{{organizationSecret}}", "type": "text" }],
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/{{userId}}/patients/{{patientId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["external", "v1", "organizations", "{{organizationId}}", "users", "{{userId}}", "patients", "{{patientId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Patient",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "PUT",
+            "header": [{ "key": "x-organization-secret", "value": "{{organizationSecret}}", "type": "text" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"phone\": \"0412345678\",\n    \"email\": \"updated@example.com\",\n    \"australian_address\": {\n        \"street_number\": \"99\",\n        \"street_name\": \"Updated Lane\",\n        \"suburb\": \"Brisbane\",\n        \"state\": \"QLD\",\n        \"postcode\": \"4000\"\n    }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/{{userId}}/patients/{{patientId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["external", "v1", "organizations", "{{organizationId}}", "users", "{{userId}}", "patients", "{{patientId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Patient",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "DELETE",
+            "header": [{ "key": "x-organization-secret", "value": "{{organizationSecret}}", "type": "text" }],
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/{{userId}}/patients/{{patientId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["external", "v1", "organizations", "{{organizationId}}", "users", "{{userId}}", "patients", "{{patientId}}"]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Validate Integration",
           "request": {
             "auth": {
@@ -423,6 +479,60 @@
                   "value": ""
                 }
               ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Read User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [{ "key": "x-organization-secret", "value": "{{organizationSecret}}", "type": "text" }],
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/:userId",
+              "host": ["{{baseUrl}}"],
+              "path": ["external", "v1", "organizations", "{{organizationId}}", "users", ":userId"],
+              "variable": [{ "key": "userId", "value": "" }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Disable User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "PUT",
+            "header": [{ "key": "x-organization-secret", "value": "{{organizationSecret}}", "type": "text" }],
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/:userId/disable",
+              "host": ["{{baseUrl}}"],
+              "path": ["external", "v1", "organizations", "{{organizationId}}", "users", ":userId", "disable"],
+              "variable": [{ "key": "userId", "value": "" }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Enable User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+            },
+            "method": "PUT",
+            "header": [{ "key": "x-organization-secret", "value": "{{organizationSecret}}", "type": "text" }],
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/:userId/enable",
+              "host": ["{{baseUrl}}"],
+              "path": ["external", "v1", "organizations", "{{organizationId}}", "users", ":userId", "enable"],
+              "variable": [{ "key": "userId", "value": "" }]
             }
           },
           "response": []

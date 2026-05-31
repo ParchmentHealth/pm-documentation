@@ -1,0 +1,22 @@
+---
+openapi: "PUT /v1/organizations/{organization_id}/users/{user_id}/custom-drugs/{drug_id}"
+---
+
+Updates a **user-level** custom drug. Send only the fields you want to change.
+
+## Integration Notes
+
+1. **Scope Requirement**: Your API token must include the `update:custom_drug` scope.
+2. **Target**: `drug_id` is the `custom_drug_id` returned by the list/create endpoints. The drug must already exist for this user — otherwise `404` is returned.
+3. **Partial update**: Only the provided fields are changed; omitted fields are left untouched.
+4. **Response**: Returns the updated drug.
+
+## Example Request
+
+```json
+{
+  "quantity": "60",
+  "max_repeats": "3",
+  "patient_instructions": "Take one capsule three times daily"
+}
+```

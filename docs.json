@@ -80,6 +80,18 @@
               "api-reference/endpoint/v1/enable-user",
               "api-reference/endpoint/v1/user-workflows"
             ]
+          },
+          {
+            "group": "Custom Drug Management Endpoints",
+            "pages": [
+              "api-reference/endpoint/v1/create-custom-drugs-bulk",
+              "api-reference/endpoint/v1/read-custom-drugs-bulk",
+              "api-reference/endpoint/v1/delete-custom-drugs-bulk",
+              "api-reference/endpoint/v1/create-custom-drug",
+              "api-reference/endpoint/v1/read-custom-drugs",
+              "api-reference/endpoint/v1/update-custom-drug",
+              "api-reference/endpoint/v1/delete-custom-drug"
+            ]
           }
         ]
       },

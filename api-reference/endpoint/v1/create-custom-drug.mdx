@@ -1,0 +1,28 @@
+---
+openapi: "POST /v1/organizations/{organization_id}/users/{user_id}/custom-drugs"
+---
+
+Creates a **user-level** custom drug for the given user (stored against `USER#{user_id}`).
+
+## Integration Notes
+
+1. **Scope Requirement**: Your API token must include the `create:custom_drug` scope.
+2. **Level**: This endpoint always creates user-level drugs. Use the bulk endpoint to manage the organization-level catalog.
+3. **Response**: Returns the created drug, including its `custom_drug_id` (use it to update/delete the drug or to prefill the prescription form).
+4. **Validation**: `item_generic_name`, `item_strength`, `item_form`, `route_of_administration`, `quantity`, `poison_class`, and `max_repeats` are required.
+
+## Example Request
+
+```json
+{
+  "item_generic_name": "Amoxicillin",
+  "item_strength": "500mg",
+  "item_form": "Capsule",
+  "route_of_administration": "Oral",
+  "quantity": "20",
+  "max_repeats": "2",
+  "poison_class": "S4",
+  "brand_name": "Amoxil",
+  "patient_instructions": "Take one capsule twice daily"
+}
+```
