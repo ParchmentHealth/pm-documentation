@@ -82,7 +82,8 @@
             ]
           },
           {
-            "group": "Custom Drug Management Endpoints",
+            "group": "Custom Drug Endpoints",
+            "tag": "Coming Soon",
             "pages": [
               "api-reference/endpoint/v1/create-custom-drugs-bulk",
               "api-reference/endpoint/v1/read-custom-drugs-bulk",
