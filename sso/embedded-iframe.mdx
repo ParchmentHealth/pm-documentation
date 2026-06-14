@@ -123,4 +123,46 @@ Use the returned `redirect_url` as the iframe source:
 
 <img src="/images/iframe-embed.png" alt="Parchment embedded iframe example" />
 
+## Troubleshooting
+
+### Blank page with "HTTP ERROR 431"
+
+If the embedded iframe (or the portal itself) shows a blank page reading
+**`HTTP ERROR 431` — Request Header Fields Too Large**, the browser has
+accumulated too many Parchment authentication cookies on the
+`parchment.health` domain and the request header has grown past the
+server's size limit.
+
+This almost always happens during **integration testing**, when the same
+browser signs in many times in a short period — each sign-in can leave
+behind cookies that aren't cleaned up. End-users who sign in occasionally
+are very unlikely to see it.
+
+<Warning>
+This is a browser-side cookie limit, and the error is returned *before* the
+page loads — so refreshing or navigating to another Parchment URL won't fix
+it. The cookies have to be cleared.
+</Warning>
+
+<Steps>
+  <Step title="Open cookie storage for the Parchment domain">
+    Open **DevTools → Application → Cookies**, then select the
+    `https://portal.<env>.parchment.health` entry.
+  </Step>
+  <Step title="Clear the Parchment cookies">
+    Click **Clear all cookies** (🚫) to remove every cookie for that domain —
+    in particular the `CognitoIdentityServiceProvider.*` entries.
+  </Step>
+  <Step title="Relaunch">
+    Generate a fresh SSO token and load the iframe again. You'll sign in
+    cleanly and the error will be gone.
+  </Step>
+</Steps>
+
+<Note>
+To avoid this entirely while testing, use an **incognito/private window**
+(or a separate browser profile) for each round of sign-in testing — its
+cookies are discarded when the window closes.
+</Note>
+
 
