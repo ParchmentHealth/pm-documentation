@@ -398,6 +398,16 @@ interface PrescriptionReissuedEvent {
 - Refresh any cached prescription token / delivery details in your system
 - Use the SCID to fetch the latest prescription state via the [Get Patient Prescriptions](/api-reference/endpoint/v1/get-patient-prescriptions) API endpoint
 
+<Note>
+The fetched prescription includes a `delivery` object describing how and where it
+was sent (channel, recipient type, destination, and the pharmacy identity for
+pharmacy sends). `delivery` always reflects the **current** version, so a reissue
+overwrites it. To build a full delivery history (e.g. an original send followed by
+reissues to different addresses), fetch the prescription in response to **each**
+`prescription.created` / `prescription.reissued` notification — every fetch returns
+the delivery state as at that event. The webhook payload itself carries IDs only.
+</Note>
+
 
 ---
 

@@ -755,6 +755,15 @@
                           "given_name": "Emily",
                           "family_name": "Johnson",
                           "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae"
+                        },
+                        "delivery": {
+                          "method": "EMAIL",
+                          "recipient_type": "PHARMACY",
+                          "destination": "scripts@bayside-pharmacy.com.au",
+                          "pharmacy": {
+                            "pharmacy_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                            "name": "Bayside Pharmacy"
+                          }
                         }
                       },
                       {
@@ -795,6 +804,11 @@
                           "given_name": "Emily",
                           "family_name": "Johnson",
                           "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae"
+                        },
+                        "delivery": {
+                          "method": "SMS",
+                          "recipient_type": "PATIENT",
+                          "destination": "+61400000000"
                         }
                       }
                     ]
@@ -1578,20 +1592,87 @@
       "post": {
         "description": "Creates a user-level custom drug for a user in Parchment",
         "parameters": [
-          { "name": "x-organization-secret", "in": "header", "required": true, "description": "Organization secret for authentication - provided by Parchment", "schema": { "type": "string" } },
-          { "name": "organization_id", "in": "path", "required": true, "description": "Organization ID", "schema": { "type": "string", "format": "uuid" } },
-          { "name": "user_id", "in": "path", "required": true, "description": "User ID", "schema": { "type": "string" } }
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
           "description": "Custom drug to create",
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CustomDrugInput" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomDrugInput"
+              }
+            }
+          }
         },
         "responses": {
-          "201": { "description": "Custom drug created successfully", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CustomDrugResponse" } } } },
-          "401": { "description": "Unauthorized", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiErrorResponse" } } } },
-          "422": { "description": "Validation failed", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiErrorResponse" } } } },
-          "500": { "description": "Internal Server Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiErrorResponse" } } } }
+          "201": {
+            "description": "Custom drug created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomDrugResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -1599,59 +1680,242 @@
       "get": {
         "description": "Retrieves the organization-level custom drug catalog (shared org drugs only).",
         "parameters": [
-          { "name": "x-organization-secret", "in": "header", "required": true, "description": "Organization secret for authentication - provided by Parchment", "schema": { "type": "string" } },
-          { "name": "organization_id", "in": "path", "required": true, "description": "Organization ID", "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
           "200": {
             "description": "Custom drugs retrieved successfully",
-            "content": { "application/json": { "schema": {
-              "type": "object",
-              "properties": {
-                "success": { "type": "boolean" },
-                "statusCode": { "type": "integer" },
-                "message": { "type": "string" },
-                "code": { "type": "string", "example": "SUCCESS" },
-                "data": { "type": "array", "items": { "$ref": "#/components/schemas/ExternalCustomDrug" } },
-                "timestamp": { "type": "string" },
-                "requestId": { "type": "string" }
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "statusCode": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ExternalCustomDrug"
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "type": "string"
+                    }
+                  }
+                }
               }
-            } } }
+            }
           },
-          "401": { "description": "Unauthorized", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiErrorResponse" } } } },
-          "500": { "description": "Internal Server Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiErrorResponse" } } } }
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          }
         }
       },
       "post": {
         "description": "Bulk-creates organization-level custom drugs. Accepts a JSON array; returns a per-item success/failure summary.",
         "parameters": [
-          { "name": "x-organization-secret", "in": "header", "required": true, "description": "Organization secret for authentication - provided by Parchment", "schema": { "type": "string" } },
-          { "name": "organization_id", "in": "path", "required": true, "description": "Organization ID", "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "requestBody": {
           "description": "Non-empty array of custom drugs to create at organization level",
           "required": true,
-          "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/CustomDrugInput" } } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CustomDrugInput"
+                }
+              }
+            }
+          }
         },
         "responses": {
-          "200": { "description": "Bulk create processed (at least one succeeded)", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CustomDrugBulkResponse" } } } },
-          "400": { "description": "Invalid body, or all items failed", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiErrorResponse" } } } },
-          "401": { "description": "Unauthorized", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiErrorResponse" } } } },
-          "500": { "description": "Internal Server Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiErrorResponse" } } } }
+          "200": {
+            "description": "Bulk create processed (at least one succeeded)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomDrugBulkResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body, or all items failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          }
         }
       },
       "delete": {
         "description": "Deletes ALL organization-level custom drugs for the organization. Irreversible. Requires confirm=true.",
         "parameters": [
-          { "name": "x-organization-secret", "in": "header", "required": true, "description": "Organization secret for authentication - provided by Parchment", "schema": { "type": "string" } },
-          { "name": "organization_id", "in": "path", "required": true, "description": "Organization ID", "schema": { "type": "string", "format": "uuid" } },
-          { "name": "confirm", "in": "query", "required": true, "description": "Must be true to confirm the destructive wipe", "schema": { "type": "string", "enum": ["true"] } }
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "confirm",
+            "in": "query",
+            "required": true,
+            "description": "Must be true to confirm the destructive wipe",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true"
+              ]
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "All organization custom drugs deleted", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiResponse" } } } },
-          "400": { "description": "Missing confirm=true", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiErrorResponse" } } } },
-          "401": { "description": "Unauthorized", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiErrorResponse" } } } },
-          "500": { "description": "Internal Server Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiErrorResponse" } } } }
+          "200": {
+            "description": "All organization custom drugs deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing confirm=true",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -1659,36 +1923,180 @@
       "put": {
         "description": "Updates a user-level custom drug. Send only the fields to change.",
         "parameters": [
-          { "name": "x-organization-secret", "in": "header", "required": true, "description": "Organization secret for authentication - provided by Parchment", "schema": { "type": "string" } },
-          { "name": "organization_id", "in": "path", "required": true, "description": "Organization ID", "schema": { "type": "string", "format": "uuid" } },
-          { "name": "user_id", "in": "path", "required": true, "description": "User ID", "schema": { "type": "string" } },
-          { "name": "drug_id", "in": "path", "required": true, "description": "Custom drug ID (custom_drug_id from the list endpoint)", "schema": { "type": "string" } }
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "drug_id",
+            "in": "path",
+            "required": true,
+            "description": "Custom drug ID (custom_drug_id from the list endpoint)",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
           "description": "Partial custom drug fields to update",
           "required": true,
-          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CustomDrugUpdate" } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomDrugUpdate"
+              }
+            }
+          }
         },
         "responses": {
-          "200": { "description": "Custom drug updated successfully", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CustomDrugResponse" } } } },
-          "401": { "description": "Unauthorized", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiErrorResponse" } } } },
-          "404": { "description": "Custom drug not found for this user", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiErrorResponse" } } } },
-          "422": { "description": "Validation failed", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiErrorResponse" } } } },
-          "500": { "description": "Internal Server Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiErrorResponse" } } } }
+          "200": {
+            "description": "Custom drug updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomDrugResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Custom drug not found for this user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          }
         }
       },
       "delete": {
         "description": "Deletes a user-level custom drug.",
         "parameters": [
-          { "name": "x-organization-secret", "in": "header", "required": true, "description": "Organization secret for authentication - provided by Parchment", "schema": { "type": "string" } },
-          { "name": "organization_id", "in": "path", "required": true, "description": "Organization ID", "schema": { "type": "string", "format": "uuid" } },
-          { "name": "user_id", "in": "path", "required": true, "description": "User ID", "schema": { "type": "string" } },
-          { "name": "drug_id", "in": "path", "required": true, "description": "Custom drug ID (custom_drug_id from the list endpoint)", "schema": { "type": "string" } }
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "drug_id",
+            "in": "path",
+            "required": true,
+            "description": "Custom drug ID (custom_drug_id from the list endpoint)",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
-          "200": { "description": "Custom drug deleted successfully", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiResponse" } } } },
-          "401": { "description": "Unauthorized", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiErrorResponse" } } } },
-          "500": { "description": "Internal Server Error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ExternalApiErrorResponse" } } } }
+          "200": {
+            "description": "Custom drug deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -1811,81 +2219,204 @@
       "CustomDrugInput": {
         "type": "object",
         "description": "Custom drug fields supplied by a partner when creating a drug.",
-        "required": ["item_generic_name", "item_strength", "item_form", "route_of_administration", "quantity", "poison_class", "max_repeats"],
+        "required": [
+          "item_generic_name",
+          "item_strength",
+          "item_form",
+          "route_of_administration",
+          "quantity",
+          "poison_class",
+          "max_repeats"
+        ],
         "properties": {
-          "item_generic_name": { "type": "string", "maxLength": 280 },
-          "item_trade_name": { "type": "string", "maxLength": 280 },
-          "brand_name": { "type": "string", "maxLength": 100 },
-          "item_strength": { "type": "string", "maxLength": 100 },
-          "item_form": { "type": "string", "maxLength": 50 },
-          "route_of_administration": { "type": "string", "maxLength": 50 },
-          "quantity": { "type": "string", "description": "String or number; coerced to string" },
-          "max_repeats": { "type": "string", "description": "String or number; coerced to string" },
-          "poison_class": { "type": "string", "maxLength": 2 },
-          "custom_product_id": { "type": "string", "maxLength": 50 },
-          "description": { "type": "string", "maxLength": 280 },
-          "patient_instructions": { "type": "string", "maxLength": 250 },
-          "doctor_instructions": { "type": "string", "maxLength": 50 }
+          "item_generic_name": {
+            "type": "string",
+            "maxLength": 280
+          },
+          "item_trade_name": {
+            "type": "string",
+            "maxLength": 280
+          },
+          "brand_name": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "item_strength": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "item_form": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "route_of_administration": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "quantity": {
+            "type": "string",
+            "description": "String or number; coerced to string"
+          },
+          "max_repeats": {
+            "type": "string",
+            "description": "String or number; coerced to string"
+          },
+          "poison_class": {
+            "type": "string",
+            "maxLength": 2
+          },
+          "custom_product_id": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 280
+          },
+          "patient_instructions": {
+            "type": "string",
+            "maxLength": 250
+          },
+          "doctor_instructions": {
+            "type": "string",
+            "maxLength": 50
+          }
         }
       },
       "CustomDrugUpdate": {
         "type": "object",
         "description": "Partial custom drug fields to update. Send only the fields to change.",
         "properties": {
-          "item_generic_name": { "type": "string", "maxLength": 280 },
-          "item_trade_name": { "type": "string", "maxLength": 280 },
-          "brand_name": { "type": "string", "maxLength": 100 },
-          "item_strength": { "type": "string", "maxLength": 100 },
-          "item_form": { "type": "string", "maxLength": 50 },
-          "route_of_administration": { "type": "string", "maxLength": 50 },
-          "quantity": { "type": "string" },
-          "max_repeats": { "type": "string" },
-          "poison_class": { "type": "string", "maxLength": 2 },
-          "custom_product_id": { "type": "string", "maxLength": 50 },
-          "description": { "type": "string", "maxLength": 280 },
-          "patient_instructions": { "type": "string", "maxLength": 250 },
-          "doctor_instructions": { "type": "string", "maxLength": 50 }
+          "item_generic_name": {
+            "type": "string",
+            "maxLength": 280
+          },
+          "item_trade_name": {
+            "type": "string",
+            "maxLength": 280
+          },
+          "brand_name": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "item_strength": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "item_form": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "route_of_administration": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "max_repeats": {
+            "type": "string"
+          },
+          "poison_class": {
+            "type": "string",
+            "maxLength": 2
+          },
+          "custom_product_id": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 280
+          },
+          "patient_instructions": {
+            "type": "string",
+            "maxLength": 250
+          },
+          "doctor_instructions": {
+            "type": "string",
+            "maxLength": 50
+          }
         }
       },
       "CustomDrugResponse": {
         "type": "object",
         "properties": {
-          "success": { "type": "boolean" },
-          "statusCode": { "type": "integer" },
-          "message": { "type": "string" },
-          "code": { "type": "string", "example": "SUCCESS" },
-          "data": { "$ref": "#/components/schemas/ExternalCustomDrug" },
-          "timestamp": { "type": "string" },
-          "requestId": { "type": "string" }
+          "success": {
+            "type": "boolean"
+          },
+          "statusCode": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "example": "SUCCESS"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ExternalCustomDrug"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          }
         }
       },
       "CustomDrugBulkResponse": {
         "type": "object",
         "properties": {
-          "success": { "type": "boolean" },
-          "statusCode": { "type": "integer" },
-          "message": { "type": "string" },
-          "code": { "type": "string", "example": "SUCCESS" },
+          "success": {
+            "type": "boolean"
+          },
+          "statusCode": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "example": "SUCCESS"
+          },
           "data": {
             "type": "object",
             "properties": {
-              "total": { "type": "integer" },
-              "successCount": { "type": "integer" },
-              "failureCount": { "type": "integer" },
+              "total": {
+                "type": "integer"
+              },
+              "successCount": {
+                "type": "integer"
+              },
+              "failureCount": {
+                "type": "integer"
+              },
               "failures": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "index": { "type": "integer", "description": "1-based position in the request array" },
-                    "error": { "type": "string" }
+                    "index": {
+                      "type": "integer",
+                      "description": "1-based position in the request array"
+                    },
+                    "error": {
+                      "type": "string"
+                    }
                   }
                 }
               }
             }
           },
-          "timestamp": { "type": "string" },
-          "requestId": { "type": "string" }
+          "timestamp": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          }
         }
       },
       "ExternalCustomDrug": {
@@ -2779,6 +3310,44 @@
           },
           "prescriber": {
             "$ref": "#/components/schemas/Prescriber"
+          },
+          "delivery": {
+            "type": "object",
+            "description": "How and where this prescription's current version was electronically delivered. Reflects the CURRENT version only — a reissue overwrites it. To capture delivery history (e.g. an original send followed by reissues to different addresses), fetch this endpoint in response to each prescription webhook notification (`prescription.created`, `prescription.reissued`); each fetch returns the delivery state as at that event.",
+            "properties": {
+              "method": {
+                "type": "string",
+                "enum": [
+                  "EMAIL",
+                  "SMS"
+                ],
+                "description": "Electronic delivery channel used."
+              },
+              "recipient_type": {
+                "type": "string",
+                "enum": [
+                  "PHARMACY",
+                  "PATIENT"
+                ],
+                "description": "Whether the script was sent to a pharmacy or directly to the patient."
+              },
+              "destination": {
+                "type": "string",
+                "description": "The exact email address or phone number the script was sent to."
+              },
+              "pharmacy": {
+                "type": "object",
+                "description": "Identity of the selected pharmacy. Present only when recipient_type is PHARMACY; the address is in `destination`.",
+                "properties": {
+                  "pharmacy_id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
         }
       },
