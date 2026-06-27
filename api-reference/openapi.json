@@ -699,7 +699,7 @@
                 "example": {
                   "success": true,
                   "statusCode": 200,
-                  "message": "Patient prescriptions retrieved successfully",
+                  "message": "Prescriptions retrieved successfully",
                   "data": {
                     "patient": {
                       "given_name": "John",
@@ -860,6 +860,7 @@
                 "example": {
                   "success": false,
                   "statusCode": 401,
+                  "code": "UNAUTHORIZED",
                   "error": {
                     "type": "https://parchment.health/errors/authentication-required",
                     "title": "Unauthorized",
@@ -881,10 +882,11 @@
                 "example": {
                   "success": false,
                   "statusCode": 403,
+                  "code": "FORBIDDEN",
                   "error": {
                     "type": "https://parchment.health/errors/insufficient-scope",
                     "title": "Insufficient permissions",
-                    "detail": "This operation requires the 'read:patient_prescription' scope."
+                    "detail": "This operation requires the 'read:patient_prescription' scope"
                   },
                   "timestamp": "2024-01-15T10:30:00.000Z",
                   "requestId": "req_1705312200000_hij456"
@@ -902,11 +904,168 @@
                 "example": {
                   "success": false,
                   "statusCode": 404,
+                  "code": "RESOURCE_NOT_FOUND",
                   "error": {
                     "type": "https://parchment.health/errors/patient-not-found",
                     "title": "Patient not found",
                     "detail": "Patient with the specified ID does not exist.",
                     "instance": "/patients/invalid-id"
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_klm789"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/organizations/{organization_id}/users/{user_id}/patients/{patient_id}/prescriptions/{scid}": {
+      "get": {
+        "description": "Get a single prescription by SCID for a specific patient",
+        "parameters": [
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "patient_id",
+            "in": "path",
+            "required": true,
+            "description": "Patient ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "scid",
+            "in": "path",
+            "required": true,
+            "description": "Script ID (SCID) of the prescription",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved prescription",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientPrescriptionExternal"
+                },
+                "example": {
+                  "success": true,
+                  "statusCode": 200,
+                  "message": "Prescriptions retrieved successfully",
+                  "data": {
+                    "patient": {
+                      "given_name": "John",
+                      "family_name": "Smith",
+                      "date_of_birth": "1990-01-15T00:00:00.000Z",
+                      "sex": "M",
+                      "patient_id": "1234567890",
+                      "partner_patient_id": "PARTNER#12345"
+                    },
+                    "prescription": {
+                      "prescription_type": "ELECTRONIC",
+                      "url": "https://egw-etp-int-qrcode-web-au-se.azurewebsites.net/scripts/2F3WFX8J4WQH8T72X9",
+                      "scid": "2F3WFX8J4WQH8T72X9",
+                      "status": "Active",
+                      "created_date": "2025-06-30T00:11:22",
+                      "item_name": "Sildenafil 100 mg tablet, 4",
+                      "quantity": "4",
+                      "number_of_repeats_authorised": "0",
+                      "pbs_code": "",
+                      "item_strength": "",
+                      "item_form": "",
+                      "route_administration": "Oral",
+                      "custom_drug_details": {},
+                      "prescriber": {
+                        "title": "Dr",
+                        "given_name": "Emily",
+                        "family_name": "Johnson",
+                        "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae"
+                      },
+                      "delivery": {
+                        "method": "EMAIL",
+                        "recipient_type": "PHARMACY",
+                        "destination": "scripts@bayside-pharmacy.com.au",
+                        "pharmacy": {
+                          "pharmacy_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                          "name": "Bayside Pharmacy"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 401,
+                  "code": "UNAUTHORIZED",
+                  "error": {
+                    "type": "https://parchment.health/errors/authentication-required",
+                    "title": "Unauthorized",
+                    "detail": "Valid authentication token is required."
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_efg123"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Prescription not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 404,
+                  "code": "RESOURCE_NOT_FOUND",
+                  "error": {
+                    "type": "https://parchment.health/errors/resource-not-found",
+                    "title": "Resource not found",
+                    "detail": "Prescription with scid 'ABC123' not found for patient 'patient-uuid'."
                   },
                   "timestamp": "2024-01-15T10:30:00.000Z",
                   "requestId": "req_1705312200000_klm789"
@@ -2494,6 +2653,11 @@
             "description": "Human-readable success message",
             "example": "Success"
           },
+          "code": {
+            "type": "string",
+            "description": "Machine-readable operation code",
+            "example": "SUCCESS"
+          },
           "data": {
             "type": "object",
             "description": "Response payload data"
@@ -2557,6 +2721,11 @@
             "type": "integer",
             "description": "HTTP status code",
             "example": 400
+          },
+          "code": {
+            "type": "string",
+            "description": "Machine-readable operation code identifying the error",
+            "example": "RESOURCE_NOT_FOUND"
           },
           "error": {
             "type": "object",
@@ -3219,9 +3388,10 @@
             "enum": [
               "Active",
               "Ceased",
-              "Cancelled"
+              "Cancelled",
+              "Error"
             ],
-            "description": "Current status of the prescription"
+            "description": "Current status of the prescription. `Error` indicates the prescription failed processing; see the `error` object for details."
           },
           "created_date": {
             "type": "string",
@@ -3340,12 +3510,33 @@
                 "description": "Identity of the selected pharmacy. Present only when recipient_type is PHARMACY; the address is in `destination`.",
                 "properties": {
                   "pharmacy_id": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The internal Parchment record ID of the pharmacy."
                   },
                   "name": {
                     "type": "string"
                   }
                 }
+              }
+            }
+          },
+          "custom_drug_details": {
+            "type": "object",
+            "description": "Details of a custom (non-catalogue) drug, when the prescribed item is a custom drug.",
+            "properties": {
+              "custom_product_id": {
+                "type": "string",
+                "description": "The partner-supplied custom product identifier."
+              }
+            }
+          },
+          "error": {
+            "type": "object",
+            "description": "Present only when `status` is `Error`; omitted otherwise.",
+            "properties": {
+              "description": {
+                "type": "string",
+                "description": "Human-readable description of the error that occurred during processing."
               }
             }
           }
@@ -3383,6 +3574,10 @@
           "user_id"
         ],
         "properties": {
+          "title": {
+            "type": "string",
+            "description": "Prescriber's title (e.g. Dr). Present on the per-prescription prescriber; omitted on the deprecated top-level prescriber."
+          },
           "given_name": {
             "type": "string"
           },
@@ -3437,6 +3632,40 @@
               },
               "data": {
                 "$ref": "#/components/schemas/PatientPrescriptionsData"
+              }
+            }
+          }
+        ]
+      },
+      "PatientPrescriptionData": {
+        "type": "object",
+        "description": "Single patient prescription data",
+        "required": [
+          "patient",
+          "prescription"
+        ],
+        "properties": {
+          "patient": {
+            "$ref": "#/components/schemas/Patient"
+          },
+          "prescription": {
+            "$ref": "#/components/schemas/Prescription"
+          }
+        }
+      },
+      "PatientPrescriptionExternal": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ExternalApiResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "message": {
+                "example": "Prescriptions retrieved successfully"
+              },
+              "data": {
+                "$ref": "#/components/schemas/PatientPrescriptionData"
               }
             }
           }

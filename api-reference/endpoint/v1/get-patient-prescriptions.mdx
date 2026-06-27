@@ -22,7 +22,7 @@ When a prescription has encountered an error during processing, the `status` fie
 }
 ```
 
-When there is no error, the `error` field will be `null`.
+When there is no error, the `error` field is omitted from the prescription.
 
 ### Response
 
@@ -30,7 +30,37 @@ If pagination is used, the response will include a `pagination` object:
 
 ```json
 {
-  "prescriptions": [ ... ],
+  "prescriptions": [
+    {
+      "url": "https://...",
+      "scid": "ABC123",
+      "status": "Active",
+      "created_date": "2025-01-15T10:30:00Z",
+      "prescriber": {
+        "title": "Dr",
+        "given_name": "Jane",
+        "family_name": "Smith",
+        "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae"
+      },
+      "item_name": "Amoxicillin 500mg capsules",
+      "quantity": "20",
+      "number_of_repeats_authorised": "2",
+      "pbs_code": "1234A",
+      "item_strength": "500mg",
+      "item_form": "capsule",
+      "route_administration": "oral",
+      "custom_drug_details": {},
+      "delivery": {
+        "method": "EMAIL",
+        "recipient_type": "PHARMACY",
+        "destination": "scripts@bayside-pharmacy.com.au",
+        "pharmacy": {
+          "pharmacy_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+          "name": "Bayside Pharmacy"
+        }
+      }
+    }
+  ],
   "patient": { ... },
   "prescriber": { ... },
   "pagination": {

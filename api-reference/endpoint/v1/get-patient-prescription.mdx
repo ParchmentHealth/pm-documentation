@@ -31,7 +31,7 @@ Returns the prescription details along with patient and prescriber information:
     "prescription": {
       "url": "https://...",
       "scid": "ABC123",
-      "status": "ACTIVE",
+      "status": "Active",
       "created_date": "2025-01-15T10:30:00Z",
       "prescriber": {
         "title": "Dr",
@@ -46,7 +46,16 @@ Returns the prescription details along with patient and prescriber information:
       "item_strength": "500mg",
       "item_form": "capsule",
       "route_administration": "oral",
-      "error": null
+      "custom_drug_details": {},
+      "delivery": {
+        "method": "EMAIL",
+        "recipient_type": "PHARMACY",
+        "destination": "scripts@bayside-pharmacy.com.au",
+        "pharmacy": {
+          "pharmacy_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+          "name": "Bayside Pharmacy"
+        }
+      }
     }
   },
   "message": "Prescriptions retrieved successfully",
@@ -69,7 +78,7 @@ When a prescription has encountered an error during processing, the `status` fie
 }
 ```
 
-When there is no error, the `error` field will be `null`.
+When there is no error, the `error` field is omitted from the prescription.
 
 ## Error Responses
 
@@ -79,12 +88,16 @@ Returned when the prescription with the specified SCID does not exist for the pa
 
 ```json
 {
+  "success": false,
+  "statusCode": 404,
+  "code": "RESOURCE_NOT_FOUND",
   "error": {
-    "type": "PRESCRIPTION_NOT_FOUND",
+    "type": "https://parchment.health/errors/resource-not-found",
     "title": "Resource not found",
     "detail": "Prescription with scid 'ABC123' not found for patient 'patient-uuid'"
   },
-  "code": "RESOURCE_NOT_FOUND"
+  "timestamp": "2026-06-27T01:27:06.574Z",
+  "requestId": "1-6a3f26ea-6322ea502fac701a283a0252"
 }
 ```
 
