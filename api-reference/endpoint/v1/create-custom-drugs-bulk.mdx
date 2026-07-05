@@ -7,9 +7,10 @@ Bulk-creates **organization-level** custom drugs (the shared org catalog, stored
 ## Integration Notes
 
 1. **Scope Requirement**: Your API token must include the `create:custom_drug` scope.
-2. **Level**: This endpoint creates organization-level drugs. Use the user-level endpoint to add a drug for a specific prescriber.
-3. **Body**: A non-empty JSON array of custom drug objects (a single drug is a one-element array).
-4. **Partial success**: Each item is processed independently. The response reports `successCount`, `failureCount`, and the first 50 `failures` (with the 1-based `index` and error). HTTP 200 is returned if at least one item succeeded; 400 if all failed.
+2. **Organization admin/owner required**: The acting user (the token's `user_id`) must be an organization **owner** or **admin**. A token that carries the correct scope but whose user is a non-admin (e.g. a prescriber) is rejected with `401 Unauthorized`. This restriction applies only to the organization-level (bulk) endpoints; the user-level custom-drug endpoints have no such requirement.
+3. **Level**: This endpoint creates organization-level drugs. Use the user-level endpoint to add a drug for a specific prescriber.
+4. **Body**: A non-empty JSON array of custom drug objects (a single drug is a one-element array).
+5. **Partial success**: Each item is processed independently. The response reports `successCount`, `failureCount`, and the first 50 `failures` (with the 1-based `index` and error). HTTP 200 is returned if at least one item succeeded; 400 if all failed.
 
 ## Example Request
 

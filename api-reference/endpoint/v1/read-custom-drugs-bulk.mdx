@@ -7,6 +7,7 @@ Retrieves the **organization-level** custom drug catalog (shared org drugs only)
 ## Integration Notes
 
 1. **Scope Requirement**: Your API token must include the `read:custom_drug` scope.
-2. **Scope of data**: Returns only organization-level drugs (`ORGANIZATION#{organization_id}`). To get a specific prescriber's combined list (org + their personal drugs), use the user-level list endpoint.
-3. **Prefill**: Use each drug's `custom_drug_id` to prefill the prescription form.
-4. **Optional fields**: Fields that are not set on a drug are omitted from the response.
+2. **Organization admin/owner required**: The acting user (the token's `user_id`) must be an organization **owner** or **admin**. A token that carries the correct scope but whose user is a non-admin (e.g. a prescriber) is rejected with `401 Unauthorized`. This restriction applies only to the organization-level (bulk) endpoints; the user-level custom-drug endpoints have no such requirement.
+3. **Scope of data**: Returns only organization-level drugs (`ORGANIZATION#{organization_id}`). To get a specific prescriber's combined list (org + their personal drugs), use the user-level list endpoint.
+4. **Prefill**: Use each drug's `custom_drug_id` to prefill the prescription form.
+5. **Optional fields**: Fields that are not set on a drug are omitted from the response.

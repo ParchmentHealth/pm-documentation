@@ -9,8 +9,9 @@ This permanently deletes **every** organization-level custom drug for the organi
 ## Integration Notes
 
 1. **Scope Requirement**: Your API token must include the `delete:custom_drug` scope.
-2. **Confirmation required**: You must pass `?confirm=true`. Without it the request returns `400` and nothing is deleted.
-3. **Scope of effect**: Removes all organization-level drugs (`ORGANIZATION#{organization_id}`). User-level drugs are not affected.
+2. **Organization admin/owner required**: The acting user (the token's `user_id`) must be an organization **owner** or **admin**. A token that carries the correct scope but whose user is a non-admin (e.g. a prescriber) is rejected with `401 Unauthorized`. This restriction applies only to the organization-level (bulk) endpoints; the user-level custom-drug endpoints have no such requirement.
+3. **Confirmation required**: You must pass `?confirm=true`. Without it the request returns `400` and nothing is deleted.
+4. **Scope of effect**: Removes all organization-level drugs (`ORGANIZATION#{organization_id}`). User-level drugs are not affected.
 
 ## Example Request
 

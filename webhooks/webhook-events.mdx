@@ -53,20 +53,63 @@ All webhooks follow this standard structure:
 
 ### Reserved Metadata Fields
 
-Every webhook includes a top-level `metadata` object carrying three reserved fields:
+Every webhook includes a top-level `metadata` object carrying three reserved fields.
+They are **opaque pass-through values for partner use**: you supply them and Parchment
+echoes them back unchanged on the resulting webhook, so you can correlate an event to
+your own context (an order id, session, etc.).
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `reserved_1` | string \| null | Reserved for future use |
-| `reserved_2` | string \| null | Reserved for future use |
-| `reserved_3` | string \| null | Reserved for future use |
+| Field | Type | Constraints | Description |
+|-------|------|-------------|-------------|
+| `reserved_1` | string \| null | ≤ 30 chars | Partner pass-through value (echoed from the SSO request). `null` if not supplied. |
+| `reserved_2` | string \| null | ≤ 30 chars | Partner pass-through value (echoed from the SSO request). `null` if not supplied. |
+| `reserved_3` | string \| null | ≤ 30 chars | Partner pass-through value (echoed from the SSO request). `null` if not supplied. |
 
-<Note>
-  These fields are **reserved for future use**. They are **always present** on every event and are
-  **currently always `null`**. Parchment may begin populating them later without changing the payload
-  structure — so build your integration to tolerate them being present, but **do not rely on any
-  specific values or semantics yet**.
-</Note>
+**How they are populated:** append `reserved_1` / `reserved_2` / `reserved_3` as
+query parameters on the `redirect_path` when generating an SSO token (see
+[Embedded iframe → Reserved parameters](/sso/embedded-iframe#reserved-parameters)).
+Each field is delivered on the webhook only when present and non-empty; absent fields
+arrive as `null`, and values longer than 30 characters are truncated.
+
+#### Example: SSO request → webhook metadata
+
+Generate the SSO token with the reserved values on the `redirect_path`:
+
+```bash
+curl --location 'https://api.sandbox.parchmenthealth.io/external/v1/sso' \
+  --header 'x-organization-id: {organization_id}' \
+  --header 'x-organization-secret: {organization_secret}' \
+  --header 'x-partner-id: {partner_id}' \
+  --header 'x-partner-secret: {partner_secret}' \
+  --header 'x-user-id: {user_id}' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "redirect_path": "/embed/patients/{patient_id}/prescriptions?reserved_1=test1&reserved_2=test2&reserved_3=test3"
+  }'
+```
+
+When the user completes an action (e.g. creating a prescription), those values are
+echoed on the webhook `metadata`:
+
+```json
+{
+  "event_type": "prescription.created",
+  "event_id": "evt_a2d36605a5ef6325206ee6bbaa38793e",
+  "timestamp": "2026-07-05T00:24:13.278Z",
+  "partner_id": "demo",
+  "organization_id": "8d05a1af-6a6e-44e6-953e-6e1a0bee54ab",
+  "data": {
+    "patient_id": "57a8378e-2172-45c1-9329-cb800055eb0a",
+    "partner_patient_id": "UNKNOWN_PARTNER",
+    "user_id": "89be7478-10d1-702e-19d7-0346ac113984",
+    "scid": "202VYFQQPM7FTP1Q86"
+  },
+  "metadata": {
+    "reserved_1": "test1",
+    "reserved_2": "test2",
+    "reserved_3": "test3"
+  }
+}
+```
 
 ---
 
@@ -113,9 +156,9 @@ interface PrescriptionCreatedEvent {
     scid: string; // Script Control Identifier
   };
   metadata: {
-    reserved_1: string | null; // Reserved for future use (currently null)
-    reserved_2: string | null; // Reserved for future use (currently null)
-    reserved_3: string | null; // Reserved for future use (currently null)
+    reserved_1: string | null; // Partner pass-through from SSO request (null if not supplied)
+    reserved_2: string | null; // Partner pass-through from SSO request (null if not supplied)
+    reserved_3: string | null; // Partner pass-through from SSO request (null if not supplied)
   };
 }
 ```
@@ -199,9 +242,9 @@ interface PrescriptionCeasedEvent {
     scid: string; // Script Control Identifier
   };
   metadata: {
-    reserved_1: string | null; // Reserved for future use (currently null)
-    reserved_2: string | null; // Reserved for future use (currently null)
-    reserved_3: string | null; // Reserved for future use (currently null)
+    reserved_1: string | null; // Partner pass-through from SSO request (null if not supplied)
+    reserved_2: string | null; // Partner pass-through from SSO request (null if not supplied)
+    reserved_3: string | null; // Partner pass-through from SSO request (null if not supplied)
   };
 }
 ```
@@ -280,9 +323,9 @@ interface PrescriptionCancelledEvent {
     scid: string; // Script Control Identifier
   };
   metadata: {
-    reserved_1: string | null; // Reserved for future use (currently null)
-    reserved_2: string | null; // Reserved for future use (currently null)
-    reserved_3: string | null; // Reserved for future use (currently null)
+    reserved_1: string | null; // Partner pass-through from SSO request (null if not supplied)
+    reserved_2: string | null; // Partner pass-through from SSO request (null if not supplied)
+    reserved_3: string | null; // Partner pass-through from SSO request (null if not supplied)
   };
 }
 ```
@@ -361,9 +404,9 @@ interface PrescriptionReissuedEvent {
     scid: string; // Script Control Identifier (unchanged by reissue)
   };
   metadata: {
-    reserved_1: string | null; // Reserved for future use (currently null)
-    reserved_2: string | null; // Reserved for future use (currently null)
-    reserved_3: string | null; // Reserved for future use (currently null)
+    reserved_1: string | null; // Partner pass-through from SSO request (null if not supplied)
+    reserved_2: string | null; // Partner pass-through from SSO request (null if not supplied)
+    reserved_3: string | null; // Partner pass-through from SSO request (null if not supplied)
   };
 }
 ```
