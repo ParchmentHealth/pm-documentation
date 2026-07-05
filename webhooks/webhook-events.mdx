@@ -72,7 +72,9 @@ arrive as `null`, and values longer than 30 characters are truncated.
 
 #### Example: SSO request → webhook metadata
 
-Generate the SSO token with the reserved values on the `redirect_path`:
+A telehealth partner tying a prescription back to their own booking, consultation,
+and acquisition channel generates the SSO token with those values on the
+`redirect_path`:
 
 ```bash
 curl --location 'https://api.sandbox.parchmenthealth.io/external/v1/sso' \
@@ -83,12 +85,13 @@ curl --location 'https://api.sandbox.parchmenthealth.io/external/v1/sso' \
   --header 'x-user-id: {user_id}' \
   --header 'Content-Type: application/json' \
   --data '{
-    "redirect_path": "/embed/patients/{patient_id}/prescriptions?reserved_1=test1&reserved_2=test2&reserved_3=test3"
+    "redirect_path": "/embed/patients/{patient_id}/prescriptions?reserved_1=BK-2026-4471&reserved_2=consult_88213&reserved_3=app-ios"
   }'
 ```
 
-When the user completes an action (e.g. creating a prescription), those values are
-echoed on the webhook `metadata`:
+When the clinician completes the action (e.g. creating a prescription), those values
+are echoed on the webhook `metadata` so the partner can reconcile the event against
+their booking system:
 
 ```json
 {
@@ -99,14 +102,14 @@ echoed on the webhook `metadata`:
   "organization_id": "8d05a1af-6a6e-44e6-953e-6e1a0bee54ab",
   "data": {
     "patient_id": "57a8378e-2172-45c1-9329-cb800055eb0a",
-    "partner_patient_id": "UNKNOWN_PARTNER",
+    "partner_patient_id": "1523402100149593750",
     "user_id": "89be7478-10d1-702e-19d7-0346ac113984",
     "scid": "202VYFQQPM7FTP1Q86"
   },
   "metadata": {
-    "reserved_1": "test1",
-    "reserved_2": "test2",
-    "reserved_3": "test3"
+    "reserved_1": "BK-2026-4471",
+    "reserved_2": "consult_88213",
+    "reserved_3": "app-ios"
   }
 }
 ```

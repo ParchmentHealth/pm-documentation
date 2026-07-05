@@ -104,6 +104,36 @@ Opaque pass-through values for partner use. They are shown **read-only** on the 
 
 Each reserved field is independent of the pre-fill precedence above. A field only appears on the form (and is forwarded to the webhook) when it is present and non-empty; absent fields are delivered as `null`.
 
+
+**Example**
+
+A telehealth partner wants to tie the resulting prescription webhook back to their own records — the booking it came from, the consultation, and the acquisition channel. They pass those as reserved fields when generating the SSO token:
+
+```json
+{
+  "redirect_path": "/embed/patients/f03b972b-53ea-452d-ae48-024817f6c3b0/prescriptions?reserved_1=BK-2026-4471&reserved_2=consult_88213&reserved_3=app-ios"
+}
+```
+
+When the clinician creates the prescription, Parchment echoes those exact values on the webhook's `metadata`, so the partner can reconcile the event against their booking system without any extra lookup:
+
+```json
+{
+  "event_type": "prescription.created",
+  "data": {
+    "patient_id": "f03b972b-53ea-452d-ae48-024817f6c3b0",
+    "partner_patient_id": "1523402100149593750",
+    "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae",
+    "scid": "2TM1XVXBJRWXH8NM68"
+  },
+  "metadata": {
+    "reserved_1": "BK-2026-4471",
+    "reserved_2": "consult_88213",
+    "reserved_3": "app-ios"
+  }
+}
+```
+
 ### 2. Embed in Your Application
 
 Use the returned `redirect_url` as the iframe source:
