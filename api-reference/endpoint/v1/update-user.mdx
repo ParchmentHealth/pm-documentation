@@ -6,7 +6,7 @@ openapi: "PUT /v1/organizations/{organization_id}/users/{user_id}"
 
 1. **No role updates**: `access_roles`, `email` attributes will be ignored.
 2. **Partial Updates**: Only include fields you want to update. Omitted fields will not be modified.
-3. **Provider Updates**: Use the `provider_details` object for provider-specific fields to ensure proper validation.
+3. **Provider Updates**: Use the `provider_details` object for provider-specific fields to ensure proper validation. This applies to users with the `provider` or `rx_queue_manager` role — both roles carry a provider record (HPI-I, date of birth, sex, etc.) that is maintained through `provider_details`.
 4. **Validation Dependencies**: Be aware of field dependencies, especially for provider details.
 5. **User Existence**: The API will return 404 if the user doesn't exist in the organization.
 6. **Request ID**: Always log the `requestId` for debugging support requests.

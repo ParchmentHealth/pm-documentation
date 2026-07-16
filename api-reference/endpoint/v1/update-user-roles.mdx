@@ -44,7 +44,11 @@ The following roles can be assigned via this API:
 | `provider`          | Healthcare provider/prescriber                 |
 | `receptionist`      | Manage Patients (no script access)             |
 | `rx_reader`         | Read-only access to prescriptions (needs to be combined with  `receptionist`)           |
-| `rx_queue_manager`  | Manage prescription queues `coming soon`       |
+| `rx_queue_manager`  | Manage the prescription queue on behalf of prescribers — includes patient management and read-only access to prescriptions |
+
+<Note>
+**`rx_queue_manager` requires provider identity details.** Like `provider`, this role must be backed by a verified healthcare individual (HPI-I, date of birth, sex, qualifications). These details are captured when the user is created — see [Create User](/api-reference/endpoint/v1/create-user). Assigning `rx_queue_manager` via this endpoint does not collect them, so only assign it to users created with the required identity fields; otherwise create the user with the role directly, or backfill the details via [Update User](/api-reference/endpoint/v1/update-user) `provider_details`.
+</Note>
 
 
 ### Validation Rules

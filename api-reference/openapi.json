@@ -3046,12 +3046,12 @@
           "date_of_birth": {
             "type": "string",
             "format": "date",
-            "description": "User's date of birth in YYYY-MM-DD format (required if role includes 'provider')",
+            "description": "User's date of birth in YYYY-MM-DD format (required if role includes 'provider' or 'rx_queue_manager')",
             "example": "1969-10-02"
           },
           "sex": {
             "type": "string",
-            "description": "User's sex (required if role includes 'provider')",
+            "description": "User's sex (required if role includes 'provider' or 'rx_queue_manager')",
             "enum": [
               "M",
               "F",
@@ -3073,12 +3073,15 @@
           },
           "access_roles": {
             "type": "array",
-            "description": "List of access roles for the user",
+            "description": "List of access roles for the user. Roles 'provider' and 'rx_queue_manager' require additional identity fields (date_of_birth, sex, hpii_number, qualifications); 'provider' additionally requires prescriber_type (and prescriber_number unless prescriber_type is 'T').",
             "items": {
               "type": "string",
               "enum": [
                 "admin",
-                "provider"
+                "provider",
+                "receptionist",
+                "rx_reader",
+                "rx_queue_manager"
               ]
             },
             "example": [
@@ -3088,7 +3091,7 @@
           },
           "hpii_number": {
             "type": "string",
-            "description": "Healthcare Provider Individual Identifier (required if role includes 'provider')",
+            "description": "Healthcare Provider Individual Identifier (required if role includes 'provider' or 'rx_queue_manager')",
             "example": "8003614900029560"
           },
           "prescriber_type": {
@@ -3110,7 +3113,7 @@
           },
           "qualifications": {
             "type": "string",
-            "description": "Professional qualifications (required if role includes 'provider')",
+            "description": "Professional qualifications (required if role includes 'provider' or 'rx_queue_manager')",
             "example": "LLB"
           },
           "title": {
