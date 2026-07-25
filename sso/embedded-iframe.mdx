@@ -82,7 +82,7 @@ URL-encode all values (e.g. a space becomes `%20`, `#` becomes `%23`).
 | Parameter | Type | Constraints | Description |
 |-----------|------|-------------|-------------|
 | `custom_drug_id` | string | non-empty | Selects a custom drug from the organization catalog as the medication. |
-| `quantity` | integer | 1–99 | Quantity to dispense. |
+| `quantity` | integer | 1–199 | Quantity to dispense. Must be a whole number. |
 | `repeats` | integer | 0–99 | Number of repeats. |
 | `repeats_interval` | integer | 1–365 | Minimum interval (days) between repeats. |
 | `patient_instructions` | string | ≤ 250 chars | Directions for the patient. Longer values are truncated. |

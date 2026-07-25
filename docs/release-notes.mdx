@@ -1,0 +1,58 @@
+---
+title: "Release Notes"
+description: "Changes to the Parchment partner API, SSO, embedded iframe and webhooks"
+---
+
+
+<Update label="25 July 2026" >
+
+### Custom drug catalog API — new
+
+Partners can now read and manage an organization's custom drug catalog directly over the
+external API, instead of relying on a clinician to maintain it in the Parchment app.
+
+- Single-item endpoints: [create](/api-reference/endpoint/v1/create-custom-drug),
+  [read](/api-reference/endpoint/v1/read-custom-drugs),
+  [update](/api-reference/endpoint/v1/update-custom-drug) and
+  [delete](/api-reference/endpoint/v1/delete-custom-drug).
+- Bulk endpoints: [create](/api-reference/endpoint/v1/create-custom-drugs-bulk),
+  [read](/api-reference/endpoint/v1/read-custom-drugs-bulk) and
+  [delete](/api-reference/endpoint/v1/delete-custom-drugs-bulk).
+- A custom drug can be pre-selected on the prescription form with the `custom_drug_id`
+  [query parameter](/sso/embedded-iframe#query-parameters).
+
+### Webhooks
+
+- Two new events: **`prescription.ceased`** and **`prescription.cancelled`**. See the
+  [Webhook Events reference](/webhooks/webhook-events) for payloads. Endpoints that switch
+  on `event_type` should ignore unrecognised values rather than error.
+- **Reserved pass-through metadata.** `reserved_1`, `reserved_2` and `reserved_3` are now
+  delivered in the top-level `metadata` object, echoing the values supplied on the SSO
+  `redirect_path`. Absent fields arrive as `null`. Use them to reconcile an event against
+  your own order or session identifier.
+- **Every delivery is signed.** Webhook requests carry an HMAC signature — validate it
+  before trusting a payload. See
+  [Webhook Verification](/webhooks/webhook-verification).
+
+### Embedded iframe and prescription form
+
+- Can now pass through autofill fields via iFrame query parameters.
+- See [Query Parameters](/sso/embedded-iframe#query-parameters) for the full parameter
+  table and constraints.
+
+### Patient API
+
+- **Address field aliasing.** [Create patient](/api-reference/endpoint/v1/create-patient)
+  and [update patient](/api-reference/endpoint/v1/update-patient) now accept either
+  `australian_street_address` or `australian_address` and normalise internally. 
+- Create failures now return the underlying cause rather than a generic error message.
+- Creating a patient that already exists remains idempotent — it returns `200` with the
+  existing patient record.
+
+### Single sign-on
+
+- Returning users are signed in noticeably faster
+
+
+
+</Update>
