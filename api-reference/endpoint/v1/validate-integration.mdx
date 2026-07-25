@@ -6,6 +6,10 @@ openapi: "GET /v1/organizations/{organization_id}/validate"
 ## Why invoke the endpoint?
 
 This enpoint allows partners to check if they have the right credentials and gives users an indication of successful integration.
+
+<Note>
+  **Required for webhooks.** Until `/validate` succeeds for an organization, no [webhooks](/webhooks/webhook-integration) are sent for it.
+</Note>
  
 <div style={{ textAlign: 'center' }}>
   <img 

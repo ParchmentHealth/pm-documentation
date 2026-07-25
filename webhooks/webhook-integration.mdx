@@ -13,6 +13,10 @@ Parchment Health uses **webhooks** to notify your application in real-time when 
 - **Request Timeout**: 10 seconds per attempt
 - **Supported Events**: Prescription lifecycle events 
 
+<Note>
+  **Prerequisite:** each organization must first call [`GET /v1/organizations/{organization_id}/validate`](/api-reference/endpoint/v1/validate-integration). Until `/validate` succeeds for an organization, no webhooks are sent for it.
+</Note>
+
 ---
 
 ## How Webhooks Work
@@ -27,6 +31,12 @@ Parchment Health uses **webhooks** to notify your application in real-time when 
 ## How to Activate Webhooks
 
 <Steps>
+
+<Step title="Validate the organization">
+
+Call [`GET /v1/organizations/{organization_id}/validate`](/api-reference/endpoint/v1/validate-integration) once per organization you connect. This is a prerequisite — it flags the organization as integrated with your platform, and Parchment only emits webhooks for organizations that have been validated.
+
+</Step>
 
 <Step title="Provide your webhook endpoint">
 
