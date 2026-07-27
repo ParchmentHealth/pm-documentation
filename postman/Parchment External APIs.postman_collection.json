@@ -229,6 +229,55 @@
           "response": []
         },
         {
+          "name": "IHI Precheck",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-organization-secret",
+                "value": "{{organizationSecret}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"given_name\": \"Henk\",\n    \"family_name\": \"SKILLING\",\n    \"medicare_card_number\": \"2950356401\", \n    \"medicare_irn\": \"1\",\n    \"date_of_birth\": \"1941-09-24\",\n    \"sex\": \"F\",\n    \"partner_patient_id\": \"1234567890-1234567890\",\n    \"partner_id\": \"{{partnerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/{{userId}}/patients/ihi-precheck",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "external",
+                "v1",
+                "organizations",
+                "{{organizationId}}",
+                "users",
+                "{{userId}}",
+                "patients",
+                "ihi-precheck"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Read Patient Prescriptions",
           "request": {
             "auth": {
