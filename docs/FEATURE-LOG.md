@@ -16,6 +16,7 @@ Running list of features/fixes worked on, for release tracking. Newest first wit
 
 | Date | Feature | Branch | Repos affected |
 |---|---|---|---|
+| 2026-07-30 | User analytics module (event pipeline, funnels, struggle/stuck signals, heatmaps) | `feature/user-analytics` | analytics-service, web-ui, tf-misc-infrastructure |
 | 2026-07-29 | WAF — pin NoUserAgent_HEADER to Count (blocked partner server-to-server token calls) | `feature/misc-tweaks` | tf-misc-infrastructure |
 | 2026-07-27 | Fix deep-link redirect after login timeout (preserve authRedirect cookie) | `fix/login-redirect-continuity` | web-ui |
 | 2026-07-30 | External IHI precheck endpoint for partners (live HI dry-run of create) | `feature/patient-ihi-precheck` | patient-service, tf-misc-infrastructure |
