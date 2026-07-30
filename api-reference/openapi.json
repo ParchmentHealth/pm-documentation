@@ -253,6 +253,7 @@
                       "data": {
                         "outcome": "ihi_found",
                         "create_would_succeed": true,
+                        "ihi_check_passed": true,
                         "searched_path": "medicare",
                         "ihi_status": "ACTIVE",
                         "ihi_record_status": "VERIFIED"
@@ -270,6 +271,7 @@
                       "data": {
                         "outcome": "no_match",
                         "create_would_succeed": true,
+                        "ihi_check_passed": false,
                         "searched_path": "medicare"
                       },
                       "timestamp": "2024-01-15T10:30:00.000Z",
@@ -286,7 +288,7 @@
                         "outcome": "insufficient_data",
                         "create_would_succeed": false,
                         "search_paths": [
-                          { "path": "basic", "missing": ["ihi_number"] },
+                          { "path": "ihi_number", "missing": ["ihi_number"] },
                           {
                             "path": "medicare",
                             "missing": ["medicare_card_number", "medicare_irn"]
@@ -307,7 +309,7 @@
                     }
                   },
                   "already_exists": {
-                    "summary": "A patient with this partner_patient_id already exists - stored IHI state is reported",
+                    "summary": "A patient with this partner_patient_id already exists - the live IHI check still runs and is reported",
                     "value": {
                       "success": true,
                       "statusCode": 200,
@@ -315,10 +317,10 @@
                       "data": {
                         "outcome": "already_exists",
                         "create_would_succeed": true,
+                        "ihi_check_passed": false,
+                        "searched_path": "medicare",
                         "parchment_patient_id": "pat_abc123def456",
-                        "has_ihi": true,
-                        "ihi_status": "ACTIVE",
-                        "ihi_record_status": "VERIFIED"
+                        "has_ihi": false
                       },
                       "timestamp": "2024-01-15T10:30:00.000Z",
                       "requestId": "req_1705312200000_abc123"
@@ -3282,13 +3284,17 @@
           },
           "create_would_succeed": {
             "type": "boolean",
-            "description": "Whether an identical create request would currently succeed. False when the IHI record is PROVISIONAL/UNVERIFIED (creation is rejected until verified), when no search path can run, when the organization has no HPI-O, or while the HI Service is unreachable."
+            "description": "Whether an identical create request would currently succeed. False when the IHI record is PROVISIONAL/UNVERIFIED (creation is rejected until verified), when no search path can run, when the organization has no HPI-O, or while the HI Service is unreachable. Note: true for already_exists (creation returns the existing patient) and no_match (creation succeeds without an IHI) - use ihi_check_passed for the IHI answer."
+          },
+          "ihi_check_passed": {
+            "type": "boolean",
+            "description": "Present only when a live HI Service search completed (ihi_found, no_match, and already_exists when a search path could run). True only when the search resolved an IHI with ihi_status ACTIVE and ihi_record_status VERIFIED - the same bar prescribing eligibility uses. Absent means the check was not performed."
           },
           "searched_path": {
             "type": "string",
             "description": "The identifier search path that was used. Exactly one path is attempted, in priority order: IHI, Medicare, DVA, Australian address, international address.",
             "enum": [
-              "basic",
+              "ihi_number",
               "medicare",
               "dva",
               "australian-street-address",
@@ -3329,7 +3335,7 @@
                 "path": {
                   "type": "string",
                   "enum": [
-                    "basic",
+                    "ihi_number",
                     "medicare",
                     "dva",
                     "australian-street-address",

@@ -16,7 +16,9 @@ Running list of features/fixes worked on, for release tracking. Newest first wit
 
 | Date | Feature | Branch | Repos affected |
 |---|---|---|---|
-| 2026-07-27 | External IHI precheck endpoint for partners (live HI dry-run of create) | `feature/patient-ihi-precheck` | patient-service, tf-misc-infrastructure |
+| 2026-07-29 | WAF — pin NoUserAgent_HEADER to Count (blocked partner server-to-server token calls) | `feature/misc-tweaks` | tf-misc-infrastructure |
+| 2026-07-27 | Fix deep-link redirect after login timeout (preserve authRedirect cookie) | `fix/login-redirect-continuity` | web-ui |
+| 2026-07-30 | External IHI precheck endpoint for partners (live HI dry-run of create) | `feature/patient-ihi-precheck` | patient-service, tf-misc-infrastructure |
 | 2026-07-24 | Consolidated tier selection | `feature/consolidated-tier-selection` | stripe-service, web-ui |
 | 2026-07-20 | MIMS CDS drug interactions | `feature/mims-drug-interactions` | partner-service, web-ui |
 | 2026-07-18 | Activation nudge system (D+2/7/14 state-aware nudges to org owner) | `feature/activation-nudges` | user-service |
