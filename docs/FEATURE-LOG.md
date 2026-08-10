@@ -14,6 +14,7 @@ Running list of features/fixes worked on, for release tracking. Newest first wit
 
 | Date | Feature | Branch | Repos affected |
 |---|---|---|---|
+| 2026-08-10 | Integration tiles for Thrivio Health, Thrive Holistic Centre, MyLeaf, Dr James, BioStack Health (PARTNER enum + logo/form components + accordion tiles, hidden in production) | `integration-tiles` | web-ui, common |
 | 2026-08-10 | In-app feature announcements (markdown posts published to S3/CloudFront via script — no redeploy; corner-card popup + bell feed in web-ui) | `feature/announcements` | web-ui, tf-misc-infrastructure |
 | 2026-08-09 | WA conformance (PAR-1072): print min repeat interval next to repeats on paper prescription PDF; precheck skip-reason metrics with state/schedule context; Grafana precheck-outcomes panel | `feature/wa-conformance` | web-ui, erx-service, tf-misc-infrastructure |
 | 2026-08-06 | eScript Pending badge click-through: popover explaining why a prescriber is pending (grouped by who can act: user EULA acceptance, admin profile/HPI-I fixes, automatic MIMS provisioning); users list now returns derived `onboarding` so the profile gate is evaluable | `feature/escript-pending-details` | web-ui, user-service |
