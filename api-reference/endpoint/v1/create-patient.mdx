@@ -161,6 +161,14 @@ All responses include these standard fields:
 
 ## Field Validation Requirements
 
+### Partner ID
+
+The `partner_id` field is **required** in the request body. It is your Parchment-assigned partner identifier (lowercase slug, e.g. `tacklit`).
+
+- Omitted → 422 `"Partner ID is required"`
+- Not registered with Parchment → 422 `"Invalid partner_id. Contact Parchment to register your partner ID."`
+- Parchment registers your identifier during onboarding, per environment (sandbox and production) — contact Parchment before go-live
+
 ### Phone Number Format
 
 The `phone` field accepts Australian phone numbers in the following formats:

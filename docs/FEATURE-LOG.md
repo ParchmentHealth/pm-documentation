@@ -14,6 +14,8 @@ Running list of features/fixes worked on, for release tracking. Newest first wit
 
 | Date | Feature | Branch | Repos affected |
 |---|---|---|---|
+| 2026-08-12 | External create-patient: stop partner_id validation error from enumerating every registered partner slug (custom Zod errorMap, generic message) | `main` | common, patient-service |
+| 2026-08-11 | NASH PKI transition (Aug 2026): truststore scripts import new Services Australia chain (test + production); production cutover runbook incl. erxadapter restart | `feature/misc-tweaks` | healthcareid-service |
 | 2026-08-10 | Integration tiles for Thrivio Health, Thrive Holistic Centre, MyLeaf, Dr James, BioStack Health (PARTNER enum + logo/form components + accordion tiles, hidden in production) | `integration-tiles` | web-ui, common |
 | 2026-08-10 | In-app feature announcements (markdown posts published to S3/CloudFront via script — no redeploy; corner-card popup + bell feed in web-ui) | `feature/announcements` | web-ui, tf-misc-infrastructure |
 | 2026-08-09 | WA conformance (PAR-1072): print min repeat interval next to repeats on paper prescription PDF; precheck skip-reason metrics with state/schedule context; Grafana precheck-outcomes panel | `feature/wa-conformance` | web-ui, erx-service, tf-misc-infrastructure |

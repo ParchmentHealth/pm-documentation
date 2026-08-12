@@ -28,7 +28,7 @@ Authorization: Bearer your_jwt_token
 Content-Type: application/json
 
 {
-  "partner_id": "CLINIKO",
+  "partner_id": "tacklit",
   "partner_patient_id": "12345",
   "family_name": "Smith",
   "given_name": "John"
@@ -462,7 +462,7 @@ describe('Integration Tests', () => {
   it('should create and retrieve patient', async () => {
     // Create patient
     const createResponse = await client.createPatient({
-      partner_id: 'TEST',
+      partner_id: 'tacklit', // your Parchment-assigned partner slug
       partner_patient_id: 'integration_test_123',
       family_name: 'TestFamily',
       given_name: 'TestGiven',

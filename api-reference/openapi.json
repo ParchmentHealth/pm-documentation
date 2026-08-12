@@ -3058,7 +3058,8 @@
           "given_name",
           "date_of_birth",
           "sex",
-          "partner_patient_id"
+          "partner_patient_id",
+          "partner_id"
         ],
         "properties": {
           "dva_file_number": {
@@ -3138,7 +3139,8 @@
           },
           "partner_id": {
             "type": "string",
-            "description": "Partner's unique identifier for the organization"
+            "example": "tacklit",
+            "description": "Your Parchment-assigned partner identifier (lowercase slug, e.g. 'tacklit'). Parchment registers this value during partner onboarding — requests with an unregistered value are rejected with a 422 validation error. Contact Parchment before go-live to have your identifier registered."
           }
         }
       },
