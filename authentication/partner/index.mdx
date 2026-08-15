@@ -4,6 +4,12 @@ description: "Comprehensive guide for implementing partner authentication"
 ---
 
 
+<Note>
+**Cache your access token.** Tokens are valid for **6 hours**. Request one, hold it in memory, and reuse it for every call until it expires. Request a new token only on expiry or on a `401`.
+
+Do not request a token per API call. That doubles your request volume, adds a round trip to every call, and is the most common integration mistake we see.
+</Note>
+
 ## Overview
 
 Parchment uses a multi-layered authentication approach for partners:
@@ -28,7 +34,7 @@ Once a new organization is created, the partner will receive a `x-organization-i
 
 Partners must generate a JWT token for authenticated API requests. Tokens have the following characteristics:
 
-- Valid for 1 hour
+- Valid for 6 hours — read `expires_in` in the token response for the exact lifetime
 - Include specific scopes that determine permissions
 - Are signed using RS256 algorithm
 - Used as Bearer token in the Authorization header
@@ -40,7 +46,7 @@ Partners must generate a JWT token for authenticated API requests. Tokens have t
 **Server-side only.** Partner and organization credentials (`x-partner-secret`, `x-organization-secret`) and the bearer tokens derived from them are long-lived shared secrets. Never embed them in browser, mobile, or other client-side code, and never call the Parchment API directly from a frontend. CORS is not enabled, and any client-exposed credential can be read by end users (e.g. via DevTools) and used to impersonate your organization. Always proxy API calls through your backend.
 </Warning>
 
-- Tokens have a limited lifetime of 1 hour
+- Tokens have a limited lifetime of 6 hours
 - Use HTTPS for all API requests
 - Implement proper error handling for authentication failures
 
