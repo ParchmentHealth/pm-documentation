@@ -4,12 +4,6 @@ description: "Comprehensive guide for implementing partner authentication"
 ---
 
 
-<Note>
-**Cache your access token.** Tokens are valid for **6 hours**. Request one, hold it in memory, and reuse it for every call until it expires. Request a new token only on expiry or on a `401`.
-
-Do not request a token per API call. That doubles your request volume, adds a round trip to every call, and is the most common integration mistake we see.
-</Note>
-
 ## Overview
 
 Parchment uses a multi-layered authentication approach for partners:
@@ -39,6 +33,12 @@ Partners must generate a JWT token for authenticated API requests. Tokens have t
 - Are signed using RS256 algorithm
 - Used as Bearer token in the Authorization header
   - eg. `Authorization: Bearer <token>`
+
+<Note>
+**Cache your access token.** Tokens are valid for **6 hours**. Request one, hold it in memory, and reuse it for every call until it expires. Request a new token only on expiry or on a `401`.
+
+Do not request a token per API call. That doubles your request volume, adds a round trip to every call, and is the most common integration mistake we see.
+</Note>
 
 ## Security Considerations
 
