@@ -3128,8 +3128,9 @@
           },
           "ahpra_number": {
             "type": "string",
-            "description": "AHPRA registration number",
-            "example": "1234567896321"
+            "description": "AHPRA registration number: a 3-letter profession prefix followed by 10 digits (13 characters).",
+            "pattern": "^[A-Z]{3}[0-9]{10}$",
+            "example": "MED0000932846"
           },
           "hospital_provider_number": {
             "type": "string",

@@ -15,6 +15,7 @@ Running list of features/fixes worked on, for release tracking. Newest first wit
 
 | Date | Feature | Branch | Repos affected |
 |---|---|---|---|
+| 2026-08-26 | AHPRA number format validation + canonical normalization at all provider write paths (shared common helper; closes unvalidated create/update-provider + schema-less prescriber form; pre-eRx check turns generic E91037 into a specific 400) + eRx adapter XML escaping of all Service Provider registration fields | `feature/ahpra-validation` | common, user-service, erx-service, erxadapter-service, web-ui |
 | 2026-07-27 | Raise prescription quantity cap from 199 to 999 | `bug/quantity-max-999` | web-ui |
 | 2026-07-24 | Consolidated tier selection | `feature/consolidated-tier-selection` | stripe-service, web-ui |
 | 2026-07-20 | MIMS CDS drug interactions | `feature/mims-drug-interactions` | partner-service, web-ui |
