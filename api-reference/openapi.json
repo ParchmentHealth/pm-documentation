@@ -331,7 +331,7 @@
                     "validation": [
                       {
                         "field": "phone",
-                        "message": "Phone number must be a valid Australian number (e.g., 0412345678, +61412345678)",
+                        "message": "Phone number must be a valid Australian mobile number (e.g., 0412345678, +61412345678)",
                         "code": "VALIDATION_ERROR"
                       },
                       {
@@ -1857,6 +1857,15 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          {
+            "name": "custom_product_id",
+            "in": "query",
+            "required": false,
+            "description": "Filter the catalog to drugs with this exact custom_product_id",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -2858,7 +2867,7 @@
           },
           "phone": {
             "type": "string",
-            "description": "Patient's Australian phone number (optional). Must be a valid Australian number with digits only. Supports mobile (04xxxxxxxx) and landline (0[2378]xxxxxxxx) formats. International format with +61 or 61 prefix is also accepted."
+            "description": "Patient's Australian mobile number (optional). Must be a valid Australian mobile (04xxxxxxxx or 05xxxxxxxx), digits only. International format with +61 or 61 prefix is also accepted. Landlines are rejected. A mobile number can be used for IHI lookup against the Healthcare Identifiers Service."
           },
           "australian_address": {
             "$ref": "#/components/schemas/australian_street_address"

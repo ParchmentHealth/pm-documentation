@@ -61,7 +61,7 @@ openapi: "POST /v1/organizations/{organization_id}/users/{user_id}/patients"
       },
       {
         "field": "phone",
-        "message": "Phone number must be a valid Australian number (e.g., 0412345678, +61412345678)",
+        "message": "Phone number must be a valid Australian mobile number (e.g., 0412345678, +61412345678)",
         "code": "INVALID_FORMAT"
       },
       {
@@ -163,20 +163,17 @@ All responses include these standard fields:
 
 ### Phone Number Format
 
-The `phone` field accepts Australian phone numbers in the following formats:
+The `phone` field accepts Australian **mobile** numbers only (04 / 05 ranges). Mobile numbers can be used for IHI lookup against the Healthcare Identifiers Service; landlines cannot, and are rejected.
 
 **✅ Valid Examples:**
 
 - `0412345678` - Mobile number (domestic format)
-- `0312345678` - Melbourne landline (domestic format)
-- `0212345678` - Sydney landline (domestic format)
-- `0712345678` - Brisbane landline (domestic format)
-- `0812345678` - Adelaide landline (domestic format)
 - `61412345678` - International mobile (without + prefix)
-- `+61312345678` - International landline (with + prefix)
+- `+61412345678` - International mobile (with + prefix)
 
 **❌ Invalid Examples:**
 
+- `0212345678` - Landline (only mobiles are accepted)
 - `0123456789` - Starts with 1 (invalid area code)
 - `04123456789` - Too many digits
 - `041234567` - Too few digits
