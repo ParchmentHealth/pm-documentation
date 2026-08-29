@@ -4,8 +4,11 @@ Running list of features/fixes worked on, for release tracking. Newest first wit
 
 ## Next Release
 
-| Date | Feature | Branch | Repos affected |
-|---|---|---|---|
+| Date | Feature | Branch | Repos affected | Sandbox |
+|---|---|---|---|---|
+| 2026-08-26 | Nightly MIMS subscription cleanup cron (dev/sandbox only, prod-gated 4 ways) | feature/mims-cleanup-cron | user-service | Yes|
+| 2026-07-30 | User analytics module (event pipeline, funnels, struggle/stuck signals, heatmaps) | `feature/user-analytics` | analytics-service, web-ui, tf-misc-infrastructure | yes|
+| 2026-08-23 | MIMS CDS drug interactions (incl. reserved right-rail layout, idle placeholder before medication pick, premium upsell placeholder behind entitlement stub, beta badge, mobile placement above action buttons, manual-add hidden) + "Taking now" clinical flag on prescriptions (single sparse `taking_now` attribute doubling as the TakingNowIndex GSI hash key; PATCH + GET .../taking-now; confirm-dialog toggle on prescription list + details; "only medications marked as taking now" filter on the interaction check with no date window; 183-day stale prompt; fix: interaction check ran against a stale cached medication list, so a script created earlier in the same session was missing from the next check) | `feature/mims-drug-interactions` | partner-service, web-ui, erx-service, common, tf-misc-infrastructure/dynamodb/prescription-db | Yes |
 | 2026-07-25 | WAF — Terraform: add api + cognito WAF in prod after deleting manual WAF | `main` | tf-misc-infrastructure |
 | 2026-07-25 | Endpoint hardening — email, auth, user, kms-cognito, web-ui | `bug/misc-bugs` | email-service, auth-service, user-service, web-ui |
 | 2026-07-24 | Register partner org ops script | `feature/register-partner-org-ops-script` | partner-service |
@@ -15,19 +18,58 @@ Running list of features/fixes worked on, for release tracking. Newest first wit
 
 | Date | Feature | Branch | Repos affected |
 |---|---|---|---|
+| 2026-08-29 | PBS prescriber number format validation (7 digits: 6 + check digit) + normalization at UI and API — shared common helper mirroring the AHPRA fix; pre-eRx check in create-erx-entity-id turns the generic E91037 (which the adapter self-heal misreads as an email collision) into a specific 400; web-ui create/update-user Zod schemas + prescriber-details form; user-service create/update schemas close the write paths that stored the 16-digit incident value; `Provider.prescriber_number` corrected `number`→`string` | `feature/prescriber-number-validation` | common, erx-service, user-service, web-ui |
+| 2026-08-28 | External custom-drugs fixes (partner report): negative-value guard no longer rejects spaced strength ranges ("20 - 25 mg/g"); bulk create returns per-item `error.validation[]` on the all-failed 400 (optional validation param on ExternalApiHelpers.badRequest); GET org custom-drugs now honours the `custom_product_id` query filter | `feature/custom-drug-bulk-fixes` | user-service, common |
+| 2026-08-27 | Partner ops scripts: confirm profile/stage/partner-id before running (typed 'production' gate for prod, `--yes` bypass for non-prod) | `feature/misc-tweaks` | partner-service |
 | 2026-08-26 | AHPRA number format validation + canonical normalization at all provider write paths (shared common helper; closes unvalidated create/update-provider + schema-less prescriber form; pre-eRx check turns generic E91037 into a specific 400) + eRx adapter XML escaping of all Service Provider registration fields | `feature/ahpra-validation` | common, user-service, erx-service, erxadapter-service, web-ui |
-| 2026-07-27 | Raise prescription quantity cap from 199 to 999 | `bug/quantity-max-999` | web-ui |
-| 2026-07-24 | Consolidated tier selection | `feature/consolidated-tier-selection` | stripe-service, web-ui |
-| 2026-07-20 | MIMS CDS drug interactions | `feature/mims-drug-interactions` | partner-service, web-ui |
+| 2026-08-24 | IHI validation lookup (address now its own required section and saved on the created patient — it was silently dropped because the HI Service never returns one; wire mapping extracted to `_lib/lookup-payloads.ts`; shared PmDatePicker fix: pasting into an untouched date field did nothing); IHI search identifier fallback cascade in searchHS (404 no-record falls back to next identifier; new priority IHI > Medicare > DVA > mobile > email > addresses; matched/failed identifiers + warning notify in response; 120s timeouts; phone accepts AU mobiles only in create/update schemas + partner docs; lookup form sends ALL supplied identifiers so the backend cascades, verify-method picker removed — IHI/Medicare/DVA are always-visible optional fields, phone/email optional contact fields under Address, fallback warning shown on verified banner, submit renamed Verify patient; patient edit page reskinned with the same design system — SectionRow card + IHI-status/Search-order/danger-zone sidebar, single shared patient fetch replacing 7 per-section fetches, revalidate cascade surfaced) | `feature/ihi-validation-refactor` | web-ui, patient-service, common |
+| 2026-08-23 | Cross-org isolation enforcement (Jul-2026 review holes): add authz to `read-patientId-by-partner-patientId` + gate the found path in `search-create-partner-patient`; `bulk-upload-service` verifies the caller token against the path org via acl `check-stf` (fail-closed) and drops the insecure dev bypass; Fargate task-role `lambda:InvokeFunction` on acl `check-stf` + `STAGE`/`ACL_CHECK_STF_FUNCTION_NAME` env (IAM committed on `feature/partner-api-audit` — must deploy before the new bulk-upload image) | `feature/cross-org-enforcement` | patient-service, tf-misc-infrastructure |
+| 2026-08-22 | Access-audit + Grafana watchdog: pipeline-failure alarms (Firehose delivery-stall/conversion-failure on 3 streams, responder Lambda errors/throttles) + Grafana self-monitoring (ECS-task & RDS dead-man's-switch, RDS low-storage) to `pm-<ws>-common-sns`; Cloudflare all-traffic spike rule alerts on NoData (silent datasource/schema-break guard); Grafana image default pinned to 12.3.1 | `feature/partner-api-audit` | tf-misc-infrastructure |
+| 2026-08-20 | Admin portal auth + audit: wire Cognito login (incl. temp-password challenge) into web-ui-admin, verify JWTs on every admin-backend endpoint (fail-closed), per-user session ownership, structured `admin-audit` log events (chat, tool use w/ demographic redaction), CORS allowlist; remove dead browser→Lambda invocation path; new `cognito-admin` TF module for the dedicated admin user pool; agent moved to Bedrock-only via AI SDK (9-model catalog incl. AU Claude 5s / DeepSeek / GLM / GPT-5.6, side-by-side compare, AU data-residency guards, AI SDK UI stream), Anthropic API key retired; org-scope picker; new `read-users-stf` (user-service, branch `feature/admin-org-users-tool`) backing a get_organization_users agent tool | `feature/admin-auth-audit` | web-ui-admin, admin-backend, tf-misc-infrastructure, user-service |
+| 2026-08-17 | Prescription V3 (incl. UI polish: search shimmer, sticky patient banner, density toggle, 2-col wide layout, keyboard-flow tuning, shared FormFieldLabel/EmptyState) | `feature/prescription-v3` | web-ui |
+| 2026-08-14 | Stripe Subscriptions Grafana dashboard: trial vs paying vs past-due vs churned vs never-subscribed customers — daily subscription-status snapshot pm-metric Lambda (aggregate + per-partner + per-org lines incl. billing contact name/email) + dashboard with mix/trend/partner/org tables and webhook lifecycle events | `feature/stripe-subscription-metrics` | stripe-service, tf-misc-infrastructure |
+| 2026-08-12 | External create-patient: stop partner_id validation error from enumerating every registered partner slug (custom Zod errorMap, generic message) | `main` | common, patient-service |
+| 2026-08-17 | NASH cert renewal + cutover (executed 16 Aug: 345/346 entities): eRx §3.6.4 per-entity push scripts, new-chain truststore support, cutover runbook + 2028 procedure | `feature/misc-tweaks` | healthcareid-service, erxadapter-service |
+| 2026-08-10 | Integration tiles for Thrivio Health, Thrive Holistic Centre, MyLeaf, Dr James, BioStack Health (PARTNER enum + logo/form components + accordion tiles, hidden in production) | `integration-tiles` | web-ui, common |
+| 2026-08-10 | In-app feature announcements (markdown posts published to S3/CloudFront via script — no redeploy; corner-card popup + bell feed in web-ui) | `feature/announcements` | web-ui, tf-misc-infrastructure |
+| 2026-08-09 | WA conformance (PAR-1072): print min repeat interval next to repeats on paper prescription PDF; precheck skip-reason metrics with state/schedule context; Grafana precheck-outcomes panel | `feature/wa-conformance` | web-ui, erx-service, tf-misc-infrastructure |
+| 2026-08-06 | eScript Pending badge click-through: popover explaining why a prescriber is pending (grouped by who can act: user EULA acceptance, admin profile/HPI-I fixes, automatic MIMS provisioning); users list now returns derived `onboarding` so the profile gate is evaluable | `feature/escript-pending-details` | web-ui, user-service |
+| 2026-08-05 | Stay on prescription page after queuing a script (confirmation dialog + form reset instead of redirect to patient profile) | `feature/queue-script-stay-on-page` | web-ui |
+| 2026-07-31 | Host-only SSO cookies + legacy .parchment.health migration (fixes cookie-bloat 403/431) | `bug/sso-cookie-bloat` | web-ui |
+| 2026-07-30 | External IHI precheck endpoint for partners (live HI dry-run of create) | `feature/patient-ihi-precheck` | patient-service, tf-misc-infrastructure |
 | 2026-07-18 | Activation nudge system (D+2/7/14 state-aware nudges to org owner) | `feature/activation-nudges` | user-service |
-| 2026-07-14 | Prescription V3 | `feature/prescription-v3` | web-ui |
 | 2026-07-14 | Test framework + CI (Vitest / Storybook / Playwright, tiered GH Actions gating) | `feature/test-framework-ci` | web-ui |
 | 2026-07-13 | MIMS flat file | `feature/mims-flat-file` | partner-service, tf-misc-infrastructure |
-| 2026-07-10 | IHI validation lookup | `feature/ihi-validation-lookup` | web-ui |
 | 2026-07-08 | HI Service search by email + mobile | `feature/HI-email-phone` | patient-service |
 
 ## Released
+| Date | Feature | Branch | Repos affected |
+|---|---|---|---|
+| 2026-08-23 | Partner API activity audit: one structured `external-api-audit` line per partner-facing call (wrapHandler `isExternal` middleware across 27 external handlers + per-branch `/v1/token` outcomes) and per outbound webhook delivery; CloudWatch→Firehose→Parquet→Athena pipeline (`partner_api_audit` + API Gateway v1 access-log tap `partner_gateway_access`) on the existing audit bucket/CMK/workgroup; Partner API Audit Grafana dashboard; `query_partner_api_activity` admin-chat tool (allowlist-validated Athena) + csm-agent IAM | `feature/partner-api-audit` | common, partner-service, patient-service, erx-service, user-service, admin-backend, tf-misc-infrastructure | 
 
 | Date | Feature | Branch | Repos affected |
 |---|---|---|---|
+| 2026-08-17 | Prescriber account: business address now fully required (all 5 fields, was state only) with red required markers, per-field errors and panel error outline; grey literal "*" on Prescriber details / ERX details panels replaced with a shared red RequiredMark | `feature/prescriber-required-fields` | web-ui |
+| 2026-08-17 | PAR-1073: HPI-O/CSP link error now offers a "Click here to view our guide" link that opens the help article inside the Intercom Messenger (falls back to a new tab) — shown on onboarding step 1 and org settings; useOrganization now throws on a failed org fetch instead of caching the error body as an Organization (a fetch failure previously showed a false "validate your HPIO" banner blocking team invites) | `feature/csp-error-help-guide` | web-ui |
+| 2026-08-17 | Onboarding wizard: Next Step button now blocked on step 1 until org setup (HPIO) is actually saved — closes a bypass that let users reach PMS integration/team invite with an unsaved HPIO | `feature/onboarding-next-step-gate` | web-ui |
+
+
+| Date | Feature | Branch | Repos affected |
+|---|---|---|---|
+| 2026-08-13 | Billing-gap fixes: seat sync provisions Stripe customer on 'UNKNOWN' sentinel, GST tax-location self-heal for pre-Jul-25 customers, tiered prices no longer cached as $0 | `feature/billing-gap-fixes` | stripe-service, partner-service |
+
+| Date | Feature | Branch | Repos affected |
+|---|---|---|---|
+| 2026-08-08 | eScript Pending badge click-through: popover explaining why a prescriber is pending (grouped by who can act: user EULA acceptance, admin profile/HPI-I fixes, automatic MIMS provisioning); users list now returns derived `onboarding` so the profile gate is evaluable | `feature/escript-pending-details` | web-ui, user-service | 
+| 2026-08-08  | Lowercase email at all sign-up entry points (case-sensitive Cognito pool created duplicate users) | `feature/email-case-insensitive-signup` | user-service, auth-service, web-ui 
+| 2026-08-08 | HPI-I conflict on provider create: surface + log, and supersede stale records of disabled/deleted holders (fixes silent onboarding loop for duplicate accounts) | `feature/hpii-conflict-feedback` | user-service, web-ui | 
+| 2026-08-08  | Endpoint hardening — email, auth, user, kms-cognito, web-ui | `bug/misc-bugs` | kms-cognito, email-service, auth-service, user-service, web-ui | 
+| 2026-08-08 | Register partner org ops script | `feature/register-partner-org-ops-script` | partner-service | 
+| 2026-08-08  | Fix deep-link redirect after login timeout (preserve authRedirect cookie) | `fix/login-redirect-continuity` | web-ui | 
+| 2026-08-08  | Consolidated tier selection + FLAT multi-org quantity merge (fixes duplicate-price sync failure); setup script takes mandatory --product-id; fix canceled-sub paywall bypass (subscriptions.list status:all) | `feature/consolidated-tier-selection` | stripe-service, web-ui | 
+
+
+| Date | Feature | Branch | Repos affected |
+|---|---|---|---|
+| 2026-07-27 | Raise prescription quantity cap from 199 to 999 | `bug/quantity-max-999` | web-ui |
 | 2026-07-26 | Access-audit pipeline (CWL → Firehose Parquet archive + Athena + deny responder) — deployed to production | `main` | tf-misc-infrastructure |
