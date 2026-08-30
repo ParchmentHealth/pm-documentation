@@ -5,7 +5,7 @@ description: "Use AI assistants to help with your Parchment integration"
 
 # Parchment Documentation MCP Server
 
-The **Model Context Protocol (MCP)** is an open standard that allows AI assistants to access external data sources and tools. Parchment hosts an MCP server at `https://docs.parchmenthealth.io/mcp` that gives AI assistants direct access to our developer documentation and OpenAPI spec, making it easier to build integrations.
+The **Model Context Protocol (MCP)** is an open standard that allows AI assistants to access external data sources and tools. Parchment hosts an MCP server at `https://docs.parchment.health/mcp` that gives AI assistants direct access to our developer documentation and OpenAPI spec, making it easier to build integrations.
 
 ## Why Use MCP?
 
@@ -21,7 +21,7 @@ The **Model Context Protocol (MCP)** is an open standard that allows AI assistan
     Connect directly to our hosted MCP server:
 
     ```bash
-    claude mcp add --transport http parchment-docs https://docs.parchmenthealth.io/mcp
+    claude mcp add --transport http parchment-docs https://docs.parchment.health/mcp
     ```
 
     Or add to your `~/.claude.json`:
@@ -31,7 +31,7 @@ The **Model Context Protocol (MCP)** is an open standard that allows AI assistan
       "mcpServers": {
         "parchment-docs": {
           "type": "http",
-          "url": "https://docs.parchmenthealth.io/mcp"
+          "url": "https://docs.parchment.health/mcp"
         }
       }
     }
@@ -46,7 +46,7 @@ The **Model Context Protocol (MCP)** is an open standard that allows AI assistan
     {
       "mcpServers": {
         "parchment-docs": {
-          "url": "https://docs.parchmenthealth.io/mcp"
+          "url": "https://docs.parchment.health/mcp"
         }
       }
     }
@@ -60,7 +60,7 @@ The **Model Context Protocol (MCP)** is an open standard that allows AI assistan
     Connect to the hosted endpoint over HTTP:
 
     ```
-    https://docs.parchmenthealth.io/mcp
+    https://docs.parchment.health/mcp
     ```
 
     Refer to your tool's documentation for MCP configuration.
