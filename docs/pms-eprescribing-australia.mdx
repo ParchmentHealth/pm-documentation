@@ -1,0 +1,31 @@
+---
+title: "Adding electronic prescriptions to your PMS (Australia)"
+description: "How practice management software adds ADHA-conformant ePrescribing in Australia: build vs embed, conformance requirements, the CP2.3 deadline, and typical timelines."
+---
+
+If you build practice management software (PMS) for Australian clinicians, there are two ways to offer electronic prescriptions: build and conform your own ePrescribing capability, or embed an already-conformant provider like Parchment behind your interface.
+
+## What does the law require?
+
+Software that issues electronic prescriptions in Australia must conform to the Australian Digital Health Agency's (ADHA) current conformance profile and be listed on the public [Electronic Prescribing Conformance Register](https://www.digitalhealth.gov.au/initiatives-and-programs/electronic-prescriptions). Conformance covers HI Service integration, prescription delivery service connectivity, observed NPDS testing and ongoing re-conformance as profiles are revised.
+
+## What does building it yourself involve?
+
+A typical in-house build spans HI Service and identifier handling, integration with the prescription delivery services (REST APIs), observed testing, and ADHA registration. Vendors who have completed it budget roughly **9–18 months and several hundred thousand dollars**, plus permanent re-conformance work — the CP2.3 profile retires on **30 September 2026**, forcing all CP2.3-only software through the cycle again ([what the deadline means](https://www.parchment.health/resources/cp23-conformance-deadline)).
+
+## What does embedding Parchment involve?
+
+Parchment is registered on the current profile (CPv3.0.1, since August 2024) and carries the conformance obligations, so your software doesn't have to. Integration options:
+
+- **Embedded SSO** — your users click "Prescribe" in your PMS and land in Parchment's prescribing flow with patient context passed through. Most partners ship this in **weeks**.
+- **Enterprise API** — patients, prescriptions and webhooks under your own interface. See the [API Reference](/api-reference/introduction).
+
+Start with the [Partner Integration Guide](/partner-integration-guide), then [Going Live](/post-integration-guide).
+
+## Which PMS platforms already use this?
+
+Cliniko, Nookal, coreplus, PracSuite, Optomate, Zanda, Zavy360, Principle (the first Australian dental software with ePrescriptions) and others — see [current integrations](https://www.parchment.health/integrations).
+
+## How do I get sandbox access?
+
+[Request API access](https://www.parchment.health/contact/api_access) — sandbox credentials, the OpenAPI spec, and this documentation's [MCP server](/docs/mcp-server) for AI-assisted integration are available immediately.

@@ -17,6 +17,7 @@
             "group": "Get Started",
             "pages": [
               "introduction",
+              "docs/pms-eprescribing-australia",
               "docs/faq"
             ]
           },
@@ -169,5 +170,13 @@
     "socials": {
       "linkedin": "https://www.linkedin.com/company/parchment-eprescriptions/"
     }
+  },
+  "seo": {
+    "metatags": {
+      "og:site_name": "Parchment Health developer docs",
+      "og:image": "https://framerusercontent.com/images/iLu5hF4MqFuYeAscmtFWHNuNuIk.png",
+      "twitter:card": "summary_large_image"
+    },
+    "indexing": "navigable"
   }
 }
