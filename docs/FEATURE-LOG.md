@@ -7,8 +7,7 @@ Running list of features/fixes worked on, for release tracking. Newest first wit
 | Date | Feature | Branch | Repos affected | Sandbox |
 |---|---|---|---|---|
 | 2026-08-26 | Nightly MIMS subscription cleanup cron (dev/sandbox only, prod-gated 4 ways) | feature/mims-cleanup-cron | user-service | Yes|
-| 2026-07-30 | User analytics module (event pipeline, funnels, struggle/stuck signals, heatmaps) | `feature/user-analytics` | analytics-service, web-ui, tf-misc-infrastructure | yes|
-| 2026-08-23 | MIMS CDS drug interactions (incl. reserved right-rail layout, idle placeholder before medication pick, premium upsell placeholder behind entitlement stub, beta badge, mobile placement above action buttons, manual-add hidden) + "Taking now" clinical flag on prescriptions (single sparse `taking_now` attribute doubling as the TakingNowIndex GSI hash key; PATCH + GET .../taking-now; confirm-dialog toggle on prescription list + details; "only medications marked as taking now" filter on the interaction check with no date window; 183-day stale prompt; fix: interaction check ran against a stale cached medication list, so a script created earlier in the same session was missing from the next check) | `feature/mims-drug-interactions` | partner-service, web-ui, erx-service, common, tf-misc-infrastructure/dynamodb/prescription-db | Yes |
+| 2026-08-31 | MIMS CDS drug interactions (incl. reserved right-rail layout, idle placeholder before medication pick, premium upsell placeholder behind entitlement stub, beta badge, mobile placement above action buttons, manual-add hidden; static copies of MIMS reference vocabulary — doc levels, severities, poison classes, pregnancy/sport categories, DI disclaimers — with definition tooltips on doc level + severity, disclaimer fallback when the live dereference fails, glass tooltip style, severity-tab overflow fix) + "Taking now" clinical flag on prescriptions (single sparse `taking_now` attribute doubling as the TakingNowIndex GSI hash key; PATCH + GET .../taking-now; confirm-dialog toggle on prescription list + details; "only medications marked as taking now" filter on the interaction check with no date window; 183-day stale prompt; fix: interaction check ran against a stale cached medication list, so a script created earlier in the same session was missing from the next check) | `feature/mims-drug-interactions` | partner-service, web-ui, erx-service, common, tf-misc-infrastructure/dynamodb/prescription-db | Yes |
 | 2026-07-25 | WAF — Terraform: add api + cognito WAF in prod after deleting manual WAF | `main` | tf-misc-infrastructure |
 | 2026-07-25 | Endpoint hardening — email, auth, user, kms-cognito, web-ui | `bug/misc-bugs` | email-service, auth-service, user-service, web-ui |
 | 2026-07-24 | Register partner org ops script | `feature/register-partner-org-ops-script` | partner-service |
@@ -18,6 +17,7 @@ Running list of features/fixes worked on, for release tracking. Newest first wit
 
 | Date | Feature | Branch | Repos affected |
 |---|---|---|---|
+| 2026-08-31 | eRx schema 30.1 prescriber types: new `R` = Designated Registered Nurse Prescriber (PBS/RPBS nurse prescribing from 1 Oct 2026) accepted end-to-end (PrescriberType unions/enums, precheck schema, prescriber-type dropdowns); `U` relabelled Nurse → Nurse Practitioner | `feature/nurse-prescriber-type-r` | common, erx-service, web-ui |
 | 2026-08-29 | PBS prescriber number format validation (7 digits: 6 + check digit) + normalization at UI and API — shared common helper mirroring the AHPRA fix; pre-eRx check in create-erx-entity-id turns the generic E91037 (which the adapter self-heal misreads as an email collision) into a specific 400; web-ui create/update-user Zod schemas + prescriber-details form; user-service create/update schemas close the write paths that stored the 16-digit incident value; `Provider.prescriber_number` corrected `number`→`string` | `feature/prescriber-number-validation` | common, erx-service, user-service, web-ui |
 | 2026-08-29 | External custom-drugs fixes (partner report): negative-value guard no longer rejects spaced strength ranges ("20 - 25 mg/g"); bulk create returns per-item `error.validation[]` on the all-failed 400 (optional validation param on ExternalApiHelpers.badRequest); GET org custom-drugs now honours the `custom_product_id` query filter | `feature/custom-drug-bulk-fixes` | user-service, common |
 | 2026-08-27 | Partner ops scripts: confirm profile/stage/partner-id before running (typed 'production' gate for prod, `--yes` bypass for non-prod) | `feature/misc-tweaks` | partner-service |
@@ -43,6 +43,11 @@ Running list of features/fixes worked on, for release tracking. Newest first wit
 | 2026-07-08 | HI Service search by email + mobile | `feature/HI-email-phone` | patient-service |
 
 ## Released
+
+| Date | Feature | Branch | Repos affected |
+|---|---|---|---|
+| 2026-08-29 | User analytics module (event pipeline, funnels, struggle/stuck signals, heatmaps) | `feature/user-analytics` | analytics-service, web-ui, tf-misc-infrastructure | 
+
 | Date | Feature | Branch | Repos affected |
 |---|---|---|---|
 | 2026-08-23 | Partner API activity audit: one structured `external-api-audit` line per partner-facing call (wrapHandler `isExternal` middleware across 27 external handlers + per-branch `/v1/token` outcomes) and per outbound webhook delivery; CloudWatch→Firehose→Parquet→Athena pipeline (`partner_api_audit` + API Gateway v1 access-log tap `partner_gateway_access`) on the existing audit bucket/CMK/workgroup; Partner API Audit Grafana dashboard; `query_partner_api_activity` admin-chat tool (allowlist-validated Athena) + csm-agent IAM | `feature/partner-api-audit` | common, partner-service, patient-service, erx-service, user-service, admin-backend, tf-misc-infrastructure | 
