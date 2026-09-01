@@ -17,6 +17,7 @@ Running list of features/fixes worked on, for release tracking. Newest first wit
 
 | Date | Feature | Branch | Repos affected |
 |---|---|---|---|
+| 2026-09-01 | deploy-all-with-sso.sh — one command deploys all serverless repos to dev/sandbox (per repo: branch switch, pull, common submodule sync, yarn, deploy-with-sso; dirty repos skipped, end-of-run summary) | `feature/deploy-all-script` | common |
 | 2026-09-01 | External API requestId now returns the correlation id (was an X-Ray root id that never appeared in log fields) — partner-quoted requestIds become directly traceable via logs / get_request_trace; X-Ray/random fallbacks kept outside request context | `feature/external-request-id-correlation` | common |
 | 2026-09-01 | Admin portal ↔ Agent Factory link: broker log tools (get_request_trace / get_recent_service_errors / get_recent_deployments) in the admin chat agent via SigV4 MCP to AgentCore Gateway; run records minted server-side from verified Cognito user + org picker (model never picks scope); task-role IAM (PutItem on runs table, InvokeGateway) + AGENT_GATEWAY_URL env | `feature/admin-auth-audit` (admin-backend), `feature/csm-agent-factory-link` (tf) | admin-backend, tf-misc-infrastructure |
 | 2026-08-31 | Correlation-id propagation across direct Lambda invokes (invokeLambdaFunction injects ClientContext; deriveCorrelationId reads it — traces now survive service hops) + fix external-api-audit error_type always logging handler_error (read body.error.type per handleExternalError nesting) | `feature/correlation-id-propagation` | common |
