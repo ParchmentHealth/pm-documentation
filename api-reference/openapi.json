@@ -1113,51 +1113,63 @@
         },
         "responses": {
           "201": {
-            "description": "User created successfully",
+            "description": "User created. Read the `code` field — a provider record may not have been created.",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UserResponse"
                 },
-                "example": {
-                  "success": true,
-                  "statusCode": 201,
-                  "message": "User created successfully",
-                  "data": {
-                    "external_user_id": "PARTNER#USER_12345",
-                    "parchment_user_id": "usr_abc123def456",
-                    "url": "https://app.parchment.health/dashboard/users/usr_abc123def456"
+                "examples": {
+                  "Success": {
+                    "summary": "User created and provider record created",
+                    "value": {
+                      "success": true,
+                      "statusCode": 201,
+                      "message": "User created successfully",
+                      "code": "USER_CREATED",
+                      "data": {
+                        "user_id": "0b4c1a49-fea8-4922-a3da-2ca8jf8af9bd"
+                      },
+                      "timestamp": "2026-09-04T10:30:00.000Z",
+                      "requestId": "1-68d1b225-2a98752c7b2da3fa489267fc"
+                    }
                   },
-                  "timestamp": "2024-01-15T10:30:00.000Z",
-                  "requestId": "req_1705312200000_abc123"
-                }
-              }
-            }
-          },
-          "202": {
-            "description": "User creation accepted - conflicts found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserResponse"
-                },
-                "example": {
-                  "success": true,
-                  "statusCode": 202,
-                  "message": "User creation accepted - conflicts found",
-                  "data": {
-                    "external_user_id": "PARTNER#USER_12345",
-                    "parchment_user_id": "usr_existing789",
-                    "url": "https://app.parchment.health/dashboard/users/usr_existing789"
+                  "Provider not found": {
+                    "summary": "User created, but NO provider record — the user cannot prescribe",
+                    "value": {
+                      "success": true,
+                      "statusCode": 201,
+                      "message": "User created but provider not found",
+                      "code": "USER_CREATED_PROVIDER_NOT_FOUND",
+                      "data": {
+                        "user_id": "faa41171-235e-4822-b524-9f8bb07ebd3d",
+                        "warning": "User created successfully but provider search failed"
+                      },
+                      "timestamp": "2026-09-04T10:30:00.000Z",
+                      "requestId": "1-68d1b61a-156915754ad812fd58a24d90"
+                    }
                   },
-                  "timestamp": "2024-01-15T10:30:00.000Z",
-                  "requestId": "req_1705312200000_def456"
+                  "Provider already exists": {
+                    "summary": "User created, but the HPI-I is already held by another active provider in this organization",
+                    "value": {
+                      "success": true,
+                      "statusCode": 201,
+                      "message": "User created but provider already exists",
+                      "code": "USER_CREATED_PROVIDER_ALREADY_EXISTS",
+                      "data": {
+                        "user_id": "5b048ac0-b078-4955-88d5-1c4bc5147d3b",
+                        "warning": "User created successfully but provider creation failed"
+                      },
+                      "timestamp": "2026-09-04T10:30:00.000Z",
+                      "requestId": "1-68d1bc7a-2249a4da021230520c2dc288"
+                    }
+                  }
                 }
               }
             }
           },
           "400": {
-            "description": "Bad Request - Invalid request format",
+            "description": "Bad Request - the identity provider rejected the user parameters (for example, a malformed email)",
             "content": {
               "application/json": {
                 "schema": {
@@ -1167,7 +1179,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized - Authentication required",
+            "description": "Unauthorized - authentication required, token invalid, or the token lacks the create:user scope",
             "content": {
               "application/json": {
                 "schema": {
@@ -1177,7 +1189,17 @@
             }
           },
           "403": {
-            "description": "Forbidden - Insufficient permissions",
+            "description": "Forbidden - rejected by the API gateway",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - platform configuration error; contact Parchment support with the requestId",
             "content": {
               "application/json": {
                 "schema": {
@@ -1187,7 +1209,7 @@
             }
           },
           "409": {
-            "description": "Conflict - Partner user ID already exists",
+            "description": "Conflict - a Parchment user already exists with this email address. Email addresses are unique across the whole platform, not per organization.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1206,8 +1228,18 @@
               }
             }
           },
+          "429": {
+            "description": "Too Many Requests - rate limited by the identity provider; retry with back-off",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
           "500": {
-            "description": "Internal Server Error",
+            "description": "Internal Server Error - unexpected error, including a request body that is not valid JSON",
             "content": {
               "application/json": {
                 "schema": {
@@ -3038,8 +3070,7 @@
         "required": [
           "family_name",
           "given_name",
-          "email",
-          "partner_user_id"
+          "email"
         ],
         "properties": {
           "given_name": {
@@ -3060,12 +3091,12 @@
           },
           "sex": {
             "type": "string",
-            "description": "User's sex (required if role includes 'provider' or 'rx_queue_manager')",
+            "description": "User's sex — M (male), F (female), I (indeterminate), N (not stated). Required if access_roles includes 'provider' or 'rx_queue_manager'.",
             "enum": [
               "M",
               "F",
               "I",
-              "O"
+              "N"
             ],
             "example": "F"
           },
@@ -3077,7 +3108,7 @@
           },
           "phone": {
             "type": "string",
-            "description": "User's Australian phone number. Must be a valid Australian number with digits only. Supports mobile (04xxxxxxxx) and landline (0[2378]xxxxxxxx) formats. International format with +61 or 61 prefix is also accepted.",
+            "description": "Contact phone number. Not validated by the API — send an Australian number (04xxxxxxxx, 0[2378]xxxxxxxx, or +61 prefixed) so it prints correctly on prescriptions.",
             "example": "0412345678"
           },
           "access_roles": {
@@ -3100,18 +3131,21 @@
           },
           "hpii_number": {
             "type": "string",
-            "description": "Healthcare Provider Individual Identifier (required if role includes 'provider' or 'rx_queue_manager')",
+            "description": "Healthcare Provider Individual Identifier (16 digits). Required if access_roles includes 'provider' or 'rx_queue_manager'. Parchment verifies it against the HI Service using hpii_number, given_name, family_name, date_of_birth and sex — all five must match the record held by Services Australia.",
             "example": "8003614900029560"
           },
           "prescriber_type": {
             "type": "string",
-            "description": "Prescriber type (required if role includes 'provider')",
+            "description": "Prescriber type — M (medical practitioner), E (optometrist), U (nurse), F (midwife), D (dentist), V (veterinarian), T (podiatrist), C (pharmacist). Required if access_roles includes 'provider'.",
             "enum": [
               "M",
-              "N",
+              "E",
+              "U",
+              "F",
               "D",
-              "P",
-              "T"
+              "V",
+              "T",
+              "C"
             ],
             "example": "M"
           },
@@ -3146,36 +3180,32 @@
             "description": "Hospital provider number",
             "example": "H123456"
           },
-          "partner_user_id": {
+          "erx_entity_id": {
             "type": "string",
-            "description": "Partner's unique identifier for the user",
-            "example": "CLINIKO#USER_12345"
+            "minLength": 5,
+            "maxLength": 5,
+            "pattern": "^[A-Za-z0-9]{5}$",
+            "description": "eRx Entity ID — exactly 5 alphanumeric characters.",
+            "example": "AB12C"
           }
         }
       },
       "UserData": {
         "type": "object",
-        "description": "User creation response data",
+        "description": "User creation/update response data",
         "required": [
-          "external_user_id",
-          "parchment_user_id",
-          "url"
+          "user_id"
         ],
         "properties": {
-          "external_user_id": {
+          "user_id": {
             "type": "string",
-            "description": "Partner's unique identifier for the user",
-            "example": "PARTNER#USER_12345"
+            "description": "Parchment's unique identifier for the user. This is the only identifier returned.",
+            "example": "0b4c1a49-fea8-4922-a3da-2ca8jf8af9bd"
           },
-          "parchment_user_id": {
+          "warning": {
             "type": "string",
-            "description": "Parchment's unique identifier for the user",
-            "example": "usr_abc123def456"
-          },
-          "url": {
-            "type": "string",
-            "description": "Direct link to user in Parchment portal",
-            "example": "https://app.parchment.health/dashboard/users/usr_abc123def456"
+            "description": "Present only on a partial success. Names the follow-up step that did not complete. Read the top-level `code` field to decide what to do.",
+            "example": "User created successfully but provider search failed"
           }
         }
       },

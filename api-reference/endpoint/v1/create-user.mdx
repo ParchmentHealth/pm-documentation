@@ -20,7 +20,7 @@ openapi: "POST /v1/organizations/{organization_id}/users"
 }
 ```
 
-### Partial Success - User Already Exists (201 Created)
+### Email Already Registered (409 Conflict)
 
 ```json
 {
@@ -37,7 +37,10 @@ openapi: "POST /v1/organizations/{organization_id}/users"
 }
 ```
 
-### Partial Success = Provider Already Exists (201 Created)
+### Partial Success - Provider Already Exists (201 Created)
+
+The user exists, but **no provider record was created**. See Result Codes below.
+
 ```json
 {
     "success": true,
@@ -53,7 +56,9 @@ openapi: "POST /v1/organizations/{organization_id}/users"
 }
 ```
 
-### Partial Success - Provider Creation Failed (201 Created)
+### Partial Success - Provider Not Found (201 Created)
+
+The user exists, but **no provider record was created**. See Result Codes below. The `warning` text says "provider search failed" — read the `code` field, not the `warning` text.
 
 ```json
 {
@@ -117,11 +122,14 @@ openapi: "POST /v1/organizations/{organization_id}/users"
 
 ### Success Response Data
 
-| Field                | Type   | Description                                             |
-| -------------------- | ------ | ------------------------------------------------------- |
-| `external_user_id`   | string | Your system's user identifier (as provided in request) |
-| `parchment_user_id`  | string | Parchment's unique user identifier                      |
-| `url`                | string | Direct link to user in Parchment portal                |
+| Field       | Type   | Description                                                                             |
+| ----------- | ------ | --------------------------------------------------------------------------------------- |
+| `user_id`   | string | Parchment's unique identifier for the new user. Store it — it is the only handle you get. |
+| `warning`   | string | Present only on a partial success. Tells you which follow-up step did not complete.       |
+
+<Warning>
+  The request body has no `partner_user_id` field for this endpoint. Any value you send is ignored, and no such identifier is returned.
+</Warning>
 
 ### Common Response Fields
 
@@ -136,16 +144,51 @@ All responses include these standard fields:
 
 ## Status Codes
 
-| Code  | Status                | Description                                           |
-| ----- | --------------------- | ----------------------------------------------------- |
-| `201` | Created               | User successfully created                             |
-| `202` | Accepted              | User creation accepted (demographic conflicts found)  |
-| `400` | Bad Request           | Invalid request format or missing required fields     |
-| `401` | Unauthorized          | Authentication required or token invalid              |
-| `403` | Forbidden             | Insufficient permissions (missing CREATE_USER scope) |
-| `409` | Conflict              | Partner user ID already exists                        |
-| `422` | Unprocessable Entity  | Request validation failed                             |
-| `500` | Internal Server Error | Unexpected server error                               |
+| Code  | Status                | Description                                                                                  |
+| ----- | --------------------- | -------------------------------------------------------------------------------------------- |
+| `201` | Created               | User created. Check `code` — the user may be created with a warning (see Result Codes below). |
+| `400` | Bad Request           | The identity provider rejected the user parameters (for example, a malformed email)          |
+| `401` | Unauthorized          | Authentication required, token invalid, or the token lacks the `create:user` scope           |
+| `403` | Forbidden             | Rejected by the API gateway                                                                  |
+| `404` | Not Found             | Platform configuration error. Contact Parchment support with the `requestId`.                |
+| `409` | Conflict              | A Parchment user already exists with this email address                                      |
+| `422` | Unprocessable Entity  | Request validation failed — see `error.validation` for the field-level detail                |
+| `429` | Too Many Requests     | Rate limited by the identity provider. Retry with back-off.                                  |
+| `500` | Internal Server Error | Unexpected server error, including a request body that is not valid JSON                     |
+
+<Note>
+  Email addresses are unique across the whole Parchment platform, not per organization. A `409` means the address is already registered to a Parchment user — possibly in a different organization. Use a different address, or contact Parchment support to move the existing user.
+</Note>
+
+## Result Codes
+
+A `201` response is not always a complete success. Always read the `code` field.
+
+| `code`                                  | Provider record created? | What it means                                                                                     | What to do                                                                                                 |
+| --------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `USER_CREATED`                          | Yes                      | The user, the roles and (for provider roles) the provider record were all created.                  | Nothing. The user can prescribe.                                                                           |
+| `USER_CREATED_PROVIDER_NOT_FOUND`       | **No**                   | The HI Service could not match the HPI-I to the supplied demographics.                              | Correct the demographics, then delete and re-create the user, or complete the provider in the Parchment portal. |
+| `USER_CREATED_PROVIDER_SEARCH_FAILED`   | **No**                   | The HI Service lookup could not run — the organization has no HPI-O, the HI Service was unavailable, or the search data was rejected. | Check the organization has an HPI-O. Retry later. If it continues, contact Parchment support with the `requestId`. |
+| `USER_CREATED_PROVIDER_ALREADY_EXISTS`  | **No**                   | The `hpii_number` is already held by another **active** provider in the same organization.          | Check for a duplicate account for this prescriber. Disable the old user, or use the correct HPI-I.         |
+| `USER_CREATED_PROVIDER_INVALID_PARAMS`  | **No**                   | The provider record was rejected as invalid.                                                        | Check the provider fields, then contact Parchment support with the `requestId`.                            |
+| `USER_CREATED_PROVIDER_RESOURCE_NOT_FOUND` | **No**                | A record needed to build the provider (usually the organization) was not found.                     | Contact Parchment support with the `requestId`.                                                            |
+| `USER_CREATED_PROVIDER_FAILED`          | **No**                   | Provider creation failed for another reason.                                                        | Contact Parchment support with the `requestId`.                                                            |
+| `USER_CREATED_ROLES_FAILED`             | **No**                   | The user was created but no roles were assigned.                                                    | Contact Parchment support with the `requestId`.                                                            |
+
+<Warning>
+  **Treat every `USER_CREATED_PROVIDER_*` code as a failure to onboard a prescriber.** The login account exists and the roles are assigned, but there is no provider record. That user **cannot create prescriptions** until the provider record exists.
+
+  Patient operations are not affected. Patients belong to the organization, not to the provider, so you can still create, read and update patients for that organization.
+</Warning>
+
+### How the provider record is built
+
+When `access_roles` contains `provider` or `rx_queue_manager`, Parchment does two extra steps after it creates the user:
+
+1. **HI Service lookup.** Parchment sends `hpii_number`, `family_name`, `given_name`, `date_of_birth` and `sex` to the Healthcare Identifiers Service. **All five values must match the HPI-I record held by Services Australia.** A mismatch in any one of them returns `USER_CREATED_PROVIDER_NOT_FOUND`. The most common causes are a middle name sent in `given_name`, a maiden or married family name, and a wrong date of birth.
+2. **Provider creation.** Parchment writes the provider record with the HPI-I status returned in step 1. If the same `hpii_number` is already held by another active provider in that organization, the request returns `USER_CREATED_PROVIDER_ALREADY_EXISTS`.
+
+Parchment never returns the reason from the HI Service, and never returns the HPI-I number itself. Quote the `requestId` when you ask Parchment support to check a specific lookup.
 
 
 ## Field Validation Requirements
@@ -160,7 +203,7 @@ All responses include these standard fields:
 | `date_of_birth`  | string   | When `access_roles` includes "provider" or "rx_queue_manager" | Date of birth in YYYY-MM-DD format              |
 | `sex`            | string   | When `access_roles` includes "provider" or "rx_queue_manager" | Sex (M/F/I/N)                                    |
 | `hpii_number`    | string   | When `access_roles` includes "provider" or "rx_queue_manager" | Healthcare Provider Individual Identifier       |
-| `prescriber_type`| string   | When `access_roles` includes "provider"                 | Prescriber type (M/N/D/P/T)                     |
+| `prescriber_type`| string   | When `access_roles` includes "provider"                 | Prescriber type (M/E/U/F/D/V/T/C)               |
 | `prescriber_number` | string | When role is "provider" and `prescriber_type` is not "T" | Prescriber number                              |
 | `qualifications` | string   | When `access_roles` includes "provider" or "rx_queue_manager" | Professional qualifications                     |
 
@@ -174,13 +217,16 @@ All responses include these standard fields:
 | `ahpra_number`             | string   | AHPRA registration number             |
 | `hospital_provider_number` | string   | Hospital provider number              |
 | `phone`                    | string   | Clinic's Number                        |
+| `erx_entity_id`            | string   | eRx Entity ID — exactly 5 alphanumeric characters |
 
 
 ### Phone Number Format
 
-The `phone` field accepts Australian phone numbers in the following formats:
+<Note>
+  The API does not currently validate `phone`. Any string is accepted and stored. Send an Australian number in one of the formats below so the number prints correctly on prescriptions.
+</Note>
 
-**✅ Valid Examples:**
+**✅ Recommended formats:**
 
 - `0412345678` - Mobile number (domestic format)
 - `0312345678` - Melbourne landline (domestic format)
@@ -190,7 +236,7 @@ The `phone` field accepts Australian phone numbers in the following formats:
 - `61412345678` - International mobile (without + prefix)
 - `+61312345678` - International landline (with + prefix)
 
-**❌ Invalid Examples:**
+**❌ Avoid:**
 
 - `0123456789` - Starts with 1 (invalid area code)
 - `04123456789` - Too many digits
@@ -204,8 +250,9 @@ The `phone` field accepts Australian phone numbers in the following formats:
 - **Given Name**: 1-255 characters, cannot be empty
 - **HPII Number**: 16 digits exactly
 - **Prescriber Number**: 1-10 characters
-- **AHPRA Number**: 1-15 characters
-- **Provider Number**: 1-15 characters
+- **AHPRA Number**: 13 characters exactly — a 3-letter profession prefix and 10 digits, for example `MED0000932846`
+- **Provider Number**: 1-10 characters
+- **eRx Entity ID**: 5 alphanumeric characters exactly
 - **Qualifications**: 1-255 characters
 
 
@@ -248,13 +295,14 @@ Valid values for `prescriber_type` when role is "provider":
 
 ## Integration Notes
 
-1. **Store Request ID**: Always log the `requestId` for debugging support requests
-2. **Handle 202 Status**: A 202 response indicates demographic conflicts were found but a matching user was returned
-3. **Validation Errors**: Use the `error.validation` array to display field-specific error messages
-4. **Partner User ID**: Must be unique across your organization; use the format returned in `external_user_id`
-5. **URL Access**: The returned `url` provides direct access to the user in the Parchment portal
-6. **Provider Role Requirements**: When creating users with the `provider` or `rx_queue_manager` role, ensure all required identity fields are included (see Access Roles above) — these roles create a provider record attributed to a verified healthcare individual
-7. **Phone Validation**: Phone numbers must follow Australian format - see validation requirements above
+1. **Store the Request ID**: Always log the `requestId`. Parchment support needs it to trace a specific call.
+2. **Store the user_id**: `data.user_id` is the only identifier returned. Map it to your own user record.
+3. **Always read the `code` field**: A `201` does not guarantee a working prescriber. See Result Codes above.
+4. **Validation Errors**: Use the `error.validation` array to show field-level messages to your user.
+5. **Email is globally unique**: A `409` means the email is already registered somewhere on the Parchment platform, not only in your organization.
+6. **Provider Role Requirements**: When you create a user with the `provider` or `rx_queue_manager` role, send all required identity fields (see Access Roles above). These roles create a provider record that Parchment verifies against the HI Service.
+7. **Match the HI Service exactly**: Send the prescriber's legal given name and family name, as registered with AHPRA and Services Australia. Do not add middle names to `given_name`.
+8. **Phone Format**: The API does not validate `phone`. Send an Australian number in a recommended format. See Phone Number Format above.
 
 ## Example Request
 
@@ -276,8 +324,36 @@ Valid values for `prescriber_type` when role is "provider":
   "qualifications": "LLB",
   "title": "Dr",
   "provider_number": "123456789",
-  "ahpra_number": "1234567896321",
-  "hospital_provider_number": "H123456",
-  "partner_user_id": "CLINIKO#USER_12345"
+  "ahpra_number": "MED0000932846",
+  "hospital_provider_number": "H123456"
+}
+```
+
+## Example Responses for This Request
+
+Success — the provider record was created and the user can prescribe:
+
+```json
+{
+    "success": true,
+    "statusCode": 201,
+    "message": "User created successfully",
+    "code": "USER_CREATED",
+    "data": { "user_id": "0b4c1a49-fea8-4922-a3da-2ca8jf8af9bd" }
+}
+```
+
+Partial success — the user exists but **cannot prescribe**:
+
+```json
+{
+    "success": true,
+    "statusCode": 201,
+    "message": "User created but provider not found",
+    "code": "USER_CREATED_PROVIDER_NOT_FOUND",
+    "data": {
+        "user_id": "0b4c1a49-fea8-4922-a3da-2ca8jf8af9bd",
+        "warning": "User created successfully but provider search failed"
+    }
 }
 ```
