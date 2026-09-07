@@ -75,7 +75,7 @@ openapi: "GET /v1/organizations/{organization_id}/users"
 }
 ```
 
-### Insufficient Permissions (403 Forbidden)
+### Insufficient Scope (401 Unauthorized)
 
 ```json
 {
@@ -103,6 +103,14 @@ The response returns an array of user objects, where each user contains:
 | `email`   | string | User's email address               |
 
 **Note**: This endpoint only returns basic user identification fields (`user_id` and `email`) for security and performance reasons. Use the read-user endpoint to get detailed information about a specific user.
+
+<Warning>
+  There is no `external_user_id`, `partner_user_id` or any other partner-side identifier in this response, and no such field is stored by Parchment. `data` is a flat array of objects that hold exactly `user_id` and `email`. Map `user_id` to your own user record when you create the user.
+</Warning>
+
+<Note>
+  The response is a flat array, not an object. There is no `data.users` wrapper and no `pagination` object. The endpoint takes no `limit` or `lastKey` query parameter — it returns every user in the organization.
+</Note>
 
 ### Common Response Fields
 
@@ -140,7 +148,7 @@ All responses include these standard fields:
 2. **Handle Empty Results**: The API returns an empty array if no users are found
 3. **Permission Requirements**: Ensure your API token has the `READ_USER` scope
 4. **Organization Access**: You can only read users from organizations you have access to
-5. **Limited Data**: Only `user_id` and `email` are returned for security and performance reasons
+5. **Limited Data**: Only `user_id` and `email` are returned for security and performance reasons. No partner-side identifier is returned.
 6. **Detailed Information**: Use the read-user endpoint (`GET /users/{user_id}`) to get full user details
-7. **Pagination**: This endpoint returns all users in the organization (no pagination currently)
+7. **Pagination**: This endpoint returns all users in the organization. There is no pagination, and `limit` / `lastKey` query parameters are ignored.
 8. **Caching**: Consider caching user lists with appropriate TTL to reduce API calls

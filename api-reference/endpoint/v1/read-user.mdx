@@ -77,6 +77,35 @@ openapi: "GET /v1/organizations/{organization_id}/users/{user_id}"
 }
 ```
 
+### Provider Role, No Provider Record (200 OK)
+
+The user holds the `provider` role, but `provider_details` is `null`. **This user cannot create prescriptions.** See "Checking a prescriber is complete" below.
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "User details retrieved successfully",
+  "code": "SUCCESS",
+  "data": {
+    "user_id": "usr_ghi789jkl012",
+    "email": "darlene.cameron@example.com",
+    "full_name": "Darlene Cameron",
+    "access_roles": ["admin", "provider"],
+    "details": {
+      "given_name": "Darlene",
+      "family_name": "Cameron",
+      "title": null,
+      "date_of_birth": null,
+      "sex": null
+    },
+    "provider_details": null
+  },
+  "timestamp": "2024-01-25T09:15:00.000Z",
+  "requestId": "req_1706171700000_pqr901"
+}
+```
+
 ### User Not Found (404 Not Found)
 
 ```json
@@ -125,7 +154,7 @@ openapi: "GET /v1/organizations/{organization_id}/users/{user_id}"
 }
 ```
 
-### Insufficient Permissions (403 Forbidden)
+### Insufficient Scope (401 Unauthorized)
 
 ```json
 {
@@ -141,6 +170,24 @@ openapi: "GET /v1/organizations/{organization_id}/users/{user_id}"
 }
 ```
 
+## Checking a prescriber is complete
+
+Use this endpoint to confirm the result of a Create User or Update User call that included provider fields.
+
+| `provider_details` | Meaning                                                                                          | What to do                                                                                    |
+| ------------------ | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| Object             | The provider record exists. The HPI-I status is not returned.                                       | Nothing.                                                                                       |
+| `null`             | The user has a provider role but **no provider record**. The user cannot create prescriptions.     | Call Update User with the corrected `provider_details`, then read the user again. |
+| Absent             | The user holds no provider role. This is normal for `admin`, `receptionist` and `rx_reader` users. | Nothing.                                                                                       |
+
+<Warning>
+  A `USER_CREATED_PROVIDER_NOT_FOUND` or `USER_CREATED_PROVIDER_ALREADY_EXISTS` result from Create User always leaves `provider_details` as `null`. Read the user after any partial creation to confirm the repair worked.
+</Warning>
+
+<Note>
+  There is no `external_user_id` or `partner_user_id` field. Parchment stores no partner-side identifier for a user — map `user_id` to your own record.
+</Note>
+
 ## Response Fields
 
 ### Success Response Data
@@ -152,7 +199,7 @@ openapi: "GET /v1/organizations/{organization_id}/users/{user_id}"
 | `full_name`        | string   | User's full display name                        |
 | `access_roles`     | array    | Array of user roles (admin, provider, etc.)    |
 | `details`          | object   | Core user demographics (always present — see below) |
-| `provider_details` | object   | Provider-specific details (only if user has "provider" or "rx_queue_manager" role) |
+| `provider_details` | object \| null | Provider-specific details. Present only if the user has the "provider" or "rx_queue_manager" role. `null` means the user has that role but no provider record |
 
 ### Details Object
 
@@ -227,7 +274,7 @@ All responses include these standard fields:
 2. **Handle 404 Status**: Check if the user exists before attempting to read
 3. **Permission Requirements**: Ensure your API token has the `READ_USER` scope
 4. **Organization Access**: You can only read users from organizations you have access to
-5. **Provider Data Availability**: If provider details cannot be retrieved, `provider_details` will be `null`
+5. **Provider Data Availability**: `provider_details` is `null` when the user holds a provider role but has no provider record. That user cannot create prescriptions — see "Checking a prescriber is complete" above
 6. **Caching**: Consider caching user data with appropriate TTL to reduce API calls
 7. **Role-Based Fields**: Non-provider users will not have the `provider_details` field in the response
 

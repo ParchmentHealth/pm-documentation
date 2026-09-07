@@ -1128,7 +1128,7 @@
                       "message": "User created successfully",
                       "code": "USER_CREATED",
                       "data": {
-                        "user_id": "0b4c1a49-fea8-4922-a3da-2ca8jf8af9bd"
+                        "user_id": "0b4c1a49-fea8-4922-a3da-2ca8ff8af9bd"
                       },
                       "timestamp": "2026-09-04T10:30:00.000Z",
                       "requestId": "1-68d1b225-2a98752c7b2da3fa489267fc"
@@ -1251,7 +1251,7 @@
         }
       },
       "get": {
-        "description": "Retrieves all users in an organization from Parchment",
+        "description": "Retrieves every user in an organization. The response is a flat array of user_id and email only. There is no pagination and no other field is returned — use GET /users/{user_id} for full user and provider detail.",
         "parameters": [
           {
             "name": "x-organization-secret",
@@ -1271,27 +1271,6 @@
               "type": "string",
               "format": "uuid"
             }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "description": "Maximum number of users to return (1-100)",
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 100,
-              "default": 20
-            }
-          },
-          {
-            "name": "lastKey",
-            "in": "query",
-            "required": false,
-            "description": "Pagination key for retrieving the next set of results",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1305,27 +1284,20 @@
                 "example": {
                   "success": true,
                   "statusCode": 200,
-                  "message": "Users retrieved successfully",
-                  "data": {
-                    "users": [
-                      {
-                        "user_id": "usr_abc123def456",
-                        "external_user_id": "PARTNER#USER_12345",
-                        "full_name": "John Doe",
-                        "access_roles": [
-                          "provider",
-                          "admin"
-                        ]
-                      }
-                    ],
-                    "pagination": {
-                      "total": 1,
-                      "limit": 20,
-                      "lastKey": null
+                  "message": "Retrieved 2 users successfully",
+                  "code": "SUCCESS",
+                  "data": [
+                    {
+                      "user_id": "0b4c1a49-fea8-4922-a3da-2ca8ff8af9bd",
+                      "email": "darlene.cameron@example.com"
+                    },
+                    {
+                      "user_id": "5b048ac0-b078-4955-88d5-1c4bc5147d3b",
+                      "email": "john.smith@example.com"
                     }
-                  },
+                  ],
                   "timestamp": "2024-01-15T10:30:00.000Z",
-                  "requestId": "req_1705312200000_abc123"
+                  "requestId": "1-68d1b225-2a98752c7b2da3fa489267fc"
                 }
               }
             }
@@ -1418,25 +1390,49 @@
                 "example": {
                   "success": true,
                   "statusCode": 200,
-                  "message": "User retrieved successfully",
+                  "message": "User details retrieved successfully",
+                  "code": "SUCCESS",
                   "data": {
-                    "user_id": "usr_abc123def456",
-                    "external_user_id": "PARTNER#USER_12345",
-                    "full_name": "John Doe",
+                    "user_id": "0b4c1a49-fea8-4922-a3da-2ca8ff8af9bd",
+                    "email": "darlene.cameron@example.com",
+                    "full_name": "Darlene Cameron",
                     "access_roles": [
-                      "provider",
-                      "admin"
+                      "admin",
+                      "provider"
                     ],
+                    "details": {
+                      "given_name": "Darlene",
+                      "family_name": "Cameron",
+                      "title": "Dr",
+                      "date_of_birth": "1969-10-02",
+                      "sex": "F"
+                    },
                     "provider_details": {
-                      "given_name": "John",
-                      "family_name": "Doe",
-                      "prescriber_type": "M",
+                      "title": "Dr",
+                      "hpii_number": "8003614900029560",
+                      "erx_entity_id": "AB12C",
                       "prescriber_number": "1234567",
-                      "ahpra_number": "MED0001234567"
+                      "prescriber_type": "M",
+                      "provider_number": "123456789",
+                      "ahpra_number": "MED0000932846",
+                      "qualifications": "MBBS, FRACGP",
+                      "hospital_provider_number": "H123456",
+                      "family_name": "Cameron",
+                      "given_name": "Darlene",
+                      "date_of_birth": "1969-10-02",
+                      "sex": "F",
+                      "phone": "0412345678",
+                      "australian_address": {
+                        "street_number": "1",
+                        "street_name": "Collins Street",
+                        "suburb": "Melbourne",
+                        "state": "VIC",
+                        "postcode": "3000"
+                      }
                     }
                   },
                   "timestamp": "2024-01-15T10:30:00.000Z",
-                  "requestId": "req_1705312200000_abc123"
+                  "requestId": "1-68d1b225-2a98752c7b2da3fa489267fc"
                 }
               }
             }
@@ -3200,7 +3196,7 @@
           "user_id": {
             "type": "string",
             "description": "Parchment's unique identifier for the user. This is the only identifier returned.",
-            "example": "0b4c1a49-fea8-4922-a3da-2ca8jf8af9bd"
+            "example": "0b4c1a49-fea8-4922-a3da-2ca8ff8af9bd"
           },
           "warning": {
             "type": "string",
@@ -3891,6 +3887,376 @@
               "data": {
                 "type": "object",
                 "description": "Updated patient data"
+              }
+            }
+          }
+        ]
+      },
+      "UsersListResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ExternalApiResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "statusCode": {
+                "example": 200
+              },
+              "message": {
+                "example": "Retrieved 2 users successfully"
+              },
+              "data": {
+                "type": "array",
+                "description": "Flat array of users in the organization. Only user_id and email are returned. The endpoint is not paginated and returns every user.",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "user_id",
+                    "email"
+                  ],
+                  "properties": {
+                    "user_id": {
+                      "type": "string",
+                      "description": "Parchment's unique identifier for the user",
+                      "example": "0b4c1a49-fea8-4922-a3da-2ca8ff8af9bd"
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "description": "User's email address",
+                      "example": "darlene.cameron@example.com"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "UserDetailsResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ExternalApiResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "statusCode": {
+                "example": 200
+              },
+              "message": {
+                "example": "User details retrieved successfully"
+              },
+              "data": {
+                "type": "object",
+                "description": "Full detail for a single user.",
+                "required": [
+                  "user_id",
+                  "email"
+                ],
+                "properties": {
+                  "user_id": {
+                    "type": "string",
+                    "description": "Parchment's unique identifier for the user",
+                    "example": "0b4c1a49-fea8-4922-a3da-2ca8ff8af9bd"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "User's email address",
+                    "example": "darlene.cameron@example.com"
+                  },
+                  "full_name": {
+                    "type": "string",
+                    "description": "User's full name",
+                    "example": "Darlene Cameron"
+                  },
+                  "access_roles": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Roles assigned to the user",
+                    "example": [
+                      "admin",
+                      "provider"
+                    ]
+                  },
+                  "details": {
+                    "type": "object",
+                    "description": "Identity fields. Sourced from the provider record when one exists, otherwise derived from the user record (date_of_birth and sex are then null).",
+                    "properties": {
+                      "given_name": {
+                        "type": "string",
+                        "example": "Darlene"
+                      },
+                      "family_name": {
+                        "type": "string",
+                        "example": "Cameron"
+                      },
+                      "title": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "Dr"
+                      },
+                      "date_of_birth": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true,
+                        "example": "1969-10-02"
+                      },
+                      "sex": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "F"
+                      }
+                    }
+                  },
+                  "provider_details": {
+                    "type": "object",
+                    "nullable": true,
+                    "description": "Provider record for the user. Present only when access_roles contains provider or rx_queue_manager. **null means the user has a provider role but no provider record, so the user cannot create prescriptions.**",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "Professional title",
+                        "example": "Dr"
+                      },
+                      "hpii_number": {
+                        "type": "string",
+                        "description": "Healthcare Provider Individual Identifier (16 digits)",
+                        "example": "8003614900029560"
+                      },
+                      "erx_entity_id": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "eRx Entity ID (5 alphanumeric characters). Held on the user record.",
+                        "example": "AB12C"
+                      },
+                      "prescriber_number": {
+                        "type": "string",
+                        "description": "Prescriber number",
+                        "example": "1234567"
+                      },
+                      "prescriber_type": {
+                        "type": "string",
+                        "description": "Prescriber type",
+                        "example": "M"
+                      },
+                      "provider_number": {
+                        "type": "string",
+                        "description": "Medicare provider number",
+                        "example": "123456789"
+                      },
+                      "ahpra_number": {
+                        "type": "string",
+                        "description": "AHPRA registration number",
+                        "example": "MED0000932846"
+                      },
+                      "qualifications": {
+                        "type": "string",
+                        "description": "Professional qualifications",
+                        "example": "MBBS, FRACGP"
+                      },
+                      "hospital_provider_number": {
+                        "type": "string",
+                        "description": "Hospital provider number",
+                        "example": "H123456"
+                      },
+                      "family_name": {
+                        "type": "string",
+                        "description": "Prescriber's family name as held on the provider record",
+                        "example": "Cameron"
+                      },
+                      "given_name": {
+                        "type": "string",
+                        "description": "Prescriber's given name as held on the provider record",
+                        "example": "Darlene"
+                      },
+                      "date_of_birth": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "Date of birth in YYYY-MM-DD format",
+                        "example": "1969-10-02"
+                      },
+                      "sex": {
+                        "type": "string",
+                        "enum": [
+                          "M",
+                          "F",
+                          "I",
+                          "N"
+                        ],
+                        "description": "Sex",
+                        "example": "F"
+                      },
+                      "phone": {
+                        "type": "string",
+                        "description": "Provider phone number",
+                        "example": "0412345678"
+                      },
+                      "australian_address": {
+                        "allOf": [
+                          {
+                            "$ref": "#/components/schemas/australian_street_address"
+                          }
+                        ],
+                        "nullable": true,
+                        "description": "Provider address. Only present when it has been set in the Parchment portal — the external API does not accept it."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "UpdateUser": {
+        "type": "object",
+        "description": "Fields to update. Send only the fields you want to change. access_roles and email are ignored — use the update-user-roles endpoint to change roles.",
+        "properties": {
+          "full_name": {
+            "type": "string",
+            "description": "User's full name",
+            "example": "Darlene Scott"
+          },
+          "provider_details": {
+            "type": "object",
+            "description": "Provider fields. Intended for a user with the provider or rx_queue_manager role, but the role is not checked. If the user has no provider record yet, sending this object creates one.",
+            "properties": {
+              "given_name": {
+                "type": "string",
+                "example": "Darlene"
+              },
+              "family_name": {
+                "type": "string",
+                "example": "Cameron"
+              },
+              "date_of_birth": {
+                "type": "string",
+                "format": "date",
+                "example": "1969-10-02"
+              },
+              "sex": {
+                "type": "string",
+                "enum": [
+                  "M",
+                  "F",
+                  "I",
+                  "N"
+                ],
+                "example": "F"
+              },
+              "hpii_number": {
+                "type": "string",
+                "description": "Healthcare Provider Individual Identifier (16 digits). Re-verified against the HI Service using hpii_number, given_name, family_name, date_of_birth and sex.",
+                "example": "8003614900029560"
+              },
+              "phone": {
+                "type": "string",
+                "example": "0412345678"
+              },
+              "title": {
+                "type": "string",
+                "example": "Dr"
+              },
+              "prescriber_number": {
+                "type": "string",
+                "description": "Max 10 characters. Required when prescriber_type is not T.",
+                "example": "1234567"
+              },
+              "provider_number": {
+                "type": "string",
+                "description": "Max 10 characters",
+                "example": "123456789"
+              },
+              "prescriber_type": {
+                "type": "string",
+                "enum": [
+                  "M",
+                  "E",
+                  "U",
+                  "F",
+                  "D",
+                  "V",
+                  "T",
+                  "C"
+                ],
+                "example": "M"
+              },
+              "ahpra_number": {
+                "type": "string",
+                "example": "MED0000932846"
+              },
+              "qualifications": {
+                "type": "string",
+                "description": "Required when prescriber_type is provided",
+                "example": "MBBS, FRACGP"
+              },
+              "hospital_provider_number": {
+                "type": "string",
+                "example": "H123456"
+              },
+              "erx_entity_id": {
+                "type": "string",
+                "description": "eRx Entity ID — exactly 5 alphanumeric characters",
+                "example": "AB12C"
+              }
+            }
+          }
+        }
+      },
+      "UpdateUserResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ExternalApiResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "statusCode": {
+                "example": 200
+              },
+              "message": {
+                "example": "User updated successfully"
+              },
+              "code": {
+                "type": "string",
+                "description": "Always SUCCESS. This endpoint does not return a provider result code. On a user with no provider record, HI Service lookup errors return 500 and a failed provider create is not reported — confirm with GET /users/{user_id}.",
+                "example": "SUCCESS"
+              },
+              "data": {
+                "type": "object",
+                "required": [
+                  "user_id"
+                ],
+                "properties": {
+                  "user_id": {
+                    "type": "string",
+                    "description": "Parchment's unique identifier for the updated user",
+                    "example": "0b4c1a49-fea8-4922-a3da-2ca8ff8af9bd"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ExternalApiValidationErrorResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ExternalApiErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "statusCode": {
+                "example": 422
+              },
+              "code": {
+                "example": "VALIDATION_ERROR"
               }
             }
           }
