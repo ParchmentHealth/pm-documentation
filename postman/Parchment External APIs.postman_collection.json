@@ -251,7 +251,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"given_name\": \"Henk\",\n    \"family_name\": \"SKILLING\",\n    \"medicare_card_number\": \"2950356401\", \n    \"medicare_irn\": \"1\",\n    \"date_of_birth\": \"1941-09-24\",\n    \"sex\": \"F\",\n    \"partner_patient_id\": \"1234567890-1234567890\",\n    \"partner_id\": \"{{partnerId}}\"\n}",
+              "raw": "{\n    \"partner_patient_id\": \"PMS-000123\",\n    \"partner_id\": \"{{partnerId}}\",\n    \"given_name\": \"Denice\",\n    \"family_name\": \"SHEA\",\n    \"date_of_birth\": \"1992-12-16\",\n    \"sex\": \"F\",\n    \"medicare_card_number\": \"6951907501\",\n    \"medicare_irn\": \"1\",\n    \"phone\": \"0417903853\",\n    \"email\": \"919@Ausnet.com.au\",\n    \"australian_street_address\": {\n        \"street_number\": \"163\",\n        \"street_name\": \"Law Rd\",\n        \"suburb\": \"Jitarning\",\n        \"state\": \"WA\",\n        \"postcode\": \"6365\"\n    }\n}",
               "options": {
                 "raw": {
                   "language": "json"

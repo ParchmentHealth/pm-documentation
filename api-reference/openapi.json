@@ -192,7 +192,7 @@
     },
     "/v1/organizations/{organization_id}/users/{user_id}/patients/ihi-precheck": {
       "post": {
-        "description": "Checks whether the supplied patient data would resolve a valid IHI, without creating the patient. Runs the same HI Service search that patient creation performs and reports a codified outcome. The IHI number itself is never returned.",
+        "description": "Checks whether patient data resolves a valid IHI without creating the patient. Same search as Create Patient; the IHI number is never returned.",
         "parameters": [
           {
             "name": "x-organization-secret",
@@ -225,11 +225,30 @@
           }
         ],
         "requestBody": {
-          "description": "Patient data to precheck - the identical body you would send to create the patient",
+          "description": "Same body as Create Patient. Supply every identifier you hold.",
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/NewPatient"
+              },
+              "example": {
+                "partner_patient_id": "PMS-000123",
+                "partner_id": "demo",
+                "given_name": "Denice",
+                "family_name": "SHEA",
+                "date_of_birth": "1992-12-16",
+                "sex": "F",
+                "medicare_card_number": "6951907501",
+                "medicare_irn": "1",
+                "phone": "0417903853",
+                "email": "919@Ausnet.com.au",
+                "australian_street_address": {
+                  "street_number": "163",
+                  "street_name": "Law Rd",
+                  "suburb": "Jitarning",
+                  "state": "WA",
+                  "postcode": "6365"
+                }
               }
             }
           },
@@ -249,7 +268,8 @@
                     "value": {
                       "success": true,
                       "statusCode": 200,
-                      "message": "IHI precheck completed",
+                      "message": "IHI found using Medicare number",
+                      "code": "SUCCESS",
                       "data": {
                         "outcome": "ihi_found",
                         "create_would_succeed": true,
@@ -267,7 +287,8 @@
                     "value": {
                       "success": true,
                       "statusCode": 200,
-                      "message": "IHI precheck completed",
+                      "message": "No IHI found using Medicare number",
+                      "code": "SUCCESS",
                       "data": {
                         "outcome": "no_match",
                         "create_would_succeed": true,
@@ -283,24 +304,54 @@
                     "value": {
                       "success": true,
                       "statusCode": 200,
-                      "message": "IHI precheck completed",
+                      "message": "Not enough identifiers to run an IHI search",
+                      "code": "SUCCESS",
                       "data": {
                         "outcome": "insufficient_data",
                         "create_would_succeed": false,
                         "search_paths": [
-                          { "path": "ihi_number", "missing": ["ihi_number"] },
+                          {
+                            "path": "ihi_number",
+                            "missing": [
+                              "ihi_number"
+                            ]
+                          },
                           {
                             "path": "medicare",
-                            "missing": ["medicare_card_number", "medicare_irn"]
+                            "missing": [
+                              "medicare_card_number",
+                              "medicare_irn"
+                            ]
                           },
-                          { "path": "dva", "missing": ["dva_file_number"] },
+                          {
+                            "path": "dva",
+                            "missing": [
+                              "dva_file_number"
+                            ]
+                          },
+                          {
+                            "path": "mobile",
+                            "missing": [
+                              "phone"
+                            ]
+                          },
+                          {
+                            "path": "email",
+                            "missing": [
+                              "email"
+                            ]
+                          },
                           {
                             "path": "australian-street-address",
-                            "missing": ["australian_street_address"]
+                            "missing": [
+                              "australian_street_address"
+                            ]
                           },
                           {
                             "path": "international-address",
-                            "missing": ["international_address"]
+                            "missing": [
+                              "international_address"
+                            ]
                           }
                         ]
                       },
@@ -313,7 +364,8 @@
                     "value": {
                       "success": true,
                       "statusCode": 200,
-                      "message": "IHI precheck completed",
+                      "message": "Patient already exists; IHI check did not pass using Medicare number",
+                      "code": "SUCCESS",
                       "data": {
                         "outcome": "already_exists",
                         "create_would_succeed": true,
@@ -331,7 +383,8 @@
                     "value": {
                       "success": true,
                       "statusCode": 200,
-                      "message": "IHI precheck completed",
+                      "message": "Organization has no HPI-O; an IHI search cannot run",
+                      "code": "SUCCESS",
                       "data": {
                         "outcome": "organization_not_ready",
                         "create_would_succeed": false
@@ -345,7 +398,8 @@
                     "value": {
                       "success": true,
                       "statusCode": 200,
-                      "message": "IHI precheck completed",
+                      "message": "HI Service unavailable; the IHI search could not complete",
+                      "code": "SUCCESS",
                       "data": {
                         "outcome": "hi_service_error",
                         "create_would_succeed": false,
@@ -3270,7 +3324,10 @@
       "IhiPrecheckData": {
         "type": "object",
         "description": "Codified IHI precheck result. The IHI number itself is never returned.",
-        "required": ["outcome", "create_would_succeed"],
+        "required": [
+          "outcome",
+          "create_would_succeed"
+        ],
         "properties": {
           "outcome": {
             "type": "string",
@@ -3286,22 +3343,40 @@
           },
           "create_would_succeed": {
             "type": "boolean",
-            "description": "Whether an identical create request would currently succeed. False when the IHI record is PROVISIONAL/UNVERIFIED (creation is rejected until verified), when no search path can run, when the organization has no HPI-O, or while the HI Service is unreachable. Note: true for already_exists (creation returns the existing patient) and no_match (creation succeeds without an IHI) - use ihi_check_passed for the IHI answer."
+            "description": "Whether an identical create request would succeed now. True for already_exists and no_match; false for PROVISIONAL/UNVERIFIED records, organization_not_ready, hi_service_error and insufficient_data without any identifier."
           },
           "ihi_check_passed": {
             "type": "boolean",
-            "description": "Present only when a live HI Service search completed (ihi_found, no_match, and already_exists when a search path could run). True only when the search resolved an IHI with ihi_status ACTIVE and ihi_record_status VERIFIED - the same bar prescribing eligibility uses. Absent means the check was not performed."
+            "description": "True only for an ACTIVE + VERIFIED IHI. Absent when no search ran."
           },
           "searched_path": {
             "type": "string",
-            "description": "The identifier search path that was used. Exactly one path is attempted, in priority order: IHI, Medicare, DVA, Australian address, international address.",
+            "description": "Identifier that matched, or the last one tried on no_match. Identifiers are tried in priority order: IHI, Medicare, DVA, mobile, email, Australian address, international address.",
             "enum": [
               "ihi_number",
               "medicare",
               "dva",
+              "mobile",
+              "email",
               "australian-street-address",
               "international-address"
             ]
+          },
+          "failed_paths": {
+            "type": "array",
+            "description": "Identifiers tried before searched_path. Absent when the first matched.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "ihi_number",
+                "medicare",
+                "dva",
+                "mobile",
+                "email",
+                "australian-street-address",
+                "international-address"
+              ]
+            }
           },
           "ihi_status": {
             "type": "string",
@@ -3318,7 +3393,12 @@
           "ihi_record_status": {
             "type": "string",
             "description": "IHI record status, when known",
-            "enum": ["VERIFIED", "UNVERIFIED", "PROVISIONAL", "UNKNOWN"]
+            "enum": [
+              "VERIFIED",
+              "UNVERIFIED",
+              "PROVISIONAL",
+              "UNKNOWN"
+            ]
           },
           "has_ihi": {
             "type": "boolean",
@@ -3340,6 +3420,8 @@
                     "ihi_number",
                     "medicare",
                     "dva",
+                    "mobile",
+                    "email",
                     "australian-street-address",
                     "international-address"
                   ]
@@ -3356,25 +3438,55 @@
         }
       },
       "IhiPrecheckResponse": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/ExternalApiResponse"
+        "type": "object",
+        "required": [
+          "success",
+          "statusCode",
+          "message",
+          "code",
+          "data",
+          "timestamp",
+          "requestId"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Always true for a completed precheck",
+            "example": true
           },
-          {
-            "type": "object",
-            "properties": {
-              "statusCode": {
-                "example": 200
-              },
-              "message": {
-                "example": "IHI precheck completed"
-              },
-              "data": {
-                "$ref": "#/components/schemas/IhiPrecheckData"
-              }
-            }
+          "statusCode": {
+            "type": "integer",
+            "description": "HTTP status code",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable summary naming the matched identifier. Informational only.",
+            "example": "IHI found using mobile number (no record found using Medicare number)"
+          },
+          "code": {
+            "type": "string",
+            "description": "Always SUCCESS. Branch on data.outcome instead.",
+            "enum": [
+              "SUCCESS"
+            ],
+            "example": "SUCCESS"
+          },
+          "data": {
+            "$ref": "#/components/schemas/IhiPrecheckData"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of the response",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "requestId": {
+            "type": "string",
+            "description": "Unique identifier for request tracing",
+            "example": "req_1705312200000_abc123"
           }
-        ]
+        }
       },
       "NewUser": {
         "type": "object",
