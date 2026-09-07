@@ -190,6 +190,302 @@
         }
       }
     },
+    "/v1/organizations/{organization_id}/users/{user_id}/patients/ihi-precheck": {
+      "post": {
+        "description": "Checks whether patient data resolves a valid IHI without creating the patient. Same search as Create Patient; the IHI number is never returned.",
+        "parameters": [
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Same body as Create Patient. Supply every identifier you hold.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewPatient"
+              },
+              "example": {
+                "partner_patient_id": "PMS-000123",
+                "partner_id": "demo",
+                "given_name": "Denice",
+                "family_name": "SHEA",
+                "date_of_birth": "1992-12-16",
+                "sex": "F",
+                "medicare_card_number": "6951907501",
+                "medicare_irn": "1",
+                "phone": "0417903853",
+                "email": "919@Ausnet.com.au",
+                "australian_street_address": {
+                  "street_number": "163",
+                  "street_name": "Law Rd",
+                  "suburb": "Jitarning",
+                  "state": "WA",
+                  "postcode": "6365"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Precheck completed - read data.outcome for the result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IhiPrecheckResponse"
+                },
+                "examples": {
+                  "ihi_found": {
+                    "summary": "A verified IHI matched the supplied details",
+                    "value": {
+                      "success": true,
+                      "statusCode": 200,
+                      "message": "IHI found using Medicare number",
+                      "code": "SUCCESS",
+                      "data": {
+                        "outcome": "ihi_found",
+                        "create_would_succeed": true,
+                        "ihi_check_passed": true,
+                        "searched_path": "medicare",
+                        "ihi_status": "ACTIVE",
+                        "ihi_record_status": "VERIFIED"
+                      },
+                      "timestamp": "2024-01-15T10:30:00.000Z",
+                      "requestId": "req_1705312200000_abc123"
+                    }
+                  },
+                  "no_match": {
+                    "summary": "The search ran but no IHI resolved - creation would still succeed, without an IHI",
+                    "value": {
+                      "success": true,
+                      "statusCode": 200,
+                      "message": "No IHI found using Medicare number",
+                      "code": "SUCCESS",
+                      "data": {
+                        "outcome": "no_match",
+                        "create_would_succeed": true,
+                        "ihi_check_passed": false,
+                        "searched_path": "medicare"
+                      },
+                      "timestamp": "2024-01-15T10:30:00.000Z",
+                      "requestId": "req_1705312200000_abc123"
+                    }
+                  },
+                  "insufficient_data": {
+                    "summary": "No search path can run - each entry lists the fields that would unlock it",
+                    "value": {
+                      "success": true,
+                      "statusCode": 200,
+                      "message": "Not enough identifiers to run an IHI search",
+                      "code": "SUCCESS",
+                      "data": {
+                        "outcome": "insufficient_data",
+                        "create_would_succeed": false,
+                        "search_paths": [
+                          {
+                            "path": "ihi_number",
+                            "missing": [
+                              "ihi_number"
+                            ]
+                          },
+                          {
+                            "path": "medicare",
+                            "missing": [
+                              "medicare_card_number",
+                              "medicare_irn"
+                            ]
+                          },
+                          {
+                            "path": "dva",
+                            "missing": [
+                              "dva_file_number"
+                            ]
+                          },
+                          {
+                            "path": "mobile",
+                            "missing": [
+                              "phone"
+                            ]
+                          },
+                          {
+                            "path": "email",
+                            "missing": [
+                              "email"
+                            ]
+                          },
+                          {
+                            "path": "australian-street-address",
+                            "missing": [
+                              "australian_street_address"
+                            ]
+                          },
+                          {
+                            "path": "international-address",
+                            "missing": [
+                              "international_address"
+                            ]
+                          }
+                        ]
+                      },
+                      "timestamp": "2024-01-15T10:30:00.000Z",
+                      "requestId": "req_1705312200000_abc123"
+                    }
+                  },
+                  "already_exists": {
+                    "summary": "A patient with this partner_patient_id already exists - the live IHI check still runs and is reported",
+                    "value": {
+                      "success": true,
+                      "statusCode": 200,
+                      "message": "Patient already exists; IHI check did not pass using Medicare number",
+                      "code": "SUCCESS",
+                      "data": {
+                        "outcome": "already_exists",
+                        "create_would_succeed": true,
+                        "ihi_check_passed": false,
+                        "searched_path": "medicare",
+                        "parchment_patient_id": "pat_abc123def456",
+                        "has_ihi": false
+                      },
+                      "timestamp": "2024-01-15T10:30:00.000Z",
+                      "requestId": "req_1705312200000_abc123"
+                    }
+                  },
+                  "organization_not_ready": {
+                    "summary": "The organization has no HPI-O configured, so no IHI search is possible - contact Parchment",
+                    "value": {
+                      "success": true,
+                      "statusCode": 200,
+                      "message": "Organization has no HPI-O; an IHI search cannot run",
+                      "code": "SUCCESS",
+                      "data": {
+                        "outcome": "organization_not_ready",
+                        "create_would_succeed": false
+                      },
+                      "timestamp": "2024-01-15T10:30:00.000Z",
+                      "requestId": "req_1705312200000_abc123"
+                    }
+                  },
+                  "hi_service_error": {
+                    "summary": "The HI Service could not be reached - retry later",
+                    "value": {
+                      "success": true,
+                      "statusCode": 200,
+                      "message": "HI Service unavailable; the IHI search could not complete",
+                      "code": "SUCCESS",
+                      "data": {
+                        "outcome": "hi_service_error",
+                        "create_would_succeed": false,
+                        "searched_path": "medicare"
+                      },
+                      "timestamp": "2024-01-15T10:30:00.000Z",
+                      "requestId": "req_1705312200000_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 401,
+                  "error": {
+                    "type": "https://parchment.health/errors/authentication-required",
+                    "title": "Authentication required",
+                    "detail": "Invalid client credentials"
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_abc123"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Multiple patients already share this partner_patient_id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 409,
+                  "error": {
+                    "type": "https://parchment.health/errors/resource-conflict",
+                    "title": "Conflict",
+                    "detail": "Patient already exists"
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_abc123"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed - includes schema failures and identifier format/checksum failures (Medicare checksum, IHI check digit)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "success": false,
+                  "statusCode": 422,
+                  "error": {
+                    "type": "https://parchment.health/errors/validation-error",
+                    "title": "Validation failed",
+                    "detail": "There were some problems with your input.",
+                    "validation": [
+                      {
+                        "field": "medicare_card_number",
+                        "message": "Invalid Medicare number",
+                        "code": "VALIDATION_ERROR"
+                      }
+                    ]
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_abc123"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/organizations/{organization_id}/users/{user_id}/patients/{patient_id}": {
       "put": {
         "description": "Updates an existing patient in Parchment",
@@ -2853,7 +3149,8 @@
           "given_name",
           "date_of_birth",
           "sex",
-          "partner_patient_id"
+          "partner_patient_id",
+          "partner_id"
         ],
         "properties": {
           "dva_file_number": {
@@ -2933,7 +3230,8 @@
           },
           "partner_id": {
             "type": "string",
-            "description": "Partner's unique identifier for the organization"
+            "example": "tacklit",
+            "description": "Your Parchment-assigned partner identifier (lowercase slug, e.g. 'tacklit'). Parchment registers this value during partner onboarding — requests with an unregistered value are rejected with a 422 validation error. Contact Parchment before go-live to have your identifier registered."
           }
         }
       },
@@ -3059,6 +3357,173 @@
             }
           }
         ]
+      },
+      "IhiPrecheckData": {
+        "type": "object",
+        "description": "Codified IHI precheck result. The IHI number itself is never returned.",
+        "required": [
+          "outcome",
+          "create_would_succeed"
+        ],
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "description": "The precheck result. ihi_found: a live HI Service search matched an IHI. no_match: the search ran but no IHI resolved (creation still succeeds, without an IHI). insufficient_data: no search path can run with the supplied fields. already_exists: a patient with this partner_patient_id already exists for the organization. organization_not_ready: the organization has no HPI-O configured. hi_service_error: the HI Service could not be reached.",
+            "enum": [
+              "ihi_found",
+              "no_match",
+              "insufficient_data",
+              "already_exists",
+              "organization_not_ready",
+              "hi_service_error"
+            ]
+          },
+          "create_would_succeed": {
+            "type": "boolean",
+            "description": "Whether an identical create request would succeed now. True for already_exists and no_match; false for PROVISIONAL/UNVERIFIED records, organization_not_ready, hi_service_error and insufficient_data without any identifier."
+          },
+          "ihi_check_passed": {
+            "type": "boolean",
+            "description": "True only for an ACTIVE + VERIFIED IHI. Absent when no search ran."
+          },
+          "searched_path": {
+            "type": "string",
+            "description": "Identifier that matched, or the last one tried on no_match. Identifiers are tried in priority order: IHI, Medicare, DVA, mobile, email, Australian address, international address.",
+            "enum": [
+              "ihi_number",
+              "medicare",
+              "dva",
+              "mobile",
+              "email",
+              "australian-street-address",
+              "international-address"
+            ]
+          },
+          "failed_paths": {
+            "type": "array",
+            "description": "Identifiers tried before searched_path. Absent when the first matched.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "ihi_number",
+                "medicare",
+                "dva",
+                "mobile",
+                "email",
+                "australian-street-address",
+                "international-address"
+              ]
+            }
+          },
+          "ihi_status": {
+            "type": "string",
+            "description": "IHI number status, when known",
+            "enum": [
+              "ACTIVE",
+              "DECEASED",
+              "RETIRED",
+              "EXPIRED",
+              "RESOLVED",
+              "UNKNOWN"
+            ]
+          },
+          "ihi_record_status": {
+            "type": "string",
+            "description": "IHI record status, when known",
+            "enum": [
+              "VERIFIED",
+              "UNVERIFIED",
+              "PROVISIONAL",
+              "UNKNOWN"
+            ]
+          },
+          "has_ihi": {
+            "type": "boolean",
+            "description": "already_exists only: whether the stored patient holds an IHI"
+          },
+          "parchment_patient_id": {
+            "type": "string",
+            "description": "already_exists only: the Parchment patient ID"
+          },
+          "search_paths": {
+            "type": "array",
+            "description": "insufficient_data only: per-path list of the request fields that would unlock each search path",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "enum": [
+                    "ihi_number",
+                    "medicare",
+                    "dva",
+                    "mobile",
+                    "email",
+                    "australian-street-address",
+                    "international-address"
+                  ]
+                },
+                "missing": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "IhiPrecheckResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "statusCode",
+          "message",
+          "code",
+          "data",
+          "timestamp",
+          "requestId"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Always true for a completed precheck",
+            "example": true
+          },
+          "statusCode": {
+            "type": "integer",
+            "description": "HTTP status code",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable summary naming the matched identifier. Informational only.",
+            "example": "IHI found using mobile number (no record found using Medicare number)"
+          },
+          "code": {
+            "type": "string",
+            "description": "Always SUCCESS. Branch on data.outcome instead.",
+            "enum": [
+              "SUCCESS"
+            ],
+            "example": "SUCCESS"
+          },
+          "data": {
+            "$ref": "#/components/schemas/IhiPrecheckData"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of the response",
+            "example": "2024-01-15T10:30:00.000Z"
+          },
+          "requestId": {
+            "type": "string",
+            "description": "Unique identifier for request tracing",
+            "example": "req_1705312200000_abc123"
+          }
+        }
       },
       "NewUser": {
         "type": "object",

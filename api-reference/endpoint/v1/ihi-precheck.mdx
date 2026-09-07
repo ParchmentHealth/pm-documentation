@@ -1,0 +1,231 @@
+---
+openapi: "POST /v1/organizations/{organization_id}/users/{user_id}/patients/ihi-precheck"
+---
+
+## Overview
+
+Checks whether patient data resolves a valid IHI **before** you create the patient. Send the same body as [Create Patient](/api-reference/endpoint/v1/create-patient). The precheck runs the same HI Service search as creation, creates nothing, and never returns the IHI number.
+
+Branch on `data.outcome`. Two flags answer the two common questions:
+
+- **`create_would_succeed`** — would an identical create request succeed right now?
+- **`ihi_check_passed`** — did the search resolve an `ACTIVE` + `VERIFIED` IHI (the prescribing bar)? Absent when no search ran.
+- **`message`** is a human-readable summary naming the identifier that matched. It is informational only.
+
+## Outcomes
+
+| `outcome` | Meaning | `create_would_succeed` | `ihi_check_passed` |
+|---|---|---|---|
+| `ihi_found` | The HI Service returned an IHI for this patient. Read `ihi_status` and `ihi_record_status` to see whether it is usable. | `true` when `ihi_record_status` is `VERIFIED`. `false` when it is `PROVISIONAL` or `UNVERIFIED`: creation is rejected until the record is verified. | `true` when `ihi_status` is `ACTIVE` **and** `ihi_record_status` is `VERIFIED`. `false` otherwise, for example a `VERIFIED` record whose status is `DECEASED` or `EXPIRED`. |
+| `no_match` | Every identifier was tried; none matched. The patient is created without an IHI. | `true` | `false` |
+| `insufficient_data` | No identifier to search on. `search_paths` lists what would unlock each path. | `false`, or `true` for Medicare without `medicare_irn` | absent |
+| `already_exists` | A patient with this `partner_patient_id` exists. The live check still runs on the submitted data. Creation returns the existing patient. | `true` | live result, or absent if the check could not run |
+| `organization_not_ready` | The organization has no HPI-O. Contact Parchment. | `false` | absent |
+| `hi_service_error` | The HI Service is unreachable. Retry later. | `false` | absent |
+
+## Search Paths
+
+Every identifier you supply is tried in priority order until one matches. An identifier that returns no record falls back to the next. Supply every identifier you hold.
+
+| Priority | Path | Requires |
+|---|---|---|
+| 1 | `ihi_number` | `ihi_number` |
+| 2 | `medicare` | `medicare_card_number` + `medicare_irn` |
+| 3 | `dva` | `dva_file_number` |
+| 4 | `mobile` | `phone` (Australian mobile) |
+| 5 | `email` | `email` |
+| 6 | `australian-street-address` | `australian_street_address` |
+| 7 | `international-address` | `international_address` |
+
+All paths also require `family_name`, `given_name`, `date_of_birth`, `sex`.
+
+`searched_path` is the identifier that matched (or the last one tried on `no_match`). `failed_paths` lists the identifiers tried before it. It is absent when the first identifier matched.
+
+## Request Example
+
+```json
+{
+  "partner_patient_id": "PMS-000123",
+  "partner_id": "demo",
+  "given_name": "Denice",
+  "family_name": "SHEA",
+  "date_of_birth": "1992-12-16",
+  "sex": "F",
+  "medicare_card_number": "6951907501",
+  "medicare_irn": "1",
+  "phone": "0417903853",
+  "email": "919@Ausnet.com.au",
+  "australian_street_address": {
+    "street_number": "163",
+    "street_name": "Law Rd",
+    "suburb": "Jitarning",
+    "state": "WA",
+    "postcode": "6365"
+  }
+}
+```
+
+## Response Examples
+
+### IHI Found (200)
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "IHI found using Medicare number",
+  "code": "SUCCESS",
+  "data": {
+    "outcome": "ihi_found",
+    "create_would_succeed": true,
+    "ihi_check_passed": true,
+    "searched_path": "medicare",
+    "ihi_status": "ACTIVE",
+    "ihi_record_status": "VERIFIED"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_abc123"
+}
+```
+
+### IHI Found After Fallback (200)
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "IHI found using mobile number (no record found using Medicare number)",
+  "code": "SUCCESS",
+  "data": {
+    "outcome": "ihi_found",
+    "create_would_succeed": true,
+    "ihi_check_passed": true,
+    "searched_path": "mobile",
+    "failed_paths": ["medicare"],
+    "ihi_status": "ACTIVE",
+    "ihi_record_status": "VERIFIED"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_abc123"
+}
+```
+
+### No Match (200)
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "No IHI found using Medicare number, mobile number, Australian address",
+  "code": "SUCCESS",
+  "data": {
+    "outcome": "no_match",
+    "create_would_succeed": true,
+    "ihi_check_passed": false,
+    "searched_path": "australian-street-address",
+    "failed_paths": ["medicare", "mobile"]
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_abc123"
+}
+```
+
+### Insufficient Data (200)
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Not enough identifiers to run an IHI search",
+  "code": "SUCCESS",
+  "data": {
+    "outcome": "insufficient_data",
+    "create_would_succeed": false,
+    "search_paths": [
+      { "path": "ihi_number", "missing": ["ihi_number"] },
+      { "path": "medicare", "missing": ["medicare_card_number", "medicare_irn"] },
+      { "path": "dva", "missing": ["dva_file_number"] },
+      { "path": "mobile", "missing": ["phone"] },
+      { "path": "email", "missing": ["email"] },
+      { "path": "australian-street-address", "missing": ["australian_street_address"] },
+      { "path": "international-address", "missing": ["international_address"] }
+    ]
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_abc123"
+}
+```
+
+### Patient Already Exists (200)
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Patient already exists; IHI check did not pass using Medicare number",
+  "code": "SUCCESS",
+  "data": {
+    "outcome": "already_exists",
+    "create_would_succeed": true,
+    "ihi_check_passed": false,
+    "searched_path": "medicare",
+    "parchment_patient_id": "pat_abc123def456",
+    "has_ihi": false
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_abc123"
+}
+```
+
+### Validation Error (422)
+
+Schema and identifier-format failures (Medicare checksum, IHI check digit, mobile, email, future date of birth) are reported together:
+
+```json
+{
+  "success": false,
+  "statusCode": 422,
+  "error": {
+    "type": "https://parchment.health/errors/validation-error",
+    "title": "Validation failed",
+    "detail": "There were some problems with your input.",
+    "validation": [
+      { "field": "email", "message": "Invalid email address", "code": "VALIDATION_ERROR" },
+      { "field": "medicare_card_number", "message": "Invalid Medicare number", "code": "VALIDATION_ERROR" }
+    ]
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_abc123"
+}
+```
+
+## Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `outcome` | string | `ihi_found`, `no_match`, `insufficient_data`, `already_exists`, `organization_not_ready`, `hi_service_error` |
+| `create_would_succeed` | boolean | Whether an identical create request would succeed now |
+| `ihi_check_passed` | boolean | `true` only for an `ACTIVE` + `VERIFIED` IHI. Absent when no search ran |
+| `searched_path` | string | Identifier that matched, or the last one tried on `no_match` |
+| `failed_paths` | array | Identifiers tried before `searched_path`. Absent when the first matched |
+| `ihi_status` | string | `ACTIVE`, `DECEASED`, `RETIRED`, `EXPIRED`, `RESOLVED`, `UNKNOWN` |
+| `ihi_record_status` | string | `VERIFIED`, `UNVERIFIED`, `PROVISIONAL`, `UNKNOWN` |
+| `has_ihi` | boolean | `already_exists` only: the stored record holds an IHI |
+| `parchment_patient_id` | string | `already_exists` only |
+| `search_paths` | array | `insufficient_data` only: fields that would unlock each path |
+
+## Status Codes
+
+| Code | Meaning |
+|------|---------|
+| 200 | Precheck completed — read `data.outcome` |
+| 401 | Authentication failed |
+| 409 | Multiple patients share this `partner_patient_id` |
+| 422 | Validation failed — see `error.validation` |
+| 500 | Unexpected server error |
+
+## Notes
+
+- Requires the `create:patient` scope.
+- The IHI number is never returned. Create the patient to have Parchment store it.
+- Medicare without `medicare_irn` as the only identifier reports `insufficient_data`.

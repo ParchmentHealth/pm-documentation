@@ -229,6 +229,55 @@
           "response": []
         },
         {
+          "name": "IHI Precheck",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-organization-secret",
+                "value": "{{organizationSecret}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"partner_patient_id\": \"PMS-000123\",\n    \"partner_id\": \"{{partnerId}}\",\n    \"given_name\": \"Denice\",\n    \"family_name\": \"SHEA\",\n    \"date_of_birth\": \"1992-12-16\",\n    \"sex\": \"F\",\n    \"medicare_card_number\": \"6951907501\",\n    \"medicare_irn\": \"1\",\n    \"phone\": \"0417903853\",\n    \"email\": \"919@Ausnet.com.au\",\n    \"australian_street_address\": {\n        \"street_number\": \"163\",\n        \"street_name\": \"Law Rd\",\n        \"suburb\": \"Jitarning\",\n        \"state\": \"WA\",\n        \"postcode\": \"6365\"\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/external/v1/organizations/{{organizationId}}/users/{{userId}}/patients/ihi-precheck",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "external",
+                "v1",
+                "organizations",
+                "{{organizationId}}",
+                "users",
+                "{{userId}}",
+                "patients",
+                "ihi-precheck"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Read Patient Prescriptions",
           "request": {
             "auth": {
