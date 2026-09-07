@@ -23,7 +23,7 @@ Running list of features/fixes worked on, for release tracking. Newest first wit
 | 2026-08-05 | Stay on prescription page after queuing a script (confirmation dialog + form reset instead of redirect to patient profile) | `feature/queue-script-stay-on-page` | web-ui |
 | 2026-07-31 | Host-only SSO cookies + legacy .parchment.health migration (fixes cookie-bloat 403/431) | `bug/sso-cookie-bloat` | web-ui |
 | 2026-07-30 | User analytics module (event pipeline, funnels, struggle/stuck signals, heatmaps) | `feature/user-analytics` | analytics-service, web-ui, tf-misc-infrastructure |
-| 2026-07-30 | External IHI precheck endpoint for partners (live HI dry-run of create) | `feature/patient-ihi-precheck` | patient-service, tf-misc-infrastructure |
+| 2026-09-07 | External IHI precheck endpoint for partners (live HI dry-run of create; runs the full identifier cascade incl. mobile/email, reports `searched_path` + `failed_paths`) | `feature/patient-ihi-precheck` | patient-service, tf-misc-infrastructure |
 | 2026-07-20 | MIMS CDS drug interactions | `feature/mims-drug-interactions` | partner-service, web-ui |
 | 2026-07-18 | Activation nudge system (D+2/7/14 state-aware nudges to org owner) | `feature/activation-nudges` | user-service |
 | 2026-07-14 | Prescription V3 | `feature/prescription-v3` | web-ui |
