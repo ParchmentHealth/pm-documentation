@@ -260,7 +260,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IhiPrecheckResponse"
+                  "$ref": "#/components/schemas/IHIPrecheckResponse"
                 },
                 "examples": {
                   "ihi_found": {
@@ -483,7 +483,8 @@
               }
             }
           }
-        }
+        },
+        "summary": "IHI Precheck"
       }
     },
     "/v1/organizations/{organization_id}/users/{user_id}/patients/{patient_id}": {
@@ -1485,7 +1486,7 @@
             }
           },
           "403": {
-            "description": "Forbidden - rejected by the API gateway",
+            "description": "Forbidden - rejected by the API gateway, or the user creation service refused access",
             "content": {
               "application/json": {
                 "schema": {
@@ -3358,7 +3359,7 @@
           }
         ]
       },
-      "IhiPrecheckData": {
+      "IHIPrecheckData": {
         "type": "object",
         "description": "Codified IHI precheck result. The IHI number itself is never returned.",
         "required": [
@@ -3474,7 +3475,7 @@
           }
         }
       },
-      "IhiPrecheckResponse": {
+      "IHIPrecheckResponse": {
         "type": "object",
         "required": [
           "success",
@@ -3510,7 +3511,7 @@
             "example": "SUCCESS"
           },
           "data": {
-            "$ref": "#/components/schemas/IhiPrecheckData"
+            "$ref": "#/components/schemas/IHIPrecheckData"
           },
           "timestamp": {
             "type": "string",
@@ -3537,12 +3538,14 @@
           "given_name": {
             "type": "string",
             "description": "User's given name",
-            "example": "Darlene"
+            "example": "Darlene",
+            "minLength": 1
           },
           "family_name": {
             "type": "string",
             "description": "User's family name",
-            "example": "Cameron"
+            "example": "Cameron",
+            "minLength": 1
           },
           "date_of_birth": {
             "type": "string",
@@ -3574,7 +3577,7 @@
           },
           "access_roles": {
             "type": "array",
-            "description": "List of access roles for the user. Roles 'provider' and 'rx_queue_manager' require additional identity fields (date_of_birth, sex, hpii_number, qualifications); 'provider' additionally requires prescriber_type (and prescriber_number unless prescriber_type is 'T').",
+            "description": "Roles for the user. Omitted: the user gets member only. provider and rx_queue_manager require date_of_birth, sex, hpii_number and qualifications; provider also requires prescriber_type, and prescriber_number unless prescriber_type is T.",
             "items": {
               "type": "string",
               "enum": [
@@ -3592,7 +3595,7 @@
           },
           "hpii_number": {
             "type": "string",
-            "description": "Healthcare Provider Individual Identifier (16 digits). Required if access_roles includes 'provider' or 'rx_queue_manager'. Parchment verifies it against the HI Service using hpii_number, given_name, family_name, date_of_birth and sex — all five must match the record held by Services Australia.",
+            "description": "Healthcare Provider Individual Identifier, 16 digits with a valid check digit. Required when access_roles includes provider or rx_queue_manager. Verified against the HI Service together with given_name, family_name, date_of_birth and sex.",
             "example": "8003614900029560"
           },
           "prescriber_type": {
@@ -3613,12 +3616,13 @@
           "prescriber_number": {
             "type": "string",
             "description": "Prescriber number (required if role includes 'provider' and prescriber_type is not 'T')",
-            "example": "1234567"
+            "example": "1234567",
+            "maxLength": 10
           },
           "qualifications": {
             "type": "string",
-            "description": "Professional qualifications (required if role includes 'provider' or 'rx_queue_manager')",
-            "example": "LLB"
+            "description": "Professional qualifications. Required when access_roles includes provider or rx_queue_manager.",
+            "example": "MBBS, FRACGP"
           },
           "title": {
             "type": "string",
@@ -3628,7 +3632,8 @@
           "provider_number": {
             "type": "string",
             "description": "Medicare provider number",
-            "example": "123456789"
+            "example": "123456789",
+            "maxLength": 10
           },
           "ahpra_number": {
             "type": "string",
@@ -3671,25 +3676,57 @@
         }
       },
       "UserResponse": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/ExternalApiResponse"
+        "type": "object",
+        "required": [
+          "success",
+          "statusCode",
+          "message",
+          "code",
+          "data",
+          "timestamp",
+          "requestId"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
           },
-          {
-            "type": "object",
-            "properties": {
-              "statusCode": {
-                "example": 201
-              },
-              "message": {
-                "example": "User created successfully"
-              },
-              "data": {
-                "$ref": "#/components/schemas/UserData"
-              }
-            }
+          "statusCode": {
+            "type": "integer",
+            "example": 201
+          },
+          "message": {
+            "type": "string",
+            "example": "User created successfully"
+          },
+          "code": {
+            "type": "string",
+            "description": "Result code. USER_CREATED means the provider record exists. Any USER_CREATED_PROVIDER_* code means there is no provider record and the user cannot prescribe.",
+            "enum": [
+              "USER_CREATED",
+              "USER_CREATED_PROVIDER_NOT_FOUND",
+              "USER_CREATED_PROVIDER_SEARCH_FAILED",
+              "USER_CREATED_PROVIDER_ALREADY_EXISTS",
+              "USER_CREATED_PROVIDER_INVALID_PARAMS",
+              "USER_CREATED_PROVIDER_RESOURCE_NOT_FOUND",
+              "USER_CREATED_PROVIDER_FAILED",
+              "USER_CREATED_ROLES_FAILED"
+            ],
+            "example": "USER_CREATED"
+          },
+          "data": {
+            "$ref": "#/components/schemas/UserData"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-09-22T20:31:54.558Z"
+          },
+          "requestId": {
+            "type": "string",
+            "example": "1-68d1b225-2a98752c7b2da3fa489267fc"
           }
-        ]
+        }
       },
       "UpdateUserRoles": {
         "type": "object",

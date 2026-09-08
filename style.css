@@ -287,3 +287,18 @@ html.dark .pm-env-sandbox{background:rgba(20,184,166,.08)}
 html.dark .pm-env-prod{background:rgba(245,158,11,.09)}
 html.dark .pm-env-sandbox .pm-env-tag{background:rgba(20,184,166,.16);color:var(--pm-glow)}
 html.dark .pm-env-prod .pm-env-tag{background:rgba(245,158,11,.16);color:var(--pm-prod-bright)}
+
+/* ============================================================
+   Sidebar page tags (frontmatter `tag:`) — solid black pill.
+   Mintlify renders the tag as .nav-tag-pill-text with a teal
+   tint by default; override to black/white in both themes.
+   ============================================================ */
+.nav-tag-pill-text[data-nav-tag]{
+  background:#000 !important;
+  color:#fff !important;
+}
+html.dark .nav-tag-pill-text[data-nav-tag]{
+  background:#000 !important;
+  color:#fff !important;
+  border:1px solid rgba(255,255,255,.25);
+}
