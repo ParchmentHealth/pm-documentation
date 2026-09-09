@@ -2412,6 +2412,179 @@
         }
       }
     },
+    "/v1/organizations/{organization_id}/custom-drugs/{custom_drug_id}": {
+      "put": {
+        "description": "Updates one organization-level custom drug. Send only the fields to change.",
+        "parameters": [
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "custom_drug_id",
+            "in": "path",
+            "required": true,
+            "description": "custom_drug_id from the catalog or bulk-create response",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Partial custom drug fields to update",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomDrugUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Custom drug updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomDrugResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No updatable fields provided",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Custom drug not found for this organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Deletes one organization-level custom drug.",
+        "parameters": [
+          {
+            "name": "x-organization-secret",
+            "in": "header",
+            "required": true,
+            "description": "Organization secret for authentication - provided by Parchment",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "path",
+            "required": true,
+            "description": "Organization ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "custom_drug_id",
+            "in": "path",
+            "required": true,
+            "description": "custom_drug_id from the catalog or bulk-create response",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Custom drug deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternalApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/organizations/{organization_id}/users/{user_id}/custom-drugs/{drug_id}": {
       "put": {
         "description": "Updates a user-level custom drug. Send only the fields to change.",
@@ -2756,11 +2929,16 @@
           },
           "poison_class": {
             "type": "string",
-            "maxLength": 2
+            "maxLength": 2,
+            "pattern": "^S[2-9]$",
+            "description": "Schedule with the S prefix, S2 to S9. A bare digit is rejected.",
+            "example": "S4"
           },
           "custom_product_id": {
             "type": "string",
-            "maxLength": 50
+            "maxLength": 50,
+            "description": "Your own identifier for this drug. Never generated by Parchment. Not checked for uniqueness.",
+            "example": "EK-12345"
           },
           "description": {
             "type": "string",
@@ -2812,11 +2990,16 @@
           },
           "poison_class": {
             "type": "string",
-            "maxLength": 2
+            "maxLength": 2,
+            "pattern": "^S[2-9]$",
+            "description": "Schedule with the S prefix, S2 to S9. A bare digit is rejected.",
+            "example": "S4"
           },
           "custom_product_id": {
             "type": "string",
-            "maxLength": 50
+            "maxLength": 50,
+            "description": "Your own identifier for this drug. Never generated by Parchment. Not checked for uniqueness.",
+            "example": "EK-12345"
           },
           "description": {
             "type": "string",
@@ -2898,6 +3081,26 @@
                     },
                     "error": {
                       "type": "string"
+                    }
+                  }
+                }
+              },
+              "created": {
+                "type": "array",
+                "description": "One entry per created drug",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "index": {
+                      "type": "integer",
+                      "description": "1-based position in the request array"
+                    },
+                    "custom_drug_id": {
+                      "type": "string"
+                    },
+                    "custom_product_id": {
+                      "type": "string",
+                      "description": "Your identifier, echoed if supplied"
                     }
                   }
                 }

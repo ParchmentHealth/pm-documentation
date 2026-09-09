@@ -2,15 +2,9 @@
 openapi: "POST /v1/organizations/{organization_id}/custom-drugs"
 ---
 
-Bulk-creates **organization-level** custom drugs (the shared org catalog, stored against `ORGANIZATION#{organization_id}`).
+Creates **organization-level** custom drugs. Send a JSON array; a single drug is a one-element array. Each item is processed on its own, so one bad item does not block the rest.
 
-## Integration Notes
-
-1. **Scope Requirement**: Your API token must include the `create:custom_drug` scope.
-2. **Organization admin/owner required**: The acting user (the token's `user_id`) must be an organization **owner** or **admin**. A token that carries the correct scope but whose user is a non-admin (e.g. a prescriber) is rejected with `401 Unauthorized`. This restriction applies only to the organization-level (bulk) endpoints; the user-level custom-drug endpoints have no such requirement.
-3. **Level**: This endpoint creates organization-level drugs. Use the user-level endpoint to add a drug for a specific prescriber.
-4. **Body**: A non-empty JSON array of custom drug objects (a single drug is a one-element array).
-5. **Partial success**: Each item is processed independently. The response reports `successCount`, `failureCount`, and the first 50 `failures` (with the 1-based `index` and error). HTTP 200 is returned if at least one item succeeded; 400 if all failed.
+`created[]` returns the `custom_drug_id` of every drug created, with your `custom_product_id` echoed back. Store it: it is the id for the per-item update and delete endpoints.
 
 ## Example Request
 
@@ -23,7 +17,8 @@ Bulk-creates **organization-level** custom drugs (the shared org catalog, stored
     "route_of_administration": "Oral",
     "quantity": "20",
     "max_repeats": "2",
-    "poison_class": "S4"
+    "poison_class": "S4",
+    "custom_product_id": "EK-12345"
   },
   {
     "item_generic_name": "Ibuprofen",
@@ -32,7 +27,8 @@ Bulk-creates **organization-level** custom drugs (the shared org catalog, stored
     "route_of_administration": "Oral",
     "quantity": "30",
     "max_repeats": "1",
-    "poison_class": "S2"
+    "poison_class": "S2",
+    "custom_product_id": "EK-12346"
   }
 ]
 ```
@@ -45,8 +41,40 @@ Bulk-creates **organization-level** custom drugs (the shared org catalog, stored
   "statusCode": 200,
   "message": "Created 2 of 2 custom drugs successfully",
   "code": "SUCCESS",
-  "data": { "total": 2, "successCount": 2, "failureCount": 0, "failures": [] },
+  "data": {
+    "total": 2,
+    "successCount": 2,
+    "failureCount": 0,
+    "failures": [],
+    "created": [
+      { "index": 1, "custom_drug_id": "3b99ce35-844c-4925-93ff-5b8ec13be5f5", "custom_product_id": "EK-12345" },
+      { "index": 2, "custom_drug_id": "9f5dec76-d438-4aea-a6a1-173d8efb5377", "custom_product_id": "EK-12346" }
+    ]
+  },
   "timestamp": "2024-01-25T09:15:00.000Z",
   "requestId": "req_1706171700000_abc123"
 }
 ```
+
+## Field Rules
+
+| Field | Rule |
+|---|---|
+| `custom_product_id` | Optional, max 50 characters. Your own id; Parchment never generates it and does not check uniqueness |
+| `poison_class` | `S2` to `S9` with the `S` prefix. A bare digit such as `5` is rejected |
+| `quantity`, `max_repeats` | String or number; stored as string. `max_repeats` 0 to 99 |
+
+## Status Codes
+
+| Code | Meaning |
+|------|---------|
+| 200 | At least one item created — read `failures` for the rest |
+| 400 | Body is not a non-empty array, or every item failed |
+| 401 | Authentication failed, or the token's user is not an organization owner or admin |
+| 500 | Unexpected server error |
+
+## Notes
+
+- Requires the `create:custom_drug` scope.
+- `failures` lists the first 50 failed items with their 1-based `index`.
+- Use the user-level create endpoint for a prescriber's personal drug.

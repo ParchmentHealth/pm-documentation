@@ -1,0 +1,107 @@
+---
+title: "Custom Drug Catalog Workflows"
+description: "Keeping an organization's custom drug catalog in sync with your system"
+icon: "diagram-project"
+---
+
+## Keeping the catalog in sync
+
+Your system is the source of truth for the drug list. Parchment holds a copy per organization. Sync by item, not by wiping the catalog: a wipe leaves the organization with no drugs until the re-create finishes, and it changes every `custom_drug_id`.
+
+Two ids are involved:
+
+- **`custom_product_id`** is yours. Send it on create. Parchment stores it as-is and never generates it.
+- **`custom_drug_id`** is Parchment's. It is returned on create and used for update, delete, and prescription prefill.
+
+<Steps>
+  <Step title="Initial load">
+    Create the catalog in one bulk call. Set `custom_product_id` on every item.
+
+    ```json
+    POST /v1/organizations/{organizationId}/custom-drugs
+    [
+      {
+        "custom_product_id": "EK-12345",
+        "item_generic_name": "Amoxicillin",
+        "item_strength": "500mg",
+        "item_form": "Capsule",
+        "route_of_administration": "Oral",
+        "quantity": "20",
+        "max_repeats": "2",
+        "poison_class": "S4"
+      }
+    ]
+    ```
+
+    Store each `created[].custom_drug_id` against your `custom_product_id`.
+
+    ```json
+    "created": [
+      { "index": 1, "custom_drug_id": "3b99ce35-844c-4925-93ff-5b8ec13be5f5", "custom_product_id": "EK-12345" }
+    ]
+    ```
+  </Step>
+
+  <Step title="Changed item">
+    Send only the fields that changed.
+
+    ```json
+    PUT /v1/organizations/{organizationId}/custom-drugs/{customDrugId}
+    {
+      "item_strength": "250mg"
+    }
+    ```
+  </Step>
+
+  <Step title="Removed item">
+    ```bash
+    DELETE /v1/organizations/{organizationId}/custom-drugs/{customDrugId}
+    ```
+
+    <Info>
+      Idempotent. Deleting an id that is already gone returns `200`.
+    </Info>
+  </Step>
+
+  <Step title="New item">
+    Bulk create with a one-element array. Store the returned `custom_drug_id`.
+  </Step>
+</Steps>
+
+## Recovering a lost mapping
+
+If you no longer hold the `custom_drug_id` for an item, look it up by your own id.
+
+```bash
+GET /v1/organizations/{organizationId}/custom-drugs?custom_product_id=EK-12345
+```
+
+`custom_product_id` is not checked for uniqueness. If you sent the same value twice, the filter returns both drugs.
+
+## Full replace
+
+Use only when the mapping is lost or the catalog is small enough that a gap does not matter.
+
+```bash
+DELETE /v1/organizations/{organizationId}/custom-drugs?confirm=true
+POST   /v1/organizations/{organizationId}/custom-drugs
+```
+
+<Warning>
+  Every `custom_drug_id` changes. Any prefill links or stored mappings that use the old ids stop working.
+</Warning>
+
+## Field rules
+
+| Field | Rule |
+|---|---|
+| `custom_product_id` | Optional, max 50 characters. Letters, digits and hyphens if the drug may also be edited in the Parchment app |
+| `poison_class` | `S2` to `S9` with the `S` prefix. A bare digit is rejected |
+| `quantity` | Positive whole number, sent as a string or number |
+| `max_repeats` | 0 to 99 |
+
+## Notes
+
+- Organization-level endpoints require the token's user to be an organization owner or admin.
+- Per-item update and delete use the `update:custom_drug` and `delete:custom_drug` scopes.
+- Prescribers keep personal drugs under the user-level endpoints. Those are never touched by the organization sync.

@@ -1,0 +1,37 @@
+---
+openapi: "DELETE /v1/organizations/{organization_id}/custom-drugs/{custom_drug_id}"
+title: "Delete Organization Custom Drug"
+tag: "NEW"
+---
+
+Deletes one **organization-level** custom drug. `custom_drug_id` is the `custom_drug_id` from the catalog list or the bulk-create `created[]` array.
+
+To clear the whole catalog use the bulk delete endpoint instead.
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Custom drug deleted successfully",
+  "code": "SUCCESS",
+  "data": null,
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_abc123"
+}
+```
+
+## Status Codes
+
+| Code | Meaning |
+|------|---------|
+| 200 | Deleted, or no such drug (idempotent) |
+| 401 | Authentication failed, or the token's user is not an organization owner or admin |
+| 500 | Unexpected server error |
+
+## Notes
+
+- Requires the `delete:custom_drug` scope.
+- Idempotent: deleting an id that does not exist still returns `200`.
+- User-level drugs are never affected.

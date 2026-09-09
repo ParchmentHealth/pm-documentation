@@ -1,0 +1,59 @@
+---
+openapi: "PUT /v1/organizations/{organization_id}/custom-drugs/{custom_drug_id}"
+title: "Update Organization Custom Drug"
+tag: "NEW"
+---
+
+Updates one **organization-level** custom drug. Send only the fields to change. Omitted fields are left as they are.
+
+`custom_drug_id` is the `custom_drug_id` from the catalog list or the bulk-create `created[]` array. It must exist in this organization's catalog, or `404` is returned.
+
+## Example Request
+
+```json
+{
+  "item_strength": "250mg",
+  "quantity": "30"
+}
+```
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Custom drug updated successfully",
+  "code": "SUCCESS",
+  "data": {
+    "custom_drug_id": "3b99ce35-844c-4925-93ff-5b8ec13be5f5",
+    "item_generic_name": "Amoxicillin",
+    "item_strength": "250mg",
+    "item_form": "Capsule",
+    "route_of_administration": "Oral",
+    "quantity": "30",
+    "max_repeats": "2",
+    "poison_class": "S4",
+    "custom_product_id": "EK-12345"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_abc123"
+}
+```
+
+## Status Codes
+
+| Code | Meaning |
+|------|---------|
+| 200 | Updated — `data` is the full drug |
+| 400 | Body has no updatable fields |
+| 401 | Authentication failed, or the token's user is not an organization owner or admin |
+| 404 | No drug with this `custom_drug_id` in this organization's catalog |
+| 422 | Validation failed — see `error.validation` |
+| 500 | Unexpected server error |
+
+## Notes
+
+- Requires the `update:custom_drug` scope.
+- Organization-level only. Use the user-level endpoint for a prescriber's personal drugs.
+- Fields not set on the drug are omitted from `data`.
