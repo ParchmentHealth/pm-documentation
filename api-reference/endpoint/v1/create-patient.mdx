@@ -169,6 +169,14 @@ The `partner_id` field is **required** in the request body. It is your Parchment
 - Not registered with Parchment → 422 `"Invalid partner_id. Contact Parchment to register your partner ID."`
 - Parchment registers your identifier during onboarding, per environment (sandbox and production) — contact Parchment before go-live
 
+### Code List Casing
+
+Code lists are matched case-insensitively — `sex`, `state`, `ihi_status`, `ihi_record_status` and `partner_id`. `nsw`, `Nsw` and `NSW` are the same value.
+
+- `state` also accepts the full name, e.g. `New South Wales`
+- `email` is stored lower case; `dva_file_number` and `entitlement_number` are stored upper case with separators removed
+- Responses always return the canonical form, e.g. `NSW`
+
 ### Phone Number Format
 
 The `phone` field accepts Australian **mobile** numbers only (04 / 05 ranges). Mobile numbers can be used for IHI lookup against the Healthcare Identifiers Service; landlines cannot, and are rejected.
