@@ -70,7 +70,7 @@ Running list of features/fixes worked on, for release tracking. Newest first wit
 | 2026-07-20 | MIMS CDS drug interactions | `feature/mims-drug-interactions` | partner-service, web-ui |
 | 2026-07-18 | Activation nudge system (D+2/7/14 state-aware nudges to org owner) | `feature/activation-nudges` | user-service |
 | 2026-07-14 | Test framework + CI (Vitest / Storybook / Playwright, tiered GH Actions gating) | `feature/test-framework-ci` | web-ui |
-| 2026-09-08 | MIMS flat file (incl. `/mims-local/search` results ordered by ascending molecule strength, mg-normalised, no-strength packs last, relevance order kept within ties) | `feature/mims-flat-file` | partner-service, tf-misc-infrastructure |
+| 2026-09-20 | MIMS flat file (incl. `/mims-local/search` results ordered by ascending molecule strength, mg-normalised, no-strength packs last, relevance order kept within ties) | `feature/mims-flat-file` | partner-service, tf-misc-infrastructure |
 
 
 ## Released
