@@ -502,7 +502,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"full_name\": \"Frank Reynolds\",\n    \"prescriber_details\": {\n        \"given_name\": \"Frank\",\n        \"family_name\": \"Reynolds\",\n        \"date_of_birth\": \"1967-06-25\",\n        \"sex\": \"M\",\n        \"phone\": \"0412345678\",\n        \"hpii_number\": \"8003616566696624\",\n        \"prescriber_type\": \"T\",\n        \"prescriber_number\": \"1234567\",\n        \"qualifications\": \"MBBS\"\n    }\n}",
+              "raw": "{\n    \"full_name\": \"Frank Reynolds\",\n    \"provider_details\": {\n        \"given_name\": \"Frank\",\n        \"family_name\": \"Reynolds\",\n        \"date_of_birth\": \"1967-06-25\",\n        \"sex\": \"M\",\n        \"phone\": \"0412345678\",\n        \"hpii_number\": \"8003616566696624\",\n        \"prescriber_type\": \"T\",\n        \"prescriber_number\": \"1234567\",\n        \"qualifications\": \"MBBS\"\n    }\n}",
               "options": {
                 "raw": {
                   "language": "json"
