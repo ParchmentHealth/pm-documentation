@@ -4690,15 +4690,17 @@
                   },
                   "details": {
                     "type": "object",
-                    "description": "Identity fields. Sourced from the provider record when one exists, otherwise derived from the user record (date_of_birth and sex are then null).",
+                    "description": "Identity fields. Provider record first, user record as fallback. Every key is always present; an unknown value is null.",
                     "properties": {
                       "given_name": {
                         "type": "string",
-                        "example": "Darlene"
+                        "example": "Darlene",
+                        "nullable": true
                       },
                       "family_name": {
                         "type": "string",
-                        "example": "Cameron"
+                        "example": "Cameron",
+                        "nullable": true
                       },
                       "title": {
                         "type": "string",
@@ -4809,6 +4811,42 @@
                         ],
                         "nullable": true,
                         "description": "Provider address. Only present when it has been set in the Parchment portal — the external API does not accept it."
+                      }
+                    }
+                  },
+                  "is_escript_ready": {
+                    "type": "object",
+                    "description": "eScript readiness. Present only when the user holds the provider or rx_queue_manager role.",
+                    "properties": {
+                      "can_prescribe": {
+                        "type": "boolean",
+                        "description": "User can create an electronic prescription now.",
+                        "example": true
+                      },
+                      "hpii_verified": {
+                        "type": "boolean",
+                        "description": "HPI-I confirmed against the HI Service.",
+                        "example": true
+                      },
+                      "profile_complete": {
+                        "type": "boolean",
+                        "description": "Prescriber profile is complete. Advisory; not required for can_prescribe.",
+                        "example": true
+                      },
+                      "erx_registered": {
+                        "type": "boolean",
+                        "description": "eRx entity ID issued.",
+                        "example": true
+                      },
+                      "mims_ready": {
+                        "type": "boolean",
+                        "description": "Medication catalogue provisioned.",
+                        "example": true
+                      },
+                      "account_enabled": {
+                        "type": "boolean",
+                        "description": "Account is not disabled.",
+                        "example": true
                       }
                     }
                   }

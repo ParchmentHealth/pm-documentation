@@ -10,8 +10,9 @@ openapi: "PUT /v1/organizations/{organization_id}/users/{user_id}"
 4. **Validation Dependencies**: Be aware of field dependencies, especially for provider details.
 5. **User Existence**: The API will return 404 if the user doesn't exist in the organization.
 6. **Request ID**: Always log the `requestId` for debugging support requests.
-7. **No provider result code**: A `200` does not confirm the provider record exists. Read the user back and check `provider_details`. See HPI-I updates and partial user creation below.
+7. **A provider write that fails is reported**: a rejected create or update returns 4xx, not `200`. Confirm readiness with `is_escript_ready.can_prescribe` on Read User.
 8. **HPI-I changes trigger an HI Service lookup**: Send `hpii_number`, `given_name`, `family_name`, `date_of_birth` and `sex` together. All five must match the record held by Services Australia.
+9. **`full_name` follows the provider record**: sending names in `provider_details` updates the account's `full_name` too, unless you set `full_name` yourself.
 
 
 
@@ -30,37 +31,25 @@ The lookup uses `hpii_number`, `given_name`, `family_name`, `date_of_birth` and 
 
 ### What the response tells you
 
-<Warning>
-  Update User does not return a `USER_CREATED_PROVIDER_*` style result code. Every success is `200` with `"code": "SUCCESS"`. A `200` means the update was applied — it is not proof that the provider record is now verified. **Always confirm with `GET /v1/organizations/{organization_id}/users/{user_id}` and check that `provider_details` is not `null`.**
-</Warning>
+| Response | `code` | What to do |
+| --- | --- | --- |
+| `200` "User updated successfully" | `SUCCESS` | Applied. Confirm readiness with `is_escript_ready.can_prescribe` on Read User. |
+| `400` "Invalid HPII number" / "Invalid organization HPIO number" | `INVALID_USER_PARAMETERS` | Correct the value. The org HPI-O case needs Parchment support. |
+| `404` "User not found" | `RESOURCE_NOT_FOUND` | Check the `user_id`. |
+| `409` "IHI already assigned to another provider" | `USER_ALREADY_EXISTS` | Another active provider holds this HPI-I. Find the duplicate account or use the correct number. |
+| `422` per-field `validation[]` | `VALIDATION_ERROR` | Correct the fields named. `REQUIRED_FIELD` means the identity set is incomplete in both the request and the stored record. |
+| `422` `HI_SERVICE_NO_MATCH` | `VALIDATION_ERROR` | The HPI-I does not match the demographics. Do not retry the same values. |
+| `422` `HI_SERVICE_NOT_VERIFIED` | `VALIDATION_ERROR` | The lookup returned no status. Nothing was saved. Retry later or contact support. |
+| `500` | `INTERNAL_ERROR` | The HI Service was unreachable. Retry later. |
 
-| Response                                                | `code`                    | Meaning                                                                                                     | What to do                                                                             |
-| ------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| `200` "User updated successfully"                       | `SUCCESS`                 | The update was applied. If the user had no provider record, the HI Service lookup did not fail. If the user already had an active record, a failed lookup is **not** reported here. | Read the user back and check `provider_details` is not `null`.                            |
-| `404` "User not found"                                  | `RESOURCE_NOT_FOUND`      | No user with that `user_id` in this organization.                                                              | Check the `user_id`.                                                                      |
-| `409` "IHI already assigned to another provider"        | `USER_ALREADY_EXISTS`     | The HPI-I is already held by another active provider in this organization. Returned only when the user **already has** a provider record, the `hpii_number` changes, and `date_of_birth`, `sex` and `family_name` do not change. | Look for a duplicate account for this prescriber. Disable it, or use the correct HPI-I.   |
-| `422` "There were some problems with your input."       | `VALIDATION_ERROR`        | A field failed schema validation, for example `date_of_birth` is not `YYYY-MM-DD` ("Invalid date"). See `error.validation[]`. | Correct the field named in `error.validation[]`.                                          |
-| `500` "No Healthcare Provider records have been found"  | `INTERNAL_ERROR`          | Same condition as `USER_CREATED_PROVIDER_NOT_FOUND` — the HI Service could not match the HPI-I to the supplied given name, family name, date of birth and sex. This is a data problem, not a server fault. | Correct the demographics and send the update again. Do not retry the same values.        |
-| `500` "Invalid HPII number"                             | `INTERNAL_ERROR`          | `hpii_number` is not a valid 16-digit HPI-I. Reported as a `500` on the repair path, not a `400`.               | Correct the number.                                                                       |
-| `500` "Invalid date of birth"                           | `INTERNAL_ERROR`          | `date_of_birth` is missing from both the request and the stored record, or is out of range for the HI Service. | Send `date_of_birth` in YYYY-MM-DD format.                                                |
-| `500` "Invalid organization HPIO number"                | `INTERNAL_ERROR`          | The organization has no HPI-O, so no lookup can run.                                                           | Contact Parchment support with the `requestId`.                                           |
-| `500` other detail                                      | `INTERNAL_ERROR`          | The HI Service was unavailable, or the update failed.                                                          | Retry later. If it continues, contact Parchment support with the `requestId`.             |
-
-<Note>
-  The rows above describe the repair path — a user with **no** provider record, or an inactive one. When the user already has an **active** provider record the same lookup errors surface differently: "Invalid HPII number", "Invalid date of birth" and "Invalid organization HPIO number" return `400` `INVALID_USER_PARAMETERS`, "No Healthcare Provider records have been found" returns `404` `RESOURCE_NOT_FOUND`, and if the demographics also changed a failed lookup returns `200` with the record already updated.
-</Note>
-
-<Warning>
-  **A user with no provider record is the case where a failure to create the record is not reported.** When you repair a partial creation, the result of the provider create is not checked. If the HPI-I is already held by another active provider in the organization, or the create fails for any other reason, the call still returns `200` and no provider record exists. This is why step 2 of the repair sequence is not optional — read the user back and check `provider_details`.
-</Warning>
-
-Parchment never returns the reason from the HI Service, and never returns the HPI-I number itself. Quote the `requestId` when you ask Parchment support to check a specific lookup.
+Parchment never returns the HI Service's own reason, and never returns the HPI-I. Quote the `requestId` for support.
 
 ### Repair sequence
 
-1. `PUT /v1/organizations/{organization_id}/users/{user_id}` with the corrected `provider_details`.
-2. `GET /v1/organizations/{organization_id}/users/{user_id}`.
-3. If `provider_details` is an object, the provider record exists. The response does not include the HPI-I status, so contact Parchment support if the prescriber still cannot create prescriptions. If it is `null`, the record was still not created — repeat with corrected values, or contact Parchment support with the `requestId`.
+1. `PUT .../users/{user_id}` with the corrected `provider_details`. Send all five identity fields together.
+2. `GET .../users/{user_id}` and check `is_escript_ready.can_prescribe`.
+
+A 4xx means nothing was written. A `200` means the provider record was written; `can_prescribe` then tells you whether it is usable.
 
 ## Request
 
@@ -261,22 +250,55 @@ Valid values for `prescriber_type`:
 }
 ```
 
-### HI Service Could Not Match the HPI-I (500)
+### HI Service Could Not Match the HPI-I (422)
 
-The HPI-I did not match the given name, family name, date of birth and sex you sent. Correct the demographics before you retry.
+The HPI-I did not match the given name, family name, date of birth and sex. Correct them; do not retry the same values.
 
 ```json
 {
   "success": false,
-  "statusCode": 500,
-  "code": "INTERNAL_ERROR",
+  "statusCode": 422,
+  "code": "VALIDATION_ERROR",
   "error": {
-    "type": "https://parchment.health/errors/internal-error",
-    "title": "Internal server error",
-    "detail": "No Healthcare Provider records have been found"
+    "type": "https://parchment.health/errors/validation-error",
+    "title": "Validation failed",
+    "detail": "No Healthcare Provider records have been found.",
+    "validation": [
+      {
+        "field": "provider_details",
+        "message": "No Healthcare Provider records have been found.",
+        "code": "HI_SERVICE_NO_MATCH"
+      }
+    ]
   },
   "timestamp": "2024-01-15T10:30:00.000Z",
   "requestId": "req_1705312200000_vwx234"
+}
+```
+
+### Incomplete Provider Identity (422)
+
+A provider record cannot be created or verified without all five identity fields. Missing values are taken from the stored record first; these were absent from both.
+
+```json
+{
+  "success": false,
+  "statusCode": 422,
+  "code": "VALIDATION_ERROR",
+  "error": {
+    "type": "https://parchment.health/errors/validation-error",
+    "title": "Validation failed",
+    "detail": "The provider identity could not be assembled. These fields are missing from both this request and the stored provider record, and all of them are required to verify an HPI-I.",
+    "validation": [
+      {
+        "field": "provider_details.given_name",
+        "message": "given_name is required to verify and save a provider record",
+        "code": "REQUIRED_FIELD"
+      }
+    ]
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_yza567"
 }
 ```
 
@@ -338,30 +360,18 @@ The HPI-I did not match the given name, family name, date of birth and sex you s
 | --------- | ------ | ---------------------------------- |
 | `user_id` | string | Parchment's unique user identifier |
 
-### Common Response Fields
-
-All responses include these standard fields:
-
-| Field        | Type    | Description                             |
-| ------------ | ------- | --------------------------------------- |
-| `success`    | boolean | Indicates if the request was successful |
-| `statusCode` | number  | HTTP status code                        |
-| `code`       | string  | Machine-readable operation code. Always `SUCCESS` on a `200` — this endpoint has no provider result codes |
-| `timestamp`  | string  | ISO 8601 timestamp of the response      |
-| `requestId`  | string  | Unique identifier for debugging         |
-
 ## Status Codes
 
 | Code  | Status                | Description                                      |
 | ----- | --------------------- | ------------------------------------------------ |
 | `200` | OK                    | User successfully updated                        |
-| `400` | Bad Request           | Invalid request format or invalid parameters. HI Service lookup errors return `400` only when the user already has an active provider record |
+| `400` | Bad Request           | Invalid request format, or an invalid HPI-I / organisation HPI-O |
 | `401` | Unauthorized          | Authentication required, token invalid, or the token lacks the `update:user` scope |
 | `403` | Forbidden             | Rejected by the API gateway                      |
-| `404` | Not Found             | User not found. Also returned when the user has an active provider record, the HPI-I changes, and the HI Service finds no match |
+| `404` | Not Found             | User not found, or the provider record was not found |
 | `409` | Conflict              | The HPI-I is already held by another active provider in this organization |
-| `422` | Unprocessable Entity  | Request validation failed                       |
+| `422` | Unprocessable Entity  | Schema validation failed, the identity set is incomplete, or the HPI-I could not be verified |
 | `429` | Too Many Requests     | Rate limit exceeded                             |
-| `500` | Internal Server Error | Unexpected server error, **or an HI Service lookup error on a user with no provider record** — read `error.detail` |
+| `500` | Internal Server Error | HI Service unreachable, or an unexpected fault |
 
 
