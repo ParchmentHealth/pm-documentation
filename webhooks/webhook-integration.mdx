@@ -40,7 +40,7 @@ Call [`GET /v1/organizations/{organization_id}/validate`](/api-reference/endpoin
 
 <Step title="Provide your webhook endpoint">
 
-Contact Parchment support at [hello@parchment.health](mailto:hello@parchment.health) with:
+Contact Parchment support at [developer@parchment.health](mailto:developer@parchment.health) with:
 
 - Your **webhook endpoint URL** (must be HTTPS)
 - Your **partner ID**
@@ -249,7 +249,7 @@ Parchment stops retrying a webhook event as soon as **any one** of the following
 2. **Non-retryable response** — your endpoint returns a `4xx` other than `408` or `429`. The event fails immediately with no further attempts.
 3. **Retry budget exhausted** — all 3 attempts have failed with retryable errors.
 
-Once retries stop, the event is **not re-sent automatically**. Failures are logged on Parchment's side; contact [hello@parchment.health](mailto:hello@parchment.health) if you need a failed event replayed.
+Once retries stop, the event is **not re-sent automatically**. Failures are logged on Parchment's side; contact [developer@parchment.health](mailto:developer@parchment.health) if you need a failed event replayed.
 
 ### Idempotency
 
