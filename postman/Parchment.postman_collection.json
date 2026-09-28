@@ -1782,7 +1782,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"given_name\":\"esha\",\n    \"family_name\": \"patel\",\n    \"medicare_card_number\": \"3578167982\", \n    \"medicare_irn\": \"2\",\n    \"date_of_birth\": \"1984-07-21\",\n    \"sex\": \"F\",\n    \"no_given_name\": false,\n    \"email\": \"john.smith@example.com\",\n    \"partner_patient_id\": \"20250710\",\n    \"partner_id\": \"mydigitalhealth\",\n    \"australian_street_address\": {\n      \"street_number\": \"3\",\n      \"street_name\": \"Gainsborough Rd\",\n      \"suburb\": \"Williams Landing\",\n      \"state\": \"VIC\",\n      \"postcode\": \"3027\"\n    }\n}",
+              "raw": "{\n    \"partner_patient_id\": \"PMS-000123\",\n    \"partner_id\": \"{{partnerId}}\",\n    \"given_name\": \"Denice\",\n    \"family_name\": \"SHEA\",\n    \"date_of_birth\": \"1992-12-16\",\n    \"sex\": \"F\",\n    \"medicare_card_number\": \"6951907501\",\n    \"medicare_irn\": \"1\",\n    \"phone\": \"0417903853\",\n    \"email\": \"919@Ausnet.com.au\",\n    \"australian_street_address\": {\n        \"street_number\": \"163\",\n        \"street_name\": \"Law Rd\",\n        \"suburb\": \"Jitarning\",\n        \"state\": \"WA\",\n        \"postcode\": \"6365\"\n    }\n}",
               "options": {
                 "raw": {
                   "language": "json"
