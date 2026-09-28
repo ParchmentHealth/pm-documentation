@@ -2,17 +2,50 @@
 openapi: "POST /v1/organizations/{organization_id}/users/{user_id}/patients"
 ---
 
+## Overview
+
+Creates a patient in the organization. Parchment looks up the IHI from the HI Service unless you send `ihi_number`.
+
+A repeat `partner_patient_id` is idempotent. No new patient is created and the existing patient is returned with `200`.
+
+Requires the `create:patient` scope.
+
+## Request Example
+
+```json
+{
+  "partner_patient_id": "PMS-000123",
+  "partner_id": "demo",
+  "given_name": "Denice",
+  "family_name": "SHEA",
+  "date_of_birth": "1992-12-16",
+  "sex": "F",
+  "medicare_card_number": "6951907501",
+  "medicare_irn": "1",
+  "phone": "0417903853",
+  "email": "919@Ausnet.com.au",
+  "australian_street_address": {
+    "street_number": "163",
+    "street_name": "Law Rd",
+    "suburb": "Jitarning",
+    "state": "WA",
+    "postcode": "6365"
+  }
+}
+```
+
 ## Response Examples
 
-### Success Response (201 Created)
+### Created (201)
 
 ```json
 {
   "success": true,
   "statusCode": 201,
   "message": "Patient created successfully",
+  "code": "SUCCESS",
   "data": {
-    "external_patient_id": "CLINIKO#12345",
+    "external_patient_id": "DEMO#PMS-000123",
     "parchment_patient_id": "pat_abc123def456",
     "url": "https://app.parchment.health/dashboard/patients/pat_abc123def456"
   },
@@ -21,17 +54,16 @@ openapi: "POST /v1/organizations/{organization_id}/users/{user_id}/patients"
 }
 ```
 
-### Patient Already Exists (200 OK)
-
-A repeat `partner_patient_id` in the same organization is idempotent. No new patient is created. The response returns the existing patient.
+### Already Exists (200)
 
 ```json
 {
   "success": true,
   "statusCode": 200,
   "message": "Patient already exists",
+  "code": "SUCCESS",
   "data": {
-    "external_patient_id": "CLINIKO#12345",
+    "external_patient_id": "DEMO#PMS-000123",
     "parchment_patient_id": "pat_abc123def456",
     "url": "https://app.parchment.health/dashboard/patients/pat_abc123def456"
   },
@@ -40,15 +72,16 @@ A repeat `partner_patient_id` in the same organization is idempotent. No new pat
 }
 ```
 
-### Conflict Detected (202 Accepted)
+### Conflicts Found (202)
 
 ```json
 {
   "success": true,
   "statusCode": 202,
   "message": "Patient creation accepted - conflicts found",
+  "code": "PATIENT_CREATED_CONFLICTS_FOUND",
   "data": {
-    "external_patient_id": "CLINIKO#12345",
+    "external_patient_id": "DEMO#PMS-000123",
     "parchment_patient_id": "pat_existing789",
     "url": "https://app.parchment.health/dashboard/patients/pat_existing789"
   },
@@ -57,12 +90,13 @@ A repeat `partner_patient_id` in the same organization is idempotent. No new pat
 }
 ```
 
-### Validation Error (422 Unprocessable Entity)
+### Validation Error (422)
 
 ```json
 {
   "success": false,
   "statusCode": 422,
+  "code": "VALIDATION_ERROR",
   "error": {
     "type": "https://parchment.health/errors/validation-error",
     "title": "Validation failed",
@@ -75,18 +109,8 @@ A repeat `partner_patient_id` in the same organization is idempotent. No new pat
       },
       {
         "field": "given_name",
-        "message": "Given name cannot be empty",
+        "message": "Given name is required",
         "code": "VALIDATION_ERROR"
-      },
-      {
-        "field": "phone",
-        "message": "Phone number must be a valid Australian mobile number (e.g., 0412345678, +61412345678)",
-        "code": "INVALID_FORMAT"
-      },
-      {
-        "field": "postcode",
-        "message": "Postcode must be 4 digits",
-        "code": "INVALID_FORMAT"
       }
     ]
   },
@@ -95,14 +119,13 @@ A repeat `partner_patient_id` in the same organization is idempotent. No new pat
 }
 ```
 
-### Resource Conflict (409 Conflict)
-
-Rare. Returned when more than one patient in the organization matches the `partner_patient_id`.
+### Conflict (409)
 
 ```json
 {
   "success": false,
   "statusCode": 409,
+  "code": "USER_ALREADY_EXISTS",
   "error": {
     "type": "https://parchment.health/errors/resource-conflict",
     "title": "Resource conflict",
@@ -113,133 +136,41 @@ Rare. Returned when more than one patient in the organization matches the `partn
 }
 ```
 
-### Unauthorized (401)
-
-```json
-{
-  "success": false,
-  "statusCode": 401,
-  "error": {
-    "type": "https://parchment.health/errors/authentication-required",
-    "title": "Unauthorized",
-    "detail": "Valid authentication token is required"
-  },
-  "timestamp": "2024-01-15T10:30:00.000Z",
-  "requestId": "req_1705312200000_mno345"
-}
-```
-
-### Insufficient Permissions (403 Forbidden)
-
-```json
-{
-  "success": false,
-  "statusCode": 403,
-  "error": {
-    "type": "https://parchment.health/errors/insufficient-scope",
-    "title": "Insufficient permissions",
-    "detail": "This operation requires the 'CREATE_PATIENT' scope"
-  },
-  "timestamp": "2024-01-15T10:30:00.000Z",
-  "requestId": "req_1705312200000_pqr678"
-}
-```
-
 ## Response Fields
 
-### Success Response Data
-
-| Field                  | Type   | Description                                               |
-| ---------------------- | ------ | --------------------------------------------------------- |
-| `external_patient_id`  | string | Your system's patient identifier (as provided in request) |
-| `parchment_patient_id` | string | Parchment's unique patient identifier                     |
-| `url`                  | string | Direct link to patient in Parchment portal                |
-
-### Common Response Fields
-
-All responses include these standard fields:
-
-| Field        | Type    | Description                             |
-| ------------ | ------- | --------------------------------------- |
-| `success`    | boolean | Indicates if the request was successful |
-| `statusCode` | number  | HTTP status code                        |
-| `timestamp`  | string  | ISO 8601 timestamp of the response      |
-| `requestId`  | string  | Unique identifier for debugging         |
+| Field                  | Type   | Description                                                   |
+| ---------------------- | ------ | ------------------------------------------------------------- |
+| `external_patient_id`  | string | Your `partner_patient_id`, prefixed with your partner ID      |
+| `parchment_patient_id` | string | Parchment's patient ID                                        |
+| `url`                  | string | Link to the patient in the Parchment portal                   |
 
 ## Status Codes
 
-| Code  | Status                | Description                                             |
-| ----- | --------------------- | ------------------------------------------------------- |
-| `200` | OK                    | Patient already exists (idempotent — existing patient returned) |
-| `201` | Created               | Patient successfully created                            |
-| `202` | Accepted              | Patient creation accepted (demographic conflicts found) |
-| `400` | Bad Request           | Invalid request format or missing required fields       |
-| `401` | Unauthorized          | Token invalid, or missing `create:patient` scope        |
-| `409` | Conflict              | More than one patient matches the partner patient ID    |
-| `422` | Unprocessable Entity  | Request validation failed                               |
-| `500` | Internal Server Error | Unexpected server error                                 |
+| Code  | Status                | Description                                          |
+| ----- | --------------------- | ---------------------------------------------------- |
+| `200` | OK                    | Patient already exists; existing patient returned    |
+| `201` | Created               | Patient created                                      |
+| `202` | Accepted              | Demographic conflicts found; matching patient returned |
+| `400` | Bad Request           | Patient not created, e.g. IHI already assigned       |
+| `401` | Unauthorized          | Token invalid, or missing `create:patient` scope     |
+| `409` | Conflict              | More than one patient matches the `partner_patient_id` |
+| `422` | Unprocessable Entity  | Request validation failed                            |
+| `500` | Internal Server Error | Unexpected server error                              |
 
+## Validation
 
-## Field Validation Requirements
+| Field                | Rule                                                                  |
+| -------------------- | --------------------------------------------------------------------- |
+| `partner_id`         | Required. Your registered partner ID, per environment                 |
+| `partner_patient_id` | Required. 1–150 characters, unique in the organization                |
+| `given_name`, `family_name` | Required. Not empty                                        |
+| `phone`              | Australian mobile only (`04`/`05`, or `+61`/`61` prefix). Spaces, dashes and brackets are stripped |
+| `ihi_number`         | Optional. Exactly 16 digits                                           |
+| `postcode`           | Exactly 4 digits                                                      |
+| `sex`, `state`       | Case-insensitive. `state` also accepts the full name                  |
 
-### Partner ID
+## Notes
 
-The `partner_id` field is **required** in the request body. It is your Parchment-assigned partner identifier (lowercase slug, e.g. `tacklit`).
-
-- Omitted → 422 `"Partner ID is required"`
-- Not registered with Parchment → 422 `"Invalid partner_id. Contact Parchment to register your partner ID."`
-- Parchment registers your identifier during onboarding, per environment (sandbox and production) — contact Parchment before go-live
-
-### Code List Casing
-
-Code lists are matched case-insensitively — `sex`, `state`, `ihi_status`, `ihi_record_status` and `partner_id`. `nsw`, `Nsw` and `NSW` are the same value.
-
-- `state` also accepts the full name, e.g. `New South Wales`
-- `email` is stored lower case; `dva_file_number` and `entitlement_number` are stored upper case with separators removed
-- Responses always return the canonical form, e.g. `NSW`
-
-### Phone Number Format
-
-The `phone` field accepts Australian **mobile** numbers only (04 / 05 ranges). Mobile numbers can be used for IHI lookup against the Healthcare Identifiers Service; landlines cannot, and are rejected.
-
-**✅ Valid Examples:**
-
-- `0412345678` - Mobile number (domestic format)
-- `61412345678` - International mobile (without + prefix)
-- `+61412345678` - International mobile (with + prefix)
-
-**❌ Invalid Examples:**
-
-- `0212345678` - Landline (only mobiles are accepted)
-- `0123456789` - Starts with 1 (invalid area code)
-- `04123456789` - Too many digits
-- `041234567` - Too few digits
-- `04-1234-5678` - Contains formatting characters
-- `+1234567890` - Non-Australian number
-
-### IHI Number
-
-The `ihi_number` field is an optional 16-digit Individual Healthcare Identifier.
-
-- If provided, it must be exactly 16 numeric digits (e.g., `"8003608500035100"`).
-- If omitted, Parchment will attempt to fetch the IHI automatically from the HI Service using the patient's demographics and Medicare/DVA details.
-
-### String Length Requirements
-
-- **Family Name**: 1-255 characters, cannot be empty
-- **Given Name**: 1-255 characters, cannot be empty
-- **Partner Patient ID**: 1-150 characters, must be unique
-- **Street Number**: 1-12 characters
-- **Street Name**: 1-100 characters
-- **Suburb**: 1-100 characters
-- **Postcode**: Exactly 4 digits (e.g., "3000", "2000")
-
-## Integration Notes
-
-1. **Store Request ID**: Always log the `requestId` for debugging support requests
-2. **Handle 202 Status**: A 202 response indicates demographic conflicts were found but a matching patient was returned
-3. **Validation Errors**: Use the `error.validation` array to display field-specific error messages
-4. **Partner Patient ID**: Must be unique across your organization; use the format returned in `external_patient_id`
-5. **URL Access**: The returned `url` provides direct access to the patient in the Parchment portal
-6. **Phone Validation**: Phone numbers must follow Australian format - see validation requirements above
-7. **IHI Lookup**: Omit `ihi_number` to have Parchment resolve it via the HI Service; provide it explicitly only when you already hold a verified 16-digit IHI
+- Use `external_patient_id` from the response as the stored ID; a prefixed value is not double-prefixed.
+- Send `australian_street_address` or `australian_address`; both are accepted.
+- Log `requestId` for support requests.

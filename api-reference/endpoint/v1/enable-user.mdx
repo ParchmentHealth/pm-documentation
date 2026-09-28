@@ -2,31 +2,24 @@
 openapi: "PUT /v1/organizations/{organization_id}/users/{user_id}/enable"
 ---
 
-## Integration Notes
+## Overview
 
-1. **What Happens**: The user access si restored, allowing them to sign in again.
-2. Use role defaults to `member`
-3. **Authorization**: Requires `update:user` scope.
-4. **Idempotent**: If the user is already enabled, the endpoint returns 200 with a message indicating the user is already enabled.
+Enables the user so they can sign in again. Roles stay `member`; restore roles with [Update User Roles](/api-reference/endpoint/v1/update-user-roles). No request body.
 
+Idempotent: a user who is already enabled returns `200` with `"User is already enabled"`.
 
-## Request
+Requires the `update:user` scope.
 
-No request body is required. Simply send a PUT request to the endpoint with the organization and user IDs in the path.
+## Response Examples
 
-```bash
-PUT /v1/organizations/{organizationId}/users/{userId}/enable
-```
-
-## Response
-
-### Success Response (200 OK)
+### Enabled (200)
 
 ```json
 {
   "success": true,
   "statusCode": 200,
   "message": "User enabled successfully",
+  "code": "SUCCESS",
   "data": {
     "user_id": "a7748dfd-ceb2-4b17-8380-425c304f5ae7"
   },
@@ -35,13 +28,14 @@ PUT /v1/organizations/{organizationId}/users/{userId}/enable
 }
 ```
 
-### Already Enabled (200 OK)
+### Already Enabled (200)
 
 ```json
 {
   "success": true,
   "statusCode": 200,
   "message": "User is already enabled",
+  "code": "SUCCESS",
   "data": {
     "user_id": "a7748dfd-ceb2-4b17-8380-425c304f5ae7"
   },
@@ -52,29 +46,16 @@ PUT /v1/organizations/{organizationId}/users/{userId}/enable
 
 ## Response Fields
 
-### Success Response Data
-
-| Field     | Type   | Description                        |
-| --------- | ------ | ---------------------------------- |
-| `user_id` | string | Parchment's unique user identifier |
-
-### Common Response Fields
-
-All responses include these standard fields:
-
-| Field        | Type    | Description                             |
-| ------------ | ------- | --------------------------------------- |
-| `success`    | boolean | Indicates if the request was successful |
-| `statusCode` | number  | HTTP status code                        |
-| `timestamp`  | string  | ISO 8601 timestamp of the response      |
-| `requestId`  | string  | Unique identifier for debugging         |
+| Field     | Type   | Description            |
+| --------- | ------ | ---------------------- |
+| `user_id` | string | Parchment's user ID    |
 
 ## Status Codes
 
-| Code  | Status                | Description                                          |
-| ----- | --------------------- | ---------------------------------------------------- |
-| `200` | OK                    | User successfully enabled (or already enabled)       |
-| `400` | Bad Request           | Invalid request                                      |
-| `401` | Unauthorized          | Token invalid, or missing `update:user` scope        |
-| `404` | Not Found             | User not found                                       |
-| `500` | Internal Server Error | Unexpected server error                              |
+| Code  | Status                | Description                                   |
+| ----- | --------------------- | --------------------------------------------- |
+| `200` | OK                    | User enabled, or already enabled                |
+| `400` | Bad Request           | Target user has no email address              |
+| `401` | Unauthorized          | Token invalid, or missing `update:user` scope |
+| `404` | Not Found             | User not found                                |
+| `500` | Internal Server Error | Unexpected server error                       |
