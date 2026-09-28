@@ -73,7 +73,7 @@ All responses include these standard fields:
 | Code  | Status                | Description                                          |
 | ----- | --------------------- | ---------------------------------------------------- |
 | `200` | OK                    | User successfully disabled (or already disabled)     |
-| `401` | Unauthorized          | Authentication required or token invalid             |
-| `403` | Forbidden             | Insufficient permissions (missing delete:user scope) |
+| `400` | Bad Request           | Invalid request                                      |
+| `401` | Unauthorized          | Token invalid, or missing `update:user` scope        |
 | `404` | Not Found             | User not found                                       |
 | `500` | Internal Server Error | Unexpected server error                              |

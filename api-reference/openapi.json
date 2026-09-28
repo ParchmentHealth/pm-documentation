@@ -68,6 +68,28 @@
           "required": true
         },
         "responses": {
+          "200": {
+            "description": "Patient already exists. A repeat partner_patient_id in the same organization is idempotent: no new patient is created and the existing patient is returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientResponse"
+                },
+                "example": {
+                  "success": true,
+                  "statusCode": 200,
+                  "message": "Patient already exists",
+                  "data": {
+                    "external_patient_id": "PARTNER#12345",
+                    "parchment_patient_id": "pat_abc123def456",
+                    "url": "https://app.parchment.health/dashboard/patients/pat_abc123def456"
+                  },
+                  "timestamp": "2024-01-15T10:30:00.000Z",
+                  "requestId": "req_1705312200000_stu901"
+                }
+              }
+            }
+          },
           "201": {
             "description": "Patient created successfully",
             "content": {
@@ -113,7 +135,7 @@
             }
           },
           "409": {
-            "description": "Partner patient ID conflict",
+            "description": "Resource conflict. Rare: more than one patient in the organization matches the partner_patient_id.",
             "content": {
               "application/json": {
                 "schema": {
@@ -123,9 +145,9 @@
                   "success": false,
                   "statusCode": 409,
                   "error": {
-                    "type": "https://parchment.health/errors/partner-patient-id-conflict",
-                    "title": "Partner patient ID conflict",
-                    "detail": "Partner patient ID 'PARTNER#12345' is already in use by another patient. Please use a unique identifier."
+                    "type": "https://parchment.health/errors/resource-conflict",
+                    "title": "Resource conflict",
+                    "detail": "Patient already exists"
                   },
                   "timestamp": "2024-01-15T10:30:00.000Z",
                   "requestId": "req_1705312200000_ghi789"

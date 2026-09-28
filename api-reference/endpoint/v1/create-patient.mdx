@@ -21,6 +21,25 @@ openapi: "POST /v1/organizations/{organization_id}/users/{user_id}/patients"
 }
 ```
 
+### Patient Already Exists (200 OK)
+
+A repeat `partner_patient_id` in the same organization is idempotent. No new patient is created. The response returns the existing patient.
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Patient already exists",
+  "data": {
+    "external_patient_id": "CLINIKO#12345",
+    "parchment_patient_id": "pat_abc123def456",
+    "url": "https://app.parchment.health/dashboard/patients/pat_abc123def456"
+  },
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "requestId": "req_1705312200000_stu901"
+}
+```
+
 ### Conflict Detected (202 Accepted)
 
 ```json
@@ -76,16 +95,18 @@ openapi: "POST /v1/organizations/{organization_id}/users/{user_id}/patients"
 }
 ```
 
-### Partner Patient ID Conflict (409 Conflict)
+### Resource Conflict (409 Conflict)
+
+Rare. Returned when more than one patient in the organization matches the `partner_patient_id`.
 
 ```json
 {
   "success": false,
   "statusCode": 409,
   "error": {
-    "type": "https://parchment.health/errors/partner-patient-id-conflict",
-    "title": "Partner patient ID conflict",
-    "detail": "Partner patient ID 'CLINIKO#12345' is already in use by another patient. Please use a unique identifier."
+    "type": "https://parchment.health/errors/resource-conflict",
+    "title": "Resource conflict",
+    "detail": "Patient already exists"
   },
   "timestamp": "2024-01-15T10:30:00.000Z",
   "requestId": "req_1705312200000_jkl012"
@@ -149,12 +170,12 @@ All responses include these standard fields:
 
 | Code  | Status                | Description                                             |
 | ----- | --------------------- | ------------------------------------------------------- |
+| `200` | OK                    | Patient already exists (idempotent — existing patient returned) |
 | `201` | Created               | Patient successfully created                            |
 | `202` | Accepted              | Patient creation accepted (demographic conflicts found) |
 | `400` | Bad Request           | Invalid request format or missing required fields       |
-| `401` | Unauthorized          | Authentication required or token invalid                |
-| `403` | Forbidden             | Insufficient permissions (missing CREATE_PATIENT scope) |
-| `409` | Conflict              | Partner patient ID already exists                       |
+| `401` | Unauthorized          | Token invalid, or missing `create:patient` scope        |
+| `409` | Conflict              | More than one patient matches the partner patient ID    |
 | `422` | Unprocessable Entity  | Request validation failed                               |
 | `500` | Internal Server Error | Unexpected server error                                 |
 
