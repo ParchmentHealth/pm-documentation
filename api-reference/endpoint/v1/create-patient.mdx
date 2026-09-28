@@ -4,7 +4,7 @@ openapi: "POST /v1/organizations/{organization_id}/users/{user_id}/patients"
 
 ## Overview
 
-Creates a patient in the organization. Parchment looks up the IHI from the HI Service unless you send `ihi_number`.
+Creates a patient in the organization. Parchment searches the HI Service for the IHI. A supplied `ihi_number` is searched first.
 
 A repeat `partner_patient_id` is idempotent. No new patient is created and the existing patient is returned with `200`.
 
@@ -149,11 +149,11 @@ Requires the `create:patient` scope.
 | Code  | Status                | Description                                          |
 | ----- | --------------------- | ---------------------------------------------------- |
 | `200` | OK                    | Patient already exists; existing patient returned    |
-| `201` | Created               | Patient created                                      |
+| `201` | Created               | Patient created, or existing patient re-linked       |
 | `202` | Accepted              | Demographic conflicts found; matching patient returned |
 | `400` | Bad Request           | Patient not created, e.g. IHI already assigned       |
 | `401` | Unauthorized          | Token invalid, or missing `create:patient` scope     |
-| `409` | Conflict              | More than one patient matches the `partner_patient_id` |
+| `409` | Conflict              | Rare: `partner_patient_id` conflict                  |
 | `422` | Unprocessable Entity  | Request validation failed                            |
 | `500` | Internal Server Error | Unexpected server error                              |
 
@@ -173,4 +173,4 @@ Requires the `create:patient` scope.
 
 - Use `external_patient_id` from the response as the stored ID; a prefixed value is not double-prefixed.
 - Send `australian_street_address` or `australian_address`; both are accepted.
-- Log `requestId` for support requests.
+- A `201` can return an existing patient: same name, date of birth and sex is re-linked to your `partner_patient_id`.

@@ -149,10 +149,8 @@ All responses include these standard fields:
 | ----- | --------------------- | ------------------------------------------------ |
 | `200` | OK                    | User roles successfully updated                  |
 | `400` | Bad Request           | Invalid request format or invalid parameters     |
-| `401` | Unauthorized          | Authentication required or token invalid         |
-| `403` | Forbidden             | Insufficient permissions (missing update:user scope) |
+| `401` | Unauthorized          | Token invalid, or missing `update:user` scope    |
 | `404` | Not Found             | User not found                                   |
 | `409` | Conflict              | Role update conflict                             |
-| `422` | Unprocessable Entity  | Request validation failed                        |
 | `429` | Too Many Requests     | Rate limit exceeded                              |
 | `500` | Internal Server Error | Unexpected server error                          |

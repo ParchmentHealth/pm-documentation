@@ -111,7 +111,7 @@
             }
           },
           "201": {
-            "description": "Patient created successfully",
+            "description": "Patient created, or an existing patient with the same name, date of birth and sex re-linked to this partner_patient_id.",
             "content": {
               "application/json": {
                 "schema": {
@@ -201,7 +201,7 @@
             }
           },
           "409": {
-            "description": "More than one patient matches the partner_patient_id.",
+            "description": "Rare: the partner_patient_id matches more than one patient, or a concurrent create used it.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3819,8 +3819,16 @@
             "type": "string",
             "description": "Patient's Australian mobile number (optional). Must be a valid Australian mobile (04xxxxxxxx or 05xxxxxxxx), digits only. International format with +61 or 61 prefix is also accepted. Landlines are rejected. A mobile number can be used for IHI lookup against the Healthcare Identifiers Service."
           },
-          "australian_address": {
+          "australian_street_address": {
             "$ref": "#/components/schemas/australian_street_address"
+          },
+          "australian_address": {
+            "description": "Alias of australian_street_address. Send one, not both.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/australian_street_address"
+              }
+            ]
           },
           "medicare_valid_to": {
             "type": "string",
