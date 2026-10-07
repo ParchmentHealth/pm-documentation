@@ -82,3 +82,34 @@ If pagination is used, the response will include a `pagination` object:
 - `limit`: Maximum number of prescriptions per page (as requested).
 - `offset`: Starting position of the current page (zero-based).
 - `lastKey`: The string to use as the `lastKey` query parameter for the next request. If `null`, there are no more results.
+
+### No Prescriptions
+
+If the patient exists but has no prescriptions, `data` keeps the same object shape. `prescriptions` is empty and `prescriber` is `null`:
+
+```json
+{
+  "success": true,
+  "statusCode": 200,
+  "message": "Prescriptions not found for patient",
+  "code": "SUCCESS",
+  "data": {
+    "patient": {
+      "given_name": "DENICE",
+      "family_name": "SHEA",
+      "date_of_birth": "1992-12-16",
+      "sex": "F",
+      "patient_id": "20b04934-2ce5-4628-bc6e-ea1cd3b729e3",
+      "partner_patient_id": "PMS-000123"
+    },
+    "prescriber": null,
+    "prescriptions": []
+  },
+  "pagination": {
+    "count": 0,
+    "hasNext": false,
+    "limit": 20,
+    "offset": 0
+  }
+}
+```

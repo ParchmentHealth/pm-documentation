@@ -8,7 +8,7 @@ Creates a Parchment login for a user in your organization and assigns roles. Whe
 
 A `201` is not always a complete success. Read `code`. Every `USER_CREATED_PROVIDER_*` code means the login and roles exist but there is **no provider record**, and the user **cannot create prescriptions**.
 
-The response returns `user_id` only. There is no `partner_user_id`. Map `user_id` to your own record.
+There is no `partner_user_id`. Map `user_id` to your own record.
 
 ## Request Example
 
@@ -132,7 +132,7 @@ The response returns `user_id` only. There is no `partner_user_id`. Map `user_id
 | `USER_CREATED` | Yes | All steps completed. | None. |
 | `USER_CREATED_PROVIDER_NOT_FOUND` | **No** | The HI Service found no HPI-I record for the supplied demographics. | Correct the demographics. Call Update User with `provider_details`. |
 | `USER_CREATED_PROVIDER_SEARCH_FAILED` | **No** | The lookup could not run: no HPI-O, HI Service down, or data rejected. | Check the organization has an HPI-O. Retry later. |
-| `USER_CREATED_PROVIDER_ALREADY_EXISTS` | **No** | Another active provider in this organization holds this `hpii_number`. | Disable the duplicate, or call Update User with the correct HPI-I. |
+| `USER_CREATED_PROVIDER_ALREADY_EXISTS` | **No** | Another active provider in this organization holds this `hpii_number`. `existing_user_id` names it. | Disable the duplicate, or call Update User with the correct HPI-I. |
 | `USER_CREATED_PROVIDER_INVALID_PARAMS` | **No** | The provider record was rejected. | Contact Parchment support with the `requestId`. |
 | `USER_CREATED_PROVIDER_RESOURCE_NOT_FOUND` | **No** | A required record (usually the organization) was not found. | Contact Parchment support with the `requestId`. |
 | `USER_CREATED_PROVIDER_FAILED` | **No** | Provider creation failed for another reason. | Contact Parchment support with the `requestId`. |
@@ -146,8 +146,9 @@ The response returns `user_id` only. There is no `partner_user_id`. Map `user_id
 
 | Field | Type | Description |
 |---|---|---|
-| `user_id` | string | Parchment's identifier for the new user. The only identifier returned. |
+| `user_id` | string | Parchment's identifier for the new user. |
 | `warning` | string | Partial success only. Names the step that did not complete. Branch on `code`, not on this text. |
+| `existing_user_id` | string | `USER_CREATED_PROVIDER_ALREADY_EXISTS` only. The user that already holds the `hpii_number`. |
 
 ## Request Fields
 

@@ -8,4 +8,5 @@ openapi: "POST /v1/token"
 - Always use user_id of the user making the request
 - You can only request scopes that have been approved for your organization
 - The token must be included in the `Authorization` header as a Bearer token for all authenticated API requests
+- `402` means the organization's billing is inactive (`SUBSCRIPTION_INACTIVE`) or the partner's billing is disabled (`PARTNER_BILLING_DISABLED`). No token is issued.
 
