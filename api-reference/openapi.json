@@ -1084,131 +1084,165 @@
                 "schema": {
                   "$ref": "#/components/schemas/PatientPrescriptionsExternal"
                 },
-                "example": {
-                  "success": true,
-                  "statusCode": 200,
-                  "message": "Prescriptions retrieved successfully",
-                  "data": {
-                    "patient": {
-                      "given_name": "John",
-                      "family_name": "Smith",
-                      "date_of_birth": "1990-01-15T00:00:00.000Z",
-                      "sex": "M",
-                      "patient_id": "1234567890",
-                      "partner_patient_id": "PARTNER#12345"
-                    },
-                    "prescriber": {
-                      "given_name": "Dr. Emily",
-                      "family_name": "Johnson",
-                      "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae"
-                    },
-                    "prescriptions": [
-                      {
-                        "prescription_type": "ELECTRONIC",
-                        "url": "https://egw-etp-int-qrcode-web-au-se.azurewebsites.net/scripts/2F3WFX8J4WQH8T72X9",
-                        "scid": "2F3WFX8J4WQH8T72X9",
-                        "status": "Active",
-                        "created_date": "2025-06-30T00:11:22",
-                        "item_name": "Sildenafil 100 mg tablet, 4",
-                        "quantity": "4",
-                        "number_of_repeats_authorised": "0",
-                        "repeat_intervals": "0",
-                        "pbs_code": "",
-                        "item_strength": "",
-                        "item_form": "",
-                        "route_administration": "Oral",
-                        "pbsdva_authority_number": "0",
-                        "phone_approval_authority_number": "",
-                        "schedule_number": "S4",
-                        "private_prescription": true,
-                        "emergency_supply": false,
-                        "brand_substitution_not_allowed": false,
-                        "reason_for_prescribing": "",
-                        "patient_instructions": "xcxc",
-                        "doctor_notes": "",
-                        "pharmacy_name": "",
-                        "regulation_24": false,
-                        "controlled_substance_reference": "",
-                        "unusual_dose_flag": false,
-                        "unusual_qty_flag": false,
-                        "my_sl_consent": true,
-                        "send_to_pharmacy": "",
-                        "unlisted_item_repat_authority": false,
-                        "prescriber_script_number": "19192",
-                        "custom_drug_details": {
-                          "custom_product_id": "1234567890"
+                "examples": {
+                  "withPrescriptions": {
+                    "summary": "Patient has prescriptions",
+                    "value": {
+                      "success": true,
+                      "statusCode": 200,
+                      "message": "Prescriptions retrieved successfully",
+                      "code": "SUCCESS",
+                      "data": {
+                        "patient": {
+                          "given_name": "DENICE",
+                          "family_name": "SHEA",
+                          "date_of_birth": "1992-12-16",
+                          "sex": "F",
+                          "patient_id": "20b04934-2ce5-4628-bc6e-ea1cd3b729e3",
+                          "partner_patient_id": "PMS-000123"
                         },
                         "prescriber": {
-                          "title": "Dr",
-                          "given_name": "Emily",
+                          "given_name": "Dr. Emily",
                           "family_name": "Johnson",
                           "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae"
                         },
-                        "delivery": {
-                          "method": "EMAIL",
-                          "recipient_type": "PHARMACY",
-                          "destination": "scripts@bayside-pharmacy.com.au",
-                          "pharmacy": {
-                            "pharmacy_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-                            "name": "Bayside Pharmacy"
+                        "prescriptions": [
+                          {
+                            "prescription_type": "ELECTRONIC",
+                            "url": "https://egw-etp-int-qrcode-web-au-se.azurewebsites.net/scripts/2F3WFX8J4WQH8T72X9",
+                            "scid": "2F3WFX8J4WQH8T72X9",
+                            "status": "Active",
+                            "created_date": "2025-06-30T00:11:22",
+                            "item_name": "Sildenafil 100 mg tablet, 4",
+                            "quantity": "4",
+                            "number_of_repeats_authorised": "0",
+                            "repeat_intervals": "0",
+                            "pbs_code": "",
+                            "item_strength": "",
+                            "item_form": "",
+                            "route_administration": "Oral",
+                            "pbsdva_authority_number": "0",
+                            "phone_approval_authority_number": "",
+                            "schedule_number": "S4",
+                            "private_prescription": true,
+                            "emergency_supply": false,
+                            "brand_substitution_not_allowed": false,
+                            "reason_for_prescribing": "",
+                            "patient_instructions": "xcxc",
+                            "doctor_notes": "",
+                            "pharmacy_name": "",
+                            "regulation_24": false,
+                            "controlled_substance_reference": "",
+                            "unusual_dose_flag": false,
+                            "unusual_qty_flag": false,
+                            "my_sl_consent": true,
+                            "send_to_pharmacy": "",
+                            "unlisted_item_repat_authority": false,
+                            "prescriber_script_number": "19192",
+                            "custom_drug_details": {
+                              "custom_product_id": "1234567890"
+                            },
+                            "prescriber": {
+                              "title": "Dr",
+                              "given_name": "Emily",
+                              "family_name": "Johnson",
+                              "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae"
+                            },
+                            "delivery": {
+                              "method": "EMAIL",
+                              "recipient_type": "PHARMACY",
+                              "destination": "scripts@bayside-pharmacy.com.au",
+                              "pharmacy": {
+                                "pharmacy_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                                "name": "Bayside Pharmacy"
+                              }
+                            }
+                          },
+                          {
+                            "prescription_type": "ELECTRONIC",
+                            "url": "https://egw-etp-int-qrcode-web-au-se.azurewebsites.net/scripts/2F3WFX8B8K66686MVA",
+                            "scid": "2F3WFX8B8K66686MVA",
+                            "status": "Ceased",
+                            "created_date": "2025-04-17T05:09:02",
+                            "item_name": "Oxycodone hydrochloride 20 mg capsule, 20",
+                            "quantity": "500",
+                            "number_of_repeats_authorised": "0",
+                            "repeat_intervals": "0",
+                            "pbs_code": "8502L",
+                            "item_strength": "",
+                            "item_form": "",
+                            "route_administration": "Oral",
+                            "pbsdva_authority_number": "10074227",
+                            "phone_approval_authority_number": "1234567",
+                            "schedule_number": "S8",
+                            "private_prescription": false,
+                            "emergency_supply": false,
+                            "brand_substitution_not_allowed": false,
+                            "reason_for_prescribing": "",
+                            "patient_instructions": "1x am pm",
+                            "doctor_notes": "",
+                            "pharmacy_name": "",
+                            "regulation_24": false,
+                            "controlled_substance_reference": "",
+                            "unusual_dose_flag": false,
+                            "unusual_qty_flag": false,
+                            "my_sl_consent": true,
+                            "send_to_pharmacy": "",
+                            "unlisted_item_repat_authority": false,
+                            "prescriber_script_number": "18631",
+                            "custom_drug_details": {},
+                            "prescriber": {
+                              "title": "Dr",
+                              "given_name": "Emily",
+                              "family_name": "Johnson",
+                              "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae"
+                            },
+                            "delivery": {
+                              "method": "SMS",
+                              "recipient_type": "PATIENT",
+                              "destination": "+61400000000"
+                            }
                           }
-                        }
+                        ]
                       },
-                      {
-                        "prescription_type": "ELECTRONIC",
-                        "url": "https://egw-etp-int-qrcode-web-au-se.azurewebsites.net/scripts/2F3WFX8B8K66686MVA",
-                        "scid": "2F3WFX8B8K66686MVA",
-                        "status": "Ceased",
-                        "created_date": "2025-04-17T05:09:02",
-                        "item_name": "Oxycodone hydrochloride 20 mg capsule, 20",
-                        "quantity": "500",
-                        "number_of_repeats_authorised": "0",
-                        "repeat_intervals": "0",
-                        "pbs_code": "8502L",
-                        "item_strength": "",
-                        "item_form": "",
-                        "route_administration": "Oral",
-                        "pbsdva_authority_number": "10074227",
-                        "phone_approval_authority_number": "1234567",
-                        "schedule_number": "S8",
-                        "private_prescription": false,
-                        "emergency_supply": false,
-                        "brand_substitution_not_allowed": false,
-                        "reason_for_prescribing": "",
-                        "patient_instructions": "1x am pm",
-                        "doctor_notes": "",
-                        "pharmacy_name": "",
-                        "regulation_24": false,
-                        "controlled_substance_reference": "",
-                        "unusual_dose_flag": false,
-                        "unusual_qty_flag": false,
-                        "my_sl_consent": true,
-                        "send_to_pharmacy": "",
-                        "unlisted_item_repat_authority": false,
-                        "prescriber_script_number": "18631",
-                        "custom_drug_details": {},
-                        "prescriber": {
-                          "title": "Dr",
-                          "given_name": "Emily",
-                          "family_name": "Johnson",
-                          "user_id": "8e1c9bab-6614-4723-8981-87c8fa026dae"
-                        },
-                        "delivery": {
-                          "method": "SMS",
-                          "recipient_type": "PATIENT",
-                          "destination": "+61400000000"
-                        }
+                      "timestamp": "2024-01-15T10:30:00.000Z",
+                      "requestId": "req_1705312200000_yza567",
+                      "pagination": {
+                        "count": 2,
+                        "hasNext": false,
+                        "limit": 20,
+                        "offset": 0
                       }
-                    ]
+                    }
                   },
-                  "timestamp": "2024-01-15T10:30:00.000Z",
-                  "requestId": "req_1705312200000_yza567",
-                  "pagination": {
-                    "count": 1,
-                    "hasNext": false,
-                    "limit": 50,
-                    "offset": 0,
-                    "lastKey": null
+                  "noPrescriptions": {
+                    "summary": "Patient has no prescriptions",
+                    "value": {
+                      "success": true,
+                      "statusCode": 200,
+                      "message": "Prescriptions not found for patient",
+                      "code": "SUCCESS",
+                      "data": {
+                        "patient": {
+                          "given_name": "DENICE",
+                          "family_name": "SHEA",
+                          "date_of_birth": "1992-12-16",
+                          "sex": "F",
+                          "patient_id": "20b04934-2ce5-4628-bc6e-ea1cd3b729e3",
+                          "partner_patient_id": "PMS-000123"
+                        },
+                        "prescriber": null,
+                        "prescriptions": []
+                      },
+                      "timestamp": "2024-01-15T10:30:00.000Z",
+                      "requestId": "req_1705312200000_yza567",
+                      "pagination": {
+                        "count": 0,
+                        "hasNext": false,
+                        "limit": 20,
+                        "offset": 0
+                      }
+                    }
                   }
                 }
               }
@@ -1546,7 +1580,8 @@
                       "code": "USER_CREATED_PROVIDER_ALREADY_EXISTS",
                       "data": {
                         "user_id": "5b048ac0-b078-4955-88d5-1c4bc5147d3b",
-                        "warning": "User created successfully but provider creation failed"
+                        "warning": "User created successfully but provider creation failed",
+                        "existing_user_id": "d9eed428-4001-70c8-dffe-cc30b34cfa06"
                       },
                       "timestamp": "2026-09-04T10:30:00.000Z",
                       "requestId": "1-68d1bc7a-2249a4da021230520c2dc288"
@@ -4240,8 +4275,24 @@
           },
           "phone": {
             "type": "string",
-            "description": "Contact phone number. Not validated by the API — send an Australian number (04xxxxxxxx, 0[2378]xxxxxxxx, or +61 prefixed) so it prints correctly on prescriptions.",
+            "description": "Australian phone number (mobile, landline, 1300/1800 or 13), with or without +61. Spaces and dashes are stripped. Stored on the provider record and printed on prescriptions.",
             "example": "0412345678"
+          },
+          "australian_address": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/australian_street_address"
+              }
+            ],
+            "nullable": true,
+            "description": "Provider address, printed on the user's prescriptions. All five fields are required when sent; state accepts the code or the full name. Stored on the provider record — omitted, the organization address is used.",
+            "example": {
+              "street_number": "12",
+              "street_name": "Example Street",
+              "suburb": "Richmond",
+              "state": "VIC",
+              "postcode": "3121"
+            }
           },
           "access_roles": {
             "type": "array",
@@ -4333,13 +4384,18 @@
         "properties": {
           "user_id": {
             "type": "string",
-            "description": "Parchment's unique identifier for the user. This is the only identifier returned.",
+            "description": "Parchment's unique identifier for the user.",
             "example": "0b4c1a49-fea8-4922-a3da-2ca8ff8af9bd"
           },
           "warning": {
             "type": "string",
             "description": "Present only on a partial success. Names the follow-up step that did not complete. Read the top-level `code` field to decide what to do.",
             "example": "User created successfully but provider search failed"
+          },
+          "existing_user_id": {
+            "type": "string",
+            "description": "Present only with `USER_CREATED_PROVIDER_ALREADY_EXISTS`. The user in this organization that already holds the `hpii_number`.",
+            "example": "d9eed428-4001-70c8-dffe-cc30b34cfa06"
           }
         }
       },
@@ -4818,7 +4874,8 @@
               }
             ],
             "deprecated": true,
-            "description": "Deprecated. Use `prescriptions[].prescriber` instead. This field is kept for backwards compatibility and will be removed in a future release."
+            "nullable": true,
+            "description": "Deprecated. Use `prescriptions[].prescriber` instead. `null` when the patient has no prescriptions."
           },
           "prescriptions": {
             "type": "array",
@@ -5291,7 +5348,7 @@
                       }
                     ],
                     "nullable": true,
-                    "description": "Provider address. Only present when it has been set in the Parchment portal — the external API does not accept it."
+                    "description": "Provider address, as set by Create User, Update User or the Parchment portal."
                   }
                 }
               },
@@ -5389,7 +5446,24 @@
               },
               "phone": {
                 "type": "string",
+                "description": "Australian phone number, with or without +61. Spaces and dashes are stripped. Written without an HI Service lookup when the provider is active.",
                 "example": "0412345678"
+              },
+              "australian_address": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/australian_street_address"
+                  }
+                ],
+                "nullable": true,
+                "description": "Provider address. All five fields are required when sent; state accepts the code or the full name. null clears it. Written without an HI Service lookup when the provider is active.",
+                "example": {
+                  "street_number": "12",
+                  "street_name": "Example Street",
+                  "suburb": "Richmond",
+                  "state": "VIC",
+                  "postcode": "3121"
+                }
               },
               "title": {
                 "type": "string",
