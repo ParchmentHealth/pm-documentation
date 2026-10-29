@@ -7,6 +7,7 @@ openapi: "PUT /v1/organizations/{organization_id}/users/{user_id}"
 1. Provider fields go in `provider_details`. `access_roles` and `email` are ignored.
 2. Send `hpii_number`, `given_name`, `family_name`, `date_of_birth` and `sex` together — all five must match the Services Australia record.
 3. `full_name` follows the provider names unless you set `full_name` yourself.
+4. `phone` and `australian_address` update the provider record only. On an active provider they are written without an HI Service lookup. A user with no provider record needs the full identity set in the same request.
 
 ## HPI-I updates and partial user creation
 
@@ -90,6 +91,25 @@ A 4xx means nothing was written. A `200` means the provider record was written; 
 ```
 
 
+### Update Phone and Address
+
+No HI Service lookup when the provider record is active. Send `null` to clear the address.
+
+```json
+{
+  "provider_details": {
+    "phone": "0412345678",
+    "australian_address": {
+      "street_number": "12",
+      "street_name": "Example Street",
+      "suburb": "Richmond",
+      "state": "VIC",
+      "postcode": "3121"
+    }
+  }
+}
+```
+
 ### Repair a Partial User Creation
 
 Send the full identity set so the HI Service lookup uses only current values.
@@ -127,7 +147,8 @@ When updating provider-specific information, use the `provider_details` object:
 | `date_of_birth`            | string | No                                         | Date of birth in YYYY-MM-DD format       |
 | `sex`                      | string | No                                         | Sex (M/F/I/N)                           |
 | `hpii_number`              | string | No                                         | Healthcare Provider Identifier  |
-| `phone`                    | string | No                                         | Provider phone number           |
+| `phone`                    | string | No                                         | Australian number. Spaces and dashes are stripped. |
+| `australian_address`       | object | No                                         | `street_number`, `street_name`, `suburb`, `state`, `postcode`. All five required when sent. `null` clears it. |
 | `title`                    | string | No                                         | Professional title              |
 | `prescriber_number`        | string | When prescriber_type is not 'T' (podiatrist) | Max 10 characters |
 | `provider_number`          | string | No                                         | Max 10 characters     |
@@ -146,6 +167,8 @@ When updating provider-specific information, use the `provider_details` object:
    - If `prescriber_type` is not 'T' (podiatrist), `prescriber_number` is required
 4. **Date Format**: Date of birth must be in YYYY-MM-DD format
 5. **Sex Values**: Must be one of: M (Male), F (Female), I (Indeterminate), N (Not-stated)
+6. **Phone**: Australian mobile, landline, 1300/1800 or 13 number, with or without `+61`
+7. **Australian Address**: `street_number` max 12, `street_name` and `suburb` max 100, `state` one of VIC/NSW/QLD/WA/SA/TAS/ACT/NT (full names accepted), `postcode` 4 digits
 
 ### Prescriber Types
 

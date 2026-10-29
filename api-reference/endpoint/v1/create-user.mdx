@@ -20,6 +20,13 @@ There is no `partner_user_id`. Map `user_id` to your own record.
   "sex": "F",
   "email": "darlene.cameron@example.com",
   "phone": "0412345678",
+  "australian_address": {
+    "street_number": "12",
+    "street_name": "Example Street",
+    "suburb": "Richmond",
+    "state": "VIC",
+    "postcode": "3121"
+  },
   "access_roles": ["admin", "provider"],
   "hpii_number": "8003614900029560",
   "prescriber_type": "M",
@@ -167,7 +174,9 @@ There is no `partner_user_id`. Map `user_id` to your own record.
 | `provider_number` | No | Max 10 characters. |
 | `ahpra_number` | No | 3-letter prefix + 10 digits, e.g. `MED0000932846`. |
 | `erx_entity_id` | No | Exactly 5 alphanumeric characters. |
-| `title`, `phone`, `hospital_provider_number` | No | Free text. `phone` is not validated. Send an Australian number such as `0412345678` or `+61412345678`. |
+| `phone` | No | Australian number, e.g. `0412345678`, `+61412345678` or `1300123456`. Spaces and dashes are stripped. Stored on the provider record. |
+| `australian_address` | No | Object: `street_number` (max 12), `street_name` (max 100), `suburb` (max 100), `state` (`VIC`, `NSW`, `QLD`, `WA`, `SA`, `TAS`, `ACT`, `NT`; full names accepted), `postcode` (4 digits). All five required when sent. Stored on the provider record. |
+| `title`, `hospital_provider_number` | No | Free text. |
 
 ## Status Codes
 
