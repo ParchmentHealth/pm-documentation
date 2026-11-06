@@ -104,9 +104,7 @@ Opaque pass-through values for partner use. They are shown **read-only** on the 
 
 Each reserved field is independent of the pre-fill precedence above. A field only appears on the form (and is forwarded to the webhook) when it is present and non-empty; absent fields are delivered as `null`.
 
-### V3 Parameters
-
-<Badge color="orange">Coming soon</Badge>
+### V3 Parameters <Badge color="blue">Coming soon</Badge>
 
 When the new prescription form (V3) is enabled for an organization, `/embed/patients/{patient_id}/prescriptions` redirects to `/embed/patients/{patient_id}/prescriptions-v3` with the query string intact. Use the same `redirect_path` for both forms.
 
