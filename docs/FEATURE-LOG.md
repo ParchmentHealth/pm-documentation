@@ -24,6 +24,7 @@ Running list of features/fixes worked on, for release tracking. Newest first wit
 
 | Date | Feature | Branch | Repos affected |
 |---|---|---|---|
+| 2026-11-12 | V3 URL drug pre-fill runs the Select button's PBS checks (PAR-1304): patient Medicare / DVA eligibility, brand required for a brand-specific listing, "no substitution" ticked on one. New `mims-local/vpps/{vppId}/packs` read route supplies the whole group. Draft restore and queue amend unchanged. | feature/prescription-v3 (web-ui), feature/mims-flat-file (partner-service) | web-ui, partner-service |
 | 2026-11-12 | Drugs page: sortable Generic / Trade / Brand Name columns (default Generic A–Z, case-insensitive, blanks last, sorts full list before paging) and drug-count pills in the Organisation Drugs and My Drugs tabs. Uncommitted | `feature/misc-tweaks` | web-ui |
 | 2026-11-11 | GitHub Actions deploy IAM hardening: deploy policies scoped to stage-named resources, a permissions boundary for CI-created Lambda roles (enforced in production), and a GitHub OIDC deploy role to replace static keys. Applied to dev and production; sandbox pending | `feature/github-deploy-iam-hardening` | tf-misc-infrastructure |
 | 2026-11-11 | Add `@aws-sdk/client-athena` dependency to services that bundle common (required by common `aws_utils.ts` Athena helpers; partner-service + patient-service merged to `sandbox` and deployed) | `feature/misc-tweaks` | partner-service, patient-service, acl-service, auth-service |
