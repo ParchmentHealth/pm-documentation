@@ -1,0 +1,81 @@
+---
+title: "Iframe Events"
+description: "Get notified in your page when actions happen inside the embedded iframe"
+tag: "Coming soon"
+---
+
+The iframe can tell your page what happens inside it, with `window.postMessage`. Use the events to refresh a status or close your dialog without waiting for the doctor.
+
+<Note>
+Events are a signal only. They carry IDs, never prescription or clinical data. Keep [webhooks](/webhooks/webhook-events) and the API as your source of truth.
+</Note>
+
+## 1. Turn events on
+
+Add `parent_origin` to the SSO request body. It is the origin of the page that hosts the iframe, and it must be one of your registered embed origins.
+
+```json
+{
+  "redirect_path": "/embed/patients/f03b972b-53ea-452d-ae48-024817f6c3b0/prescriptions",
+  "parent_origin": "https://app.example.com"
+}
+```
+
+- Must be an exact `https` origin: no path, no trailing slash, no wildcard.
+- Parchment sends events to this origin only. Without `parent_origin`, no events are sent.
+
+## 2. Listen for events
+
+```js
+const PARCHMENT_ORIGIN = 'https://portal.parchment.health' // origin of the iframe src
+
+window.addEventListener('message', (event) => {
+  if (event.origin !== PARCHMENT_ORIGIN) return
+  if (event.data?.source !== 'parchment') return
+
+  switch (event.data.type) {
+    case 'prescription.created':
+    case 'prescription.cancelled':
+      refreshPrescriptions(event.data.data.patient_id)
+      break
+    case 'flow.finished':
+    case 'session.expired':
+    case 'sso.failed':
+      closeDialog()
+      break
+  }
+})
+```
+
+Always check `event.origin`. Ignore event types you do not know; more can be added.
+
+## Message format
+
+```json
+{
+  "source": "parchment",
+  "version": 1,
+  "type": "prescription.created",
+  "timestamp": "2026-11-10T10:00:00.000Z",
+  "data": {
+    "organization_id": "0d9f5a4e-6c1b-4f0e-9a51-2f6f0b7d3c11",
+    "patient_id": "f03b972b-53ea-452d-ae48-024817f6c3b0",
+    "partner_patient_id": "1523402100149593750"
+  }
+}
+```
+
+## Event types
+
+| `type` | Sent when | `data` |
+|---|---|---|
+| `embed.ready` | The embedded page has loaded | `organization_id`, `patient_id` |
+| `prescription.created` | A prescription is created. Same meaning as the webhook | `organization_id`, `patient_id`, `partner_patient_id` |
+| `prescription.cancelled` | An issued prescription is cancelled. Same meaning as the webhook | `organization_id`, `patient_id`, `partner_patient_id` |
+| `flow.finished` | The doctor clicks **Done** | `organization_id`, `patient_id` |
+| `session.expired` | The session ended. Start a new SSO to continue | `reason`: `token_expired` |
+| `sso.failed` | Sign-in did not complete | `reason`: `expired`, `mfa_cancelled` or `failed` |
+
+- `partner_patient_id` is present only when the patient has one.
+- One event is sent for each prescription. The events do not include a prescription ID; fetch the patient's prescriptions or use the webhook to get details.
+- After `session.expired` or `sso.failed` the iframe shows a "Session ended" screen. Request a new SSO token and load the iframe again.

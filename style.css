@@ -302,3 +302,24 @@ html.dark .nav-tag-pill-text[data-nav-tag]{
   color:#fff !important;
   border:1px solid rgba(255,255,255,.25);
 }
+
+/* "Coming soon" tag — gray pill instead of black */
+.nav-tag-pill-text[data-nav-tag="Coming soon"],
+html.dark .nav-tag-pill-text[data-nav-tag="Coming soon"]{
+  background:#e5e7eb !important;
+  color:#374151 !important;
+  border:none;
+}
+html.dark .nav-tag-pill-text[data-nav-tag="Coming soon"]{
+  background:#374151 !important;
+  color:#e5e7eb !important;
+}
+
+/* Inline "Coming soon" pill for headings — matches the sidebar tag */
+.pm-soon{
+  display:inline-block;vertical-align:middle;margin-left:8px;
+  padding:2px 8px;border-radius:6px;
+  font-size:.7rem;font-weight:700;line-height:1.3;
+  background:#e5e7eb;color:#374151;
+}
+html.dark .pm-soon{background:#374151;color:#e5e7eb}

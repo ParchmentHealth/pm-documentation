@@ -904,6 +904,48 @@
                 }
               }
             }
+          },
+          "402": {
+            "description": "Organization billing inactive. No token is issued.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "SUBSCRIPTION_INACTIVE": {
+                    "summary": "Organization subscription inactive",
+                    "value": {
+                      "success": false,
+                      "statusCode": 402,
+                      "code": "SUBSCRIPTION_INACTIVE",
+                      "error": {
+                        "type": "https://parchment.health/errors/subscription-inactive",
+                        "title": "Subscription inactive",
+                        "detail": "The organization's Parchment subscription is inactive. An organization admin must update billing in the Parchment portal."
+                      },
+                      "timestamp": "2026-10-03T10:30:00.000Z",
+                      "requestId": "1-68a44ded-5c4fdd75455250d518c3bab2"
+                    }
+                  },
+                  "PARTNER_BILLING_DISABLED": {
+                    "summary": "Partner billing disabled",
+                    "value": {
+                      "success": false,
+                      "statusCode": 402,
+                      "code": "PARTNER_BILLING_DISABLED",
+                      "error": {
+                        "type": "https://parchment.health/errors/partner-billing-disabled",
+                        "title": "Partner billing disabled",
+                        "detail": "Billing for this partner is disabled. Contact Parchment support."
+                      },
+                      "timestamp": "2026-10-03T10:30:00.000Z",
+                      "requestId": "1-68a44ded-5c4fdd75455250d518c3bab2"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
